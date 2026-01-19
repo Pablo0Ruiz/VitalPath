@@ -49,8 +49,11 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*"
   },
+  "prettier": "@repo/prettier-config",
   "jest": {
     "moduleFileExtensions": [
       "js",

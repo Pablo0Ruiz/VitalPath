@@ -14,13 +14,15 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.2.5",
-    "turbo": "^2.7.5"
+    "turbo": "^2.7.5",
+    "@repo/prettier-config": "workspace:*"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,md,json}": [
       "prettier --write"
     ]
   },
+  "prettier": "@repo/prettier-config",
   "packageManager": "pnpm@8.15.6",
   "name": "vitalpathai"
 }

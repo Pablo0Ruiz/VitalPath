@@ -2,7 +2,6 @@
   "name": "web",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite --clearScreen false",
     "build": "tsc && vite build",
@@ -20,8 +19,10 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.18.0",
     "typescript": "5.5.4",
-    "vite": "^5.1.4"
-  }
+    "vite": "^5.1.4",
+    "@repo/prettier-config": "workspace:*"
+  },
+  "prettier": "@repo/prettier-config"
 }
