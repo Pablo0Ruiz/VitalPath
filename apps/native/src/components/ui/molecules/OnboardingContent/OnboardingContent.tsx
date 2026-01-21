@@ -2,7 +2,7 @@ import {
   BodyText,
   HeadlineText,
   PageIndicator,
-  ButtonOnboarding,
+  ButtonAuth,
 } from '@/components/ui/atoms';
 import { View, ViewProps } from 'react-native';
 import { onboardingContentVariants } from './OnboardingContent.variants';
@@ -51,7 +51,7 @@ const OnboardingContent = ({
         </View>
 
         <View className={onboardingContentVariants.buttonWrapper}>
-          <ButtonOnboarding
+          <ButtonAuth
             title={buttonTitle}
             onPress={onButtonPress}
             icon={buttonIcon}

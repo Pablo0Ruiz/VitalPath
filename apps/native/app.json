@@ -2,6 +2,7 @@
   "expo": {
     "name": "native",
     "slug": "native",
+    "scheme": "vitalpath",
     "version": "1.0.0",
     "web": {
       "favicon": "./assets/favicon.png"
@@ -9,7 +10,7 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": [],
+    "plugins": ["expo-router"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

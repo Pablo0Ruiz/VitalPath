@@ -3,11 +3,20 @@ import { bodyTextVariants } from './BodyText.variants';
 
 export interface BodyTextProps extends TextProps {
   text: string;
+  variant?: 'title' | 'subtitle' | 'body' | 'caption';
 }
 
-const BodyText = ({ text, className, ...props }: BodyTextProps) => {
+const BodyText = ({
+  text,
+  variant = 'body',
+  className,
+  ...props
+}: BodyTextProps) => {
   return (
-    <Text className={`${bodyTextVariants.base} ${className || ''}`} {...props}>
+    <Text
+      className={`${bodyTextVariants.base} ${bodyTextVariants[variant]} ${className || ''}`}
+      {...props}
+    >
       {text}
     </Text>
   );

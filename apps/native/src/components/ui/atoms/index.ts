@@ -1,4 +1,6 @@
 export * from './BodyText';
-export * from './ButtonOnboarding';
+export * from './ButtonAuth';
 export * from './HeadlineText';
 export * from './PageIndicator';
+export * from './Input';
+export * from './Logo';
