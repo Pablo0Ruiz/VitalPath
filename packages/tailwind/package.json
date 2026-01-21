@@ -1,0 +1,14 @@
+{
+  "name": "@repo/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    "./native": "./tailwind.native.js",
+    "./web": "./tailwind.web.ts"
+  },
+  "devDependencies": {
+    "nativewind": "^4.2.1",
+    "tailwindcss": "^3.4.17"
+  }
+}
