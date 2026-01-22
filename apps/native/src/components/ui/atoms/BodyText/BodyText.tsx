@@ -3,7 +3,7 @@ import { bodyTextVariants } from './BodyText.variants';
 
 export interface BodyTextProps extends TextProps {
   text: string;
-  variant?: 'title' | 'subtitle' | 'body' | 'caption';
+  variant?: 'title' | 'subtitle' | 'body';
 }
 
 const BodyText = ({

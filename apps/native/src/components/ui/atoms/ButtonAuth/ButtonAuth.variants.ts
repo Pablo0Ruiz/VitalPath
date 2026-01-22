@@ -1,8 +1,8 @@
 export const buttonAuthVariants = {
-  base: 'flex flex-row w-full items-center justify-between rounded-full h-[68px] pl-9 pr-2 bg-[#7dd3d8] active:scale-[0.98] transition-all shadow-lg',
-  text: 'text-lg font-bold text-[#0f1819]',
+  base: 'flex flex-row w-full items-center justify-center rounded-full h-[56px] px-8 bg-[#a8e6e6] active:scale-[0.98] transition-all',
+  text: 'text-lg font-semibold text-[#0f1819]',
   iconContainer:
-    'h-[52px] w-[52px] rounded-full bg-white/50 flex items-center justify-center shadow-sm',
+    'h-[44px] w-[44px] rounded-full bg-white/50 flex items-center justify-center shadow-sm ml-2',
 };
 
 export type ButtonAuthVariants = typeof buttonAuthVariants;

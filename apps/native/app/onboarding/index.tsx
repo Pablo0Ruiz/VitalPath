@@ -1,10 +1,12 @@
 import { OnboardingContent, OnboardingHero } from '@/components/ui/molecules';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 const robot = require('../../assets/images/robot.png');
 
-export default function OnboardingWelcome() {
+const OnboardingWelcome = () => {
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="relative flex flex-col justify-between overflow-hidden">
@@ -23,11 +25,12 @@ export default function OnboardingWelcome() {
             <Text className="text-[#0f1819] text-xl font-medium">↗</Text>
           }
           onButtonPress={() => {
-            Alert.alert('Get Started');
-            // router.push('/onboarding/step2'); // Para navegar a la siguiente pantalla
+            router.push('/auth/login');
           }}
         />
       </View>
     </SafeAreaView>
   );
-}
+};
+
+export default OnboardingWelcome;
