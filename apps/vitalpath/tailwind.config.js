@@ -1,3 +1,5 @@
+const { colors } = require('./constants/colors');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -16,6 +18,8 @@ module.exports = {
         'inter-thin': ['Inter_18pt-Thin', 'sans-serif'],
         'inter-thin-italic': ['Inter_18pt-ThinItalic', 'sans-serif'],
       },
+
+      colors,
     },
   },
   plugins: [],
