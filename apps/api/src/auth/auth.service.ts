@@ -1,26 +1,80 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
+
+import * as bcrypt from 'bcrypt';
+
+import { CreateUserDto, LoginUserDto } from './dto';
+import { User } from './entities/user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const { password, ...userData } = createUserDto;
+
+      const user = await this.userModel.create({
+        ...userData,
+        password: bcrypt.hashSync(password, 10),
+      });
+
+      const { password: _, ...userWithoutPassword } = user.toObject();
+
+      return {
+        ...userWithoutPassword,
+        token: this.getJwtToken({ id: user.id }),
+      };
+    } catch (error) {
+      this.handleDBErrorsExceptions(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(loginUserDto: LoginUserDto) {
+    const { email, password } = loginUserDto;
+
+    const user = await this.userModel.findOne({ email }).select('+password');
+
+    if (!user) throw new UnauthorizedException('El correo es incorrecto');
+
+    if (!bcrypt.compareSync(password, user.password))
+      throw new UnauthorizedException('La contraseña es incorrecta');
+
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
+    return {
+      ...userWithoutPassword,
+      token: this.getJwtToken({ id: user.id }),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  private handleDBErrorsExceptions(error: unknown): never {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code: unknown }).code === 11000
+    ) {
+      throw new BadRequestException('Email already exists');
+    }
+    console.log(error);
+    throw new InternalServerErrorException('Please try again later');
   }
 }

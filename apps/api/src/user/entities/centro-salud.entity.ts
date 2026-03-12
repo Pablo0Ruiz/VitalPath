@@ -11,6 +11,15 @@ export class CentroSalud {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
   listaMedicos_ID: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  listaTrabajadores_ID: Types.ObjectId[];
+
+  @Prop({ required: false, unique: true, trim: true })
+  codigoVinculacion: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  admin_ID: Types.ObjectId;
 }
 
 export const CentroSaludSchema = SchemaFactory.createForClass(CentroSalud);
