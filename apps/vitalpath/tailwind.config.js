@@ -1,4 +1,4 @@
-const { colors } = require('./constants/colors');
+const { colors } = require('./src/constants/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -12,11 +12,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'inter-light': ['Inter_18pt-Light', 'sans-serif'],
-        'inter-light-italic': ['Inter_18pt-LightItalic', 'sans-serif'],
-        'inter-regular': ['Inter_18pt-Regular', 'sans-serif'],
-        'inter-thin': ['Inter_18pt-Thin', 'sans-serif'],
-        'inter-thin-italic': ['Inter_18pt-ThinItalic', 'sans-serif'],
+        interlight: ['Inter_18pt-Light', 'sans-serif'],
+        interlightitalic: ['Inter_18pt-LightItalic', 'sans-serif'],
+        interregular: ['Inter_18pt-Regular', 'sans-serif'],
+        interthin: ['Inter_18pt-Thin', 'sans-serif'],
+        interthinitalic: ['Inter_18pt-ThinItalic', 'sans-serif'],
       },
 
       colors,
