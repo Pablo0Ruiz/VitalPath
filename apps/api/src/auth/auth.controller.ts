@@ -1,6 +1,7 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
+import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -14,5 +15,10 @@ export class AuthController {
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
+  }
+
+  @Post('login/:id')
+  loginWithId(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.authService.loginWithId(id);
   }
 }

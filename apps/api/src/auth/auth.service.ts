@@ -60,6 +60,19 @@ export class AuthService {
     };
   }
 
+  async loginWithId(id: string) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) throw new UnauthorizedException('El usuario no existe');
+
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
+    return {
+      ...userWithoutPassword,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
+
   private getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
     return token;

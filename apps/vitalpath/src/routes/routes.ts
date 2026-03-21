@@ -1,3 +1,5 @@
+import { Octicons } from '@expo/vector-icons';
+
 export const ROUTES = {
   LOGIN: '/(auth)/login',
   REGISTER: '/(auth)/register',
@@ -7,17 +9,22 @@ export const ROUTES = {
   SETTINGS: '/(tabs)/settings',
 } as const;
 
-export type AppRouteName = (typeof ROUTES)[keyof typeof ROUTES];
-
 export const AUTH_SCREEN_NAMES = {
   LOGIN: 'login/index',
   REGISTER: 'register/index',
   RECOVER_PASSWORD: 'recover-password/index',
 } as const;
 
+export const TAB_SCREEN_NAMES = {
+  HOME: 'home/index',
+  PROFILE: 'profile/index',
+  SETTINGS: 'settings/index',
+  CHAT: 'chat/index',
+} as const;
+
 interface RouteConfig {
   title: string;
-  icon: React.ReactNode;
+  icon: keyof typeof Octicons.glyphMap;
   screenName: string;
 }
 
@@ -41,14 +48,24 @@ export const AUTH_ROUTES: RouteConfig[] = [
 ];
 
 export const TAB_ROUTES: RouteConfig[] = [
+  // {
+  //   title: 'Profile',
+  //   icon: 'person',
+  //   screenName: TAB_SCREEN_NAMES.PROFILE,
+  // },
+  // {
+  //   title: 'Settings',
+  //   icon: 'settings',
+  //   screenName: TAB_SCREEN_NAMES.SETTINGS,
+  // },
   {
-    title: 'Profile',
-    icon: 'person',
-    screenName: 'profile',
+    title: 'Home',
+    icon: 'home',
+    screenName: TAB_SCREEN_NAMES.HOME,
   },
   {
-    title: 'Settings',
-    icon: 'settings',
-    screenName: 'settings',
+    title: 'Chat',
+    icon: 'comment',
+    screenName: TAB_SCREEN_NAMES.CHAT,
   },
 ];

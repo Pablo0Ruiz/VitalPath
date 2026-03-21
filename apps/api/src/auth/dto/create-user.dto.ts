@@ -36,4 +36,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   centroSalud_ID: string;
+
+  @IsString()
+  @IsOptional()
+  genero: string;
 }

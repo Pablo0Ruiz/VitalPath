@@ -1,6 +1,7 @@
-import { TAB_ROUTES } from '@/src/routes/routes';
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+
+import { TAB_ROUTES } from '@/src/routes/routes';
+import { Octicons } from '@expo/vector-icons';
 
 export default function TabsLayout() {
   return (
@@ -11,6 +12,10 @@ export default function TabsLayout() {
           name={route.screenName}
           options={{
             title: route.title,
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Octicons name={route.icon} size={size} color={color} />
+            ),
           }}
         />
       ))}

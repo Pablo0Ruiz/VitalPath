@@ -5,12 +5,14 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button, SocialButton } from '@/src/components/ui/atoms';
+import { Button, SocialButton, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
 import { ROUTES } from '@/src/routes/routes';
 import { LoginFormValues, loginSchema } from '@/src/interfaces/auth';
+import { useAuth } from '@/src/context/AuthContext';
 
 const Login = () => {
+  const { login } = useAuth();
   const {
     control,
     handleSubmit,
@@ -23,9 +25,15 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('Datos validados:', data);
-    //TODO: Implementar conexion con el backend
+  const onSubmit = async (data: LoginFormValues) => {
+    const response = await login(data);
+
+    if (!response) {
+      Alert.alert('Error', 'Credenciales incorrectas');
+      return;
+    }
+
+    router.replace(ROUTES.HOME);
   };
 
   return (
@@ -84,6 +92,19 @@ const Login = () => {
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
         />
+
+        <TextField
+          className="mb-6"
+          onPress={() => router.push(ROUTES.REGISTER)}
+        >
+          ¿No tienes una cuenta?
+          <TextField
+            variants="caption"
+            className="text-brand-violet-600 font-semibold"
+          >
+            Registrarse
+          </TextField>
+        </TextField>
 
         <Divider text="Or continue with" className="mb-6" />
 

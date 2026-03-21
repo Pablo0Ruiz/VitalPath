@@ -1,4 +1,3 @@
-import { Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import { useColorScheme } from 'nativewind';
@@ -11,6 +10,7 @@ import { themes } from '@/src/constants/theme';
 import '../global.css';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import { AuthProvider } from '@/src/context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,12 +37,15 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack>
-    </SafeAreaView>
+    <AuthProvider>
+      <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </SafeAreaView>
+    </AuthProvider>
   );
 }

@@ -3,3 +3,8 @@ export { Checkbox } from './Checkbox';
 export { Input } from './Input';
 export { SocialButton } from './SocialButton';
 export { TextField } from './TextFiled';
+export { Badge } from './Badge';
+export { Avatar } from './Avatar';
+export { IconBox } from './IconBox';
+export { MessageItem } from './MessageItem';
+export { MessageItemImage } from './MessageItemImage';

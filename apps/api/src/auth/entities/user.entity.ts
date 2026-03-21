@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 import { UserRoles } from '../enum/user-role.enum';
+import { UserGenero } from '../enum/user-genero.enum';
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -25,6 +26,7 @@ export class User extends Document {
     type: String,
     enum: UserRoles,
     default: UserRoles.PACIENTE,
+    required: false,
   })
   role: UserRoles;
 
@@ -33,6 +35,14 @@ export class User extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'CentroSalud', required: false })
   centroSalud_ID: Types.ObjectId;
+
+  @Prop({
+    type: String,
+    enum: UserGenero,
+    default: UserGenero.MASCULINO,
+    required: true,
+  })
+  genero: UserGenero;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
