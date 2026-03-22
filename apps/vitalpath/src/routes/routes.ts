@@ -7,12 +7,14 @@ export const ROUTES = {
   HOME: '/(tabs)/home',
   PROFILE: '/(tabs)/profile',
   SETTINGS: '/(tabs)/settings',
+  RECOVER_PASSWORD_EMAIL_SENT: '/(auth)/recover-password-email-sent',
 } as const;
 
 export const AUTH_SCREEN_NAMES = {
   LOGIN: 'login/index',
   REGISTER: 'register/index',
   RECOVER_PASSWORD: 'recover-password/index',
+  RECOVER_PASSWORD_EMAIL_SENT: 'recover-password-email-sent/index',
 } as const;
 
 export const TAB_SCREEN_NAMES = {
@@ -44,6 +46,11 @@ export const AUTH_ROUTES: RouteConfig[] = [
     title: 'Recuperar Contraseña',
     icon: 'person',
     screenName: AUTH_SCREEN_NAMES.RECOVER_PASSWORD,
+  },
+  {
+    title: 'Recuperar Contraseña Email Sent',
+    icon: 'person',
+    screenName: AUTH_SCREEN_NAMES.RECOVER_PASSWORD_EMAIL_SENT,
   },
 ];
 

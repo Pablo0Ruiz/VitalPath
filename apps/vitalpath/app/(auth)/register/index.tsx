@@ -34,7 +34,6 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    console.log('Datos a registrar:', data);
     setIsLoading(true);
     const response = await register(data);
     //TODO:esto se va a cambiar por toast

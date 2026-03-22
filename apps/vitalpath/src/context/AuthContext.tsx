@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+      } finally {
         setIsLoading(false);
       }
     };

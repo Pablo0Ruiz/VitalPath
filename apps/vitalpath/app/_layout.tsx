@@ -3,6 +3,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from 'nativewind';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import { StatusBar } from 'expo-status-bar';
 
@@ -11,6 +12,8 @@ import '../global.css';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { AuthProvider } from '@/src/context/AuthContext';
+
+const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,11 +43,13 @@ export default function RootLayout() {
     <AuthProvider>
       <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
+        <QueryClientProvider client={queryClient}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </QueryClientProvider>
       </SafeAreaView>
     </AuthProvider>
   );
