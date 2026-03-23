@@ -1,12 +1,5 @@
-import { View, Text } from 'react-native';
-import React from 'react';
+import { Redirect } from 'expo-router';
 
-const index = () => {
-  return (
-    <View>
-      <Text className="font-inter-thin">index</Text>
-    </View>
-  );
-};
-
-export default index;
+export default function Index() {
+  return <Redirect href="/login" />;
+}

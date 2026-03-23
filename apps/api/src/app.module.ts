@@ -1,10 +1,33 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { EnvConfig } from './config/env.config';
+import { JoiValidationSchema } from './config/joi.validation';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
+import { UserModule } from './user/user.module';
+import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      load: [EnvConfig],
+      validationSchema: JoiValidationSchema,
+    }),
+
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.MONGO_URI,
+        dbName: process.env.MONGO_DB_NAME,
+      }),
+    }),
+    AuthModule,
+
+    CommonModule,
+
+    UserModule,
+
+    GeminiModule,
+  ],
 })
 export class AppModule {}
