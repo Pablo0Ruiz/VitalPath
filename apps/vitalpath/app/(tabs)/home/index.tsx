@@ -3,7 +3,7 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Octicons } from '@expo/vector-icons';
 
-import { Avatar, TextField } from '@/src/components/ui/atoms';
+import { Avatar, Button, TextField } from '@/src/components/ui/atoms';
 import {
   SectionHeader,
   AppointmentRow,
@@ -13,7 +13,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext';
 
 export default function DashboardScreen() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -105,6 +105,7 @@ export default function DashboardScreen() {
             onTakePress={() => {}}
           />
         </View>
+        <Button title="Cerrar sesión" onPress={logout}></Button>
 
         <View style={{ height: 40 }} />
       </ScrollView>
