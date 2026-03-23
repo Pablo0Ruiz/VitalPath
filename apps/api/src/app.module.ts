@@ -21,7 +21,6 @@ import { GeminiModule } from './gemini/gemini.module';
         dbName: process.env.MONGO_DB_NAME,
       }),
     }),
-
     AuthModule,
 
     CommonModule,

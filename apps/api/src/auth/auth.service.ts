@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +8,10 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { MailerService } from '@nestjs-modules/mailer';
+import recoverPasswordEmailTemplate from 'src/common/template/recover-password-email.template';
+import { RecoverPasswordDto } from './dto/recover-password.dto';
+import { handleServiceException } from 'src/common/helpers/handle-exceptions.helper';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +19,7 @@ export class AuthService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailerService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -38,7 +38,7 @@ export class AuthService {
         token: this.getJwtToken({ id: user.id }),
       };
     } catch (error) {
-      this.handleDBErrorsExceptions(error);
+      handleServiceException(error);
     }
   }
 
@@ -78,16 +78,40 @@ export class AuthService {
     return token;
   }
 
-  private handleDBErrorsExceptions(error: unknown): never {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      (error as { code: unknown }).code === 11000
-    ) {
-      throw new BadRequestException('Email already exists');
+  async recoverPassword(recoverPasswordDto: RecoverPasswordDto) {
+    const safeResponse = {
+      message:
+        'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña',
+    };
+
+    try {
+      const user = await this.userModel.findOne({
+        email: recoverPasswordDto.email,
+      });
+
+      // Por seguridad: no revelamos si el email está registrado o no
+      if (!user) return safeResponse;
+
+      const token = this.jwtService.sign(
+        { id: user.id },
+        {
+          expiresIn: '15m',
+        },
+      );
+
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+      await this.mailService.sendMail({
+        to: user.email,
+        subject: 'Recuperar contraseña',
+        html: recoverPasswordEmailTemplate
+          .replaceAll('{{name}}', user.name)
+          .replaceAll('{{resetLink}}', resetLink),
+      });
+
+      return safeResponse;
+    } catch (error) {
+      handleServiceException(error);
     }
-    console.log(error);
-    throw new InternalServerErrorException('Please try again later');
   }
 }
