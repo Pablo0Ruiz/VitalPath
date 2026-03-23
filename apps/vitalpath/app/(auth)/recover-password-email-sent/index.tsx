@@ -25,11 +25,7 @@ const RecoverPasswordEmailSent = () => {
   };
 
   const handleGoBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace(ROUTES.LOGIN);
-    }
+    router.replace(ROUTES.LOGIN);
   };
 
   return (

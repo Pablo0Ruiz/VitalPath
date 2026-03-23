@@ -2,7 +2,6 @@ export { FormField } from './FormField';
 export { Divider } from './Divider';
 export { AuthHeader } from './AuthHeader';
 export { SectionHeader } from './SectionHeader';
-export { MetricCard } from './MetricCard';
 export { AppointmentRow } from './AppointmentRow';
 export { MedicationRow } from './MedicationRow';
 export { HealthScoreBanner } from './HealthScoreBanner';
