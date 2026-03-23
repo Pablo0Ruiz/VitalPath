@@ -71,6 +71,9 @@ Escanea el código QR con **Expo Go** desde tu dispositivo, o presiona `i` para 
 
 - **Registro de usuario** — Crea una cuenta nueva con email y contraseña.
 - **Inicio de sesión** — Accede a tu cuenta de forma segura. La sesión se mantiene activa gracias a JWT almacenado de forma segura en el dispositivo.
+- **Recuperación de contraseña** — Envío de correo electrónico con un enlace para restablecer la contraseña. El flujo completo está implementado en el backend (generación de token, construcción del enlace y envío del email); el link de reseteo funcionará correctamente una vez que la aplicación esté desplegada en producción.
+
+  > ⚠️ **Nota:** El enlace incluido en el correo es figurativo en entorno local. Para que sea funcional, la app debe estar desplegada y la URL de producción configurada correctamente en las variables de entorno del backend.
 
 ### 🤖 Chat con IA (Gemini)
 
