@@ -79,6 +79,10 @@ export class AuthService {
   }
 
   async recoverPassword(recoverPasswordDto: RecoverPasswordDto) {
+    console.log(process.env.MAIL_HOST);
+    console.log(process.env.MAIL_PORT);
+    console.log(process.env.MAIL_USER);
+    console.log(process.env.MAIL_PASS);
     const safeResponse = {
       message:
         'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña',
