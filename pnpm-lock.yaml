@@ -71,6 +71,9 @@ importers:
       '@types/multer':
         specifier: ^2.1.0
         version: 2.1.0
+      axios:
+        specifier: ^1.13.6
+        version: 1.13.6
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0

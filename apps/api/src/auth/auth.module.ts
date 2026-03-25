@@ -8,30 +8,13 @@ import { User, UserSchema } from './entities/user.entity';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
   imports: [
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transport: {
-          host: config.get<string>('MAIL_HOST'),
-          port: config.get<number>('MAIL_PORT'),
-          secure: false,
-          auth: {
-            user: config.get<string>('MAIL_USER'),
-            pass: config.get<string>('MAIL_PASS'),
-          },
-        },
-        defaults: {
-          from: `"VitalPath" <${config.get<string>('MAIL_USER')}>`,
-        },
-      }),
-    }),
+    CommonModule,
     ConfigModule,
     MongooseModule.forFeature([
       {

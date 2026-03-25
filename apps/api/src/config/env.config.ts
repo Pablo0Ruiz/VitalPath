@@ -5,8 +5,7 @@ export const EnvConfig = () => ({
   mongo_db_name: process.env.MONGO_DB_NAME,
   jwt_secret: process.env.JWT_SECRET,
   frontend_url: process.env.FRONTEND_URL,
-  mail_host: process.env.MAIL_HOST,
-  mail_port: process.env.MAIL_PORT,
-  mail_user: process.env.MAIL_USER,
-  mail_pass: process.env.MAIL_PASS,
+  brevo_api_key: process.env.BREVO_API_KEY,
+  brevo_sender_email: process.env.BREVO_SENDER_EMAIL,
+  brevo_sender_name: process.env.BREVO_SENDER_NAME,
 });
