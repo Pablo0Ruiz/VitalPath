@@ -8,10 +8,10 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { MailerService } from '@nestjs-modules/mailer';
-import recoverPasswordEmailTemplate from 'src/common/template/recover-password-email.template';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { handleServiceException } from 'src/common/helpers/handle-exceptions.helper';
+import { EmailService } from 'src/common/email/email.service';
+import recoverPasswordEmailTemplate from 'src/common/template/recover-password-email.template';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailerService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -79,10 +79,6 @@ export class AuthService {
   }
 
   async recoverPassword(recoverPasswordDto: RecoverPasswordDto) {
-    console.log(process.env.MAIL_HOST);
-    console.log(process.env.MAIL_PORT);
-    console.log(process.env.MAIL_USER);
-    console.log(process.env.MAIL_PASS);
     const safeResponse = {
       message:
         'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña',
@@ -93,25 +89,17 @@ export class AuthService {
         email: recoverPasswordDto.email,
       });
 
-      // Por seguridad: no revelamos si el email está registrado o no
       if (!user) return safeResponse;
 
-      const token = this.jwtService.sign(
-        { id: user.id },
-        {
-          expiresIn: '15m',
-        },
-      );
+      const token = this.jwtService.sign({ id: user.id }, { expiresIn: '15m' });
 
       const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
-      await this.mailService.sendMail({
-        to: user.email,
-        subject: 'Recuperar contraseña',
-        html: recoverPasswordEmailTemplate
-          .replaceAll('{{name}}', user.name)
-          .replaceAll('{{resetLink}}', resetLink),
-      });
+      const html = recoverPasswordEmailTemplate
+        .replaceAll('{{name}}', user.name)
+        .replaceAll('{{resetLink}}', resetLink);
+
+      await this.emailService.sendRecoverPasswordEmail(user.email, html);
 
       return safeResponse;
     } catch (error) {
