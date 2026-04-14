@@ -3,5 +3,6 @@ export enum CitaState {
   ASISTIDA = 'asistida',
   EN_PROCESO = 'en_proceso',
   RESULTADOS_LISTOS = 'resultados_listos',
-  COMPLETADO = 'completado',
+  COMPLETADA = 'completada',
+  CANCELADA = 'cancelada',
 }

@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 
-const fileMimeTypesByExtension = {
+const fileMimeTypesByExtension: Record<string, string> = {
   jpg: 'image/jpg',
   jpeg: 'image/jpeg',
   png: 'image/png',
