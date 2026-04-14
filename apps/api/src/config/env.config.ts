@@ -8,4 +8,6 @@ export const EnvConfig = () => ({
   brevo_api_key: process.env.BREVO_API_KEY,
   brevo_sender_email: process.env.BREVO_SENDER_EMAIL,
   brevo_sender_name: process.env.BREVO_SENDER_NAME,
+  supabase_url: process.env.SUPABASE_URL,
+  supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
 });

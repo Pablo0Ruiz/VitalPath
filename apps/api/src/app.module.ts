@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
 import { GeminiModule } from './gemini/gemini.module';
+import { SupabaseModule } from './supabase/supabase.module';
+import { AppointmentModule } from './appointment/appointment.module';
 
 @Module({
   imports: [
@@ -28,6 +30,10 @@ import { GeminiModule } from './gemini/gemini.module';
     UserModule,
 
     GeminiModule,
+
+    SupabaseModule,
+
+    AppointmentModule,
   ],
 })
 export class AppModule {}

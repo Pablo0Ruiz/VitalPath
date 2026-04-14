@@ -9,4 +9,6 @@ export const JoiValidationSchema = Joi.object({
   BREVO_SENDER_EMAIL: Joi.string().required(),
   BREVO_SENDER_NAME: Joi.string().required(),
   FRONTEND_URL: Joi.string().required(),
+  SUPABASE_URL: Joi.string().required(),
+  SUPABASE_SERVICE_ROLE_KEY: Joi.string().required(),
 });

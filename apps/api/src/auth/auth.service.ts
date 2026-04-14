@@ -34,7 +34,7 @@ export class AuthService {
       const { password: _, ...userWithoutPassword } = user.toObject();
 
       return {
-        ...userWithoutPassword,
+        user: userWithoutPassword,
         token: this.getJwtToken({ id: user.id }),
       };
     } catch (error) {
@@ -55,7 +55,7 @@ export class AuthService {
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     return {
-      ...userWithoutPassword,
+      user: userWithoutPassword,
       token: this.getJwtToken({ id: user.id }),
     };
   }
@@ -68,7 +68,7 @@ export class AuthService {
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     return {
-      ...userWithoutPassword,
+      user: userWithoutPassword,
       token: this.getJwtToken({ id: user.id }),
     };
   }

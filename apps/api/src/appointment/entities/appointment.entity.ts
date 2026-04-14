@@ -2,10 +2,10 @@ import { Document, Types } from 'mongoose';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { CitaState } from './enums/cita-state.enum';
+import { CitaState } from '../dto/enum/cita-state.enum';
 
 @Schema({ timestamps: true })
-export class Cita extends Document {
+export class Appointment extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   paciente_ID: Types.ObjectId;
 
@@ -22,4 +22,4 @@ export class Cita extends Document {
   estado: CitaState;
 }
 
-export const CitaSchema = SchemaFactory.createForClass(Cita);
+export const AppointmentSchema = SchemaFactory.createForClass(Appointment);

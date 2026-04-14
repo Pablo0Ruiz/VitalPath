@@ -43,7 +43,6 @@ export class GeminiController {
     @Res() res: Response,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    console.log({ chatPromptDto: chatPromptDto, files: files });
     chatPromptDto.files = files;
     const stream = await this.geminiService.chatStream(chatPromptDto);
     const data = await this.outputStream(res, stream);
@@ -53,9 +52,16 @@ export class GeminiController {
       parts: [{ text: data }],
     };
 
+    const imageParts = (files ?? []).map(f => ({
+      fileData: {
+        mimeType: f.mimetype,
+        fileUri: '',
+      },
+    }));
+
     const userMessage = {
       role: 'user',
-      parts: [{ text: chatPromptDto.prompt }],
+      parts: [{ text: chatPromptDto.prompt }, ...imageParts],
     };
     this.geminiService.saveMesssage(chatPromptDto.chatId, userMessage);
     this.geminiService.saveMesssage(chatPromptDto.chatId, geminiMessage);

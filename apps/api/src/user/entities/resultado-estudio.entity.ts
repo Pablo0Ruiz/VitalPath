@@ -1,15 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Types, Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class ResultadoEstudio extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Cita', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Cita', required: false })
   cita_ID: Types.ObjectId;
 
   @Prop({ required: true, unique: true })
   fileUrl: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   resumenIA: string;
 }
 

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 
 export const GetUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
+  (field: string | undefined, ctx: ExecutionContext) => {
     const req = ctx.switchToHttp().getRequest();
     const user = req.user;
 
@@ -14,6 +14,6 @@ export const GetUser = createParamDecorator(
         'User no encontrado en la request',
       );
 
-    return user;
+    return field ? user[field] : user;
   },
 );
