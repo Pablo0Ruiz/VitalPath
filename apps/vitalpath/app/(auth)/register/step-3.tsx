@@ -66,10 +66,10 @@ const RegisterStep3 = () => {
 
       <ProgressBar progress={100} className="mb-10 max-w-[200px] self-center" />
 
-      <TextField variants="title" className="mb-2 text-center">
+      <TextField variant="title" className="mb-2 text-center">
         Credenciales
       </TextField>
-      <TextField variants="caption" className="text-center text-slate-500 mb-8">
+      <TextField variant="caption" className="text-center text-slate-500 mb-8">
         (Paso 3 de 3)
       </TextField>
 

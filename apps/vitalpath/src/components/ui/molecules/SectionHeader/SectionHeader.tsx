@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, TouchableOpacity, ViewProps } from 'react-native';
-import { TextField } from '../../atoms';
+import { View, ViewProps } from 'react-native';
+import { Button, TextField } from '../../atoms';
 
 export interface SectionHeaderProps extends ViewProps {
   title: string;
@@ -21,20 +20,20 @@ const SectionHeader = ({
       {...props}
     >
       <TextField
-        variants="body"
+        variant="body"
         className="text-brand-slate-800 text-[17px] font-bold text-left"
       >
         {title}
       </TextField>
       {linkLabel && onLinkPress && (
-        <TouchableOpacity onPress={onLinkPress}>
+        <Button onPress={onLinkPress}>
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-brand-violet-600 font-semibold text-[13px]"
           >
             {linkLabel}
           </TextField>
-        </TouchableOpacity>
+        </Button>
       )}
     </View>
   );

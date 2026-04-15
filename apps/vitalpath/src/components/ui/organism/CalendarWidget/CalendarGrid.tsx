@@ -35,7 +35,7 @@ export const CalendarGrid = ({
         {WEEK_DAYS.map((day, idx) => (
           <View key={idx} className="w-[14%] items-center">
             <TextField
-              variants="caption"
+              variant="caption"
               className="text-slate-400 font-semibold"
             >
               {day}

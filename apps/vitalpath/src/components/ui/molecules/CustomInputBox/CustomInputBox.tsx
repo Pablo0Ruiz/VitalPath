@@ -1,15 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { useState } from 'react';
-import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  View,
-} from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, View } from 'react-native';
 
-import { Input } from '@/src/components/ui/atoms';
+import { Button, Input } from '@/src/components/ui/atoms';
 import { getGalleryImages } from '@/src/core/actions/image-picker/get-gallery-images';
 
 export interface CustomInputBoxProps {
@@ -80,20 +74,20 @@ const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
           value={text}
           onChangeText={setText}
           leftIcon={
-            <Pressable
+            <Button
               onPress={handlePickImages}
               style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
             >
               <Ionicons name="attach-outline" size={22} color={'black'} />
-            </Pressable>
+            </Button>
           }
           rightIcon={
-            <Pressable
+            <Button
               onPress={handleSendMessage}
               style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
             >
               <Ionicons name="paper-plane-outline" size={22} color={'black'} />
-            </Pressable>
+            </Button>
           }
         />
       </View>

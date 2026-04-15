@@ -19,7 +19,7 @@ const GenderForm = ({
   return (
     <View className="mb-8 mt-2">
       <TextField
-        variants="body"
+        variant="body"
         className="text-left text-sm text-brand-slate-700 mb-2"
       >
         {title}
@@ -36,7 +36,7 @@ const GenderForm = ({
             }`}
           >
             <TextField
-              variants="body"
+              variant="body"
               className={
                 value === g
                   ? 'text-brand-violet-700 font-semibold'
@@ -49,7 +49,7 @@ const GenderForm = ({
         ))}
       </View>
       {errorMessage && (
-        <TextField variants="caption" className="text-red-500 text-sm mt-1">
+        <TextField variant="caption" className="text-red-500 text-sm mt-1">
           {errorMessage}
         </TextField>
       )}

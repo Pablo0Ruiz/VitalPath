@@ -1,10 +1,12 @@
+import { Alert, ScrollView, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+import { Octicons } from '@expo/vector-icons';
+
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader } from '@/src/components/ui/molecules';
 import { useRecoverPassword } from '@/src/hooks/auth/useRecoverPassword';
 import { ROUTES } from '@/src/routes/routes';
-import { Octicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Alert, ScrollView, View } from 'react-native';
 
 const RecoverPasswordEmailSent = () => {
   const { email } = useLocalSearchParams<Record<string, string>>();
@@ -45,7 +47,7 @@ const RecoverPasswordEmailSent = () => {
         </View>
 
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-center text-sm text-brand-slate-400 mb-10 px-4 leading-5"
         >
           Revisa tu bandeja de entrada y sigue las instrucciones para crear una

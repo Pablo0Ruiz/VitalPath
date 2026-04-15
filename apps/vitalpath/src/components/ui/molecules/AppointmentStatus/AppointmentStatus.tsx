@@ -23,7 +23,7 @@ const AppointmentStatus = ({
     <View className={`items-end gap-2 ${className ?? ''}`} {...props}>
       <View className={`px-2 py-1 rounded-full ${config.bg}`}>
         <TextField
-          variants="body"
+          variant="body"
           className={`text-xs font-semibold ${config.text}`}
         >
           {config.label}
@@ -36,7 +36,7 @@ const AppointmentStatus = ({
           className="px-2 py-1 rounded-full bg-red-50"
         >
           <TextField
-            variants="body"
+            variant="body"
             className="text-xs text-red-500 font-medium"
           >
             Cancelar

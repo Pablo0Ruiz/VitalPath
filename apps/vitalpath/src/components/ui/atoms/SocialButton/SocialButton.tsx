@@ -20,7 +20,7 @@ const SocialButton = ({
       className="flex-1 items-center justify-center rounded-xl border border-brand-slate-200 bg-white py-3"
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
     >
-      <TextField variants="body" className="font-semibold ">
+      <TextField variant="body" className="font-semibold ">
         {labelDefault}
       </TextField>
     </Pressable>

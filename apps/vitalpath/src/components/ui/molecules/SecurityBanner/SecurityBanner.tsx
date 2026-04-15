@@ -21,18 +21,18 @@ const SecurityBanner = ({
       </View>
       <View className="flex-1">
         <TextField
-          variants="body"
+          variant="body"
           className="text-white font-bold text-base mb-1"
         >
           Seguridad de Nivel Médico
         </TextField>
-        <TextField variants="caption" className="text-slate-600 leading-5 mb-3">
+        <TextField variant="caption" className="text-slate-600 leading-5 mb-3">
           Tus resultados están protegidos mediante cifrado AES-256 de extremo a
           extremo. Solo tú y tu médico tratante pueden acceder a esta
           información.
         </TextField>
         <Button onPress={onMorePress}>
-          <TextField variants="caption" className="text-blue-400 font-semibold">
+          <TextField variant="caption" className="text-blue-400 font-semibold">
             Más sobre privacidad →
           </TextField>
         </Button>

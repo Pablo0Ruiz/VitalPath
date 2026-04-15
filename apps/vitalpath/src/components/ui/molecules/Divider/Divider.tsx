@@ -23,7 +23,7 @@ const Divider = ({ text, className, ...props }: DividerProps) => {
     >
       <View className={dividerVariantsDivider} />
       <TextField
-        variants="caption"
+        variant="caption"
         className="mx-3 text-xs text-brand-slate-400"
       >
         {text}

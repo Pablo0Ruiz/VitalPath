@@ -28,7 +28,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
       <View>
         <TextField
-          variants="subtitle"
+          variant="subtitle"
           className="text-center font-bold text-lg text-slate-800"
         >
           {monthName} {year}

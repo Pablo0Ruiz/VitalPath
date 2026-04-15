@@ -1,8 +1,8 @@
-import Octicons from '@expo/vector-icons/Octicons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
 import { ScrollView, View } from 'react-native';
+import Octicons from '@expo/vector-icons/Octicons';
+import { router } from 'expo-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   Button,
@@ -106,13 +106,13 @@ const RegisterStep1 = () => {
         </View>
 
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-sm self-center"
           onPress={() => router.replace(ROUTES.LOGIN)}
         >
           ¿Ya tienes una cuenta?{' '}
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-brand-violet-600 font-semibold"
           >
             Iniciar sesión

@@ -28,7 +28,7 @@ const Avatar = ({
         <Image source={image} className="w-12 h-12" />
       ) : (
         <TextField
-          variants="caption"
+          variant="caption"
           className={`${sizeStyles.text} text-center`}
           style={textColor ? { color: textColor } : undefined}
         >

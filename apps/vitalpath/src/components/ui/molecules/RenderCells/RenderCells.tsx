@@ -47,7 +47,7 @@ const RenderCells = ({
         }`}
       >
         <TextField
-          variants="body"
+          variant="body"
           className={`text-center ${isSelected ? 'text-white' : 'text-slate-800'}`}
         >
           {i}

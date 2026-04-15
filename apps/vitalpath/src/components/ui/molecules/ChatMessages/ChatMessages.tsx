@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { MessageItem, MessageItemImage } from '@/src/components/ui/atoms';
 
 import {

@@ -30,14 +30,14 @@ const FormField = ({
     <View className={`mb-4 ${className ?? ''}`}>
       <View className="flex-row justify-between items-center mb-1.5">
         <TextField
-          variants="body"
+          variant="body"
           className="text-left text-sm text-brand-slate-700"
         >
           {label}
         </TextField>
         {rightLabel && (
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-brand-violet-900"
             onPress={rightLabelOnPress}
           >
@@ -53,7 +53,7 @@ const FormField = ({
       />
       {helperText && (
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-left text-sm text-brand-slate-700"
         >
           {helperText}

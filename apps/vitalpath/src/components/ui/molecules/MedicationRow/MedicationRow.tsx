@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, TouchableOpacity, ViewProps } from 'react-native';
-import { TextField } from '../../atoms';
+import { View, ViewProps } from 'react-native';
+import { Button, TextField } from '../../atoms';
 
 export interface MedicationRowProps extends ViewProps {
   name: string;
@@ -29,7 +28,7 @@ const MedicationRow = ({
       >
         {isDone && (
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-white font-bold text-[10px]"
           >
             ✓
@@ -39,7 +38,7 @@ const MedicationRow = ({
 
       <View className="flex-1">
         <TextField
-          variants="body"
+          variant="body"
           className={`text-left font-semibold text-sm ${
             isDone
               ? 'text-brand-slate-400 line-through'
@@ -49,7 +48,7 @@ const MedicationRow = ({
           {name}
         </TextField>
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-left text-brand-slate-400 text-xs mt-0.5"
         >
           {time}
@@ -57,17 +56,17 @@ const MedicationRow = ({
       </View>
 
       {!isDone && onTakePress && (
-        <TouchableOpacity
+        <Button
           onPress={onTakePress}
           className="bg-brand-violet-100 px-3.5 py-1.5 rounded-full"
         >
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-brand-violet-600 font-semibold text-xs"
           >
             Tomar
           </TextField>
-        </TouchableOpacity>
+        </Button>
       )}
     </View>
   );
