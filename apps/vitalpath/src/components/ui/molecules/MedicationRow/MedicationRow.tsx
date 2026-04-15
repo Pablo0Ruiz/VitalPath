@@ -3,8 +3,9 @@ import { Button, TextField } from '../../atoms';
 
 export interface MedicationRowProps extends ViewProps {
   name: string;
-  time: string;
-  isDone: boolean;
+  time?: string;
+  description?: string;
+  isDone?: boolean;
   onTakePress?: () => void;
 }
 
@@ -13,6 +14,7 @@ const MedicationRow = ({
   time,
   isDone,
   onTakePress,
+  description,
   className,
   ...props
 }: MedicationRowProps) => {
@@ -47,12 +49,22 @@ const MedicationRow = ({
         >
           {name}
         </TextField>
-        <TextField
-          variant="caption"
-          className="text-left text-brand-slate-400 text-xs mt-0.5"
-        >
-          {time}
-        </TextField>
+        {time && (
+          <TextField
+            variant="caption"
+            className="text-left text-brand-slate-400 text-xs mt-0.5"
+          >
+            {time}
+          </TextField>
+        )}
+        {description && (
+          <TextField
+            variant="caption"
+            className="text-left text-brand-slate-400 text-xs mt-0.5"
+          >
+            {description}
+          </TextField>
+        )}
       </View>
 
       {!isDone && onTakePress && (

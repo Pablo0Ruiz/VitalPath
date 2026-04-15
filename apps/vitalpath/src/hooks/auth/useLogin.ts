@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 
 import { useAuth, ACCESS_TOKEN_KEY } from '@/src/context/AuthContext';
-import postLogin from '@/src/core/actions/auth-actions/login';
+import postLogin from '@/src/core/actions/auth-actions/login.action';
 import { ROUTES } from '@/src/routes/routes';
 
 export const useLogin = () => {

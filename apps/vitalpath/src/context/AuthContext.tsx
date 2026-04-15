@@ -7,6 +7,7 @@ export interface UserSession {
   name: string;
   lastName?: string;
   email: string;
+  medicaments: string[];
 }
 
 export type userCredentials = {

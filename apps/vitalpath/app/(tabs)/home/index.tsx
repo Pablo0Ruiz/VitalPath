@@ -1,20 +1,28 @@
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Octicons } from '@expo/vector-icons';
+import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar, Button, TextField } from '@/src/components/ui/atoms';
 import {
-  SectionHeader,
   AppointmentRow,
-  MedicationRow,
   Divider,
+  MedicationRow,
+  SectionHeader,
+  CustomModal,
 } from '@/src/components/ui/molecules';
 import { useAuth } from '@/src/context/AuthContext';
 import { useLogout } from '@/src/hooks/auth';
+import { useMedicaments } from '@/src/hooks/medicaments/useMedication';
+import { useState } from 'react';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
   const { logout } = useLogout();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { data: medicaments, isLoading } = useMedicaments();
+
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -86,26 +94,42 @@ export default function DashboardScreen() {
           />
         </View>
 
-        <SectionHeader title="Medicamentos de hoy" />
-        <View className="bg-white rounded-[16px] p-4 border border-brand-slate-200 mb-8 shadow-sm">
-          <MedicationRow name="Lisinopril 10mg" time="08:00 AM" isDone={true} />
-          <Divider className="my-2" />
-          <MedicationRow
-            name="Metformina 500mg"
-            time="01:00 PM"
-            isDone={false}
-            onTakePress={() => {}}
-          />
-          <Divider className="my-2" />
-          <MedicationRow
-            name="Atorvastatina 20mg"
-            time="09:00 PM"
-            isDone={false}
-            onTakePress={() => {}}
-          />
+        <View className="flex-row items-center justify-between">
+          <SectionHeader title="Medicamentos de hoy" />
+          <Button title="Agregar" onPress={openModal} />
+          <CustomModal visible={isModalVisible} onClose={closeModal} />
         </View>
-        <Button title="Cerrar sesión" onPress={logout}></Button>
 
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#7C3AED" className="my-8" />
+        ) : (
+          <View className="bg-white rounded-[16px] p-4 border border-brand-slate-200 mb-4 shadow-sm">
+            {medicaments && medicaments.length > 0 ? (
+              <FlatList
+                data={medicaments}
+                renderItem={({ item }) => (
+                  <>
+                    <MedicationRow
+                      name={item.name}
+                      description={item.description}
+                      onTakePress={() => {}}
+                    />
+                    <Divider className="my-2" />
+                  </>
+                )}
+                keyExtractor={item => item.id}
+              />
+            ) : (
+              <TextField
+                variant="caption"
+                className="text-center text-brand-slate-400 py-4"
+              >
+                No tienes medicamentos programados para hoy.
+              </TextField>
+            )}
+          </View>
+        )}
+        <Button title="Cerrar sesión" onPress={logout}></Button>
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>

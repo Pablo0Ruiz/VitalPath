@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 
 import { useAuth, ACCESS_TOKEN_KEY } from '@/src/context/AuthContext';
-import { getMe } from '@/src/core/actions/auth-actions/getMe';
+import { getMe } from '@/src/core/actions/auth-actions/getMe.action';
 import { ROUTES } from '@/src/routes/routes';
 
 export const useSession = () => {

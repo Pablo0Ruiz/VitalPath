@@ -4,9 +4,11 @@ import {
   postCita,
   patchCita,
   deleteCita,
-  type CreateCitaPayload,
-  type UpdateCitaPayload,
 } from '@/src/core/actions/appointments/appointments.actions';
+import {
+  CreateCitaPayload,
+  UpdateCitaPayload,
+} from '@/src/interfaces/appointments/appointments.interface';
 
 export const CITAS_QUERY_KEY = ['citas'] as const;
 

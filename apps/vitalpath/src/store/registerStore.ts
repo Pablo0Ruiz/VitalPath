@@ -32,10 +32,10 @@ export const useRegisterStore = create<RegisterStore>((set, get) => ({
     if (
       d.name &&
       d.lastName &&
-      d.fechaNacimiento &&
-      d.genero &&
       d.email &&
-      d.password
+      d.password &&
+      d.fechaNacimiento &&
+      d.genero
     ) {
       return d as RegisterDraft;
     }

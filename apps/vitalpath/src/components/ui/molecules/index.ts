@@ -14,3 +14,4 @@ export { AppointmentStatus } from './AppointmentStatus';
 export { AppointmentCard } from './AppointmentCard';
 export { GenderForm } from './Genderform';
 export { RenderCells } from './RenderCells';
+export { CustomModal } from './CustomModal';
