@@ -1,10 +1,11 @@
 import { Pressable, PressableProps, Text } from 'react-native';
-import { buttonVariants, baseButton, buttonTitle } from './Button.variants';
+import { buttonVariants, buttonTitle } from './Button.variants';
 
 export interface ButtonProps extends PressableProps {
-  title: string;
+  title?: string;
   onPress?: () => void;
-  variant?: keyof typeof buttonVariants;
+  variant?: 'primary' | 'secondary' | 'outline';
+  children?: React.ReactNode;
 }
 
 const Button = ({
@@ -12,16 +13,18 @@ const Button = ({
   onPress,
   className,
   variant = 'primary',
+  children,
   ...props
 }: ButtonProps) => {
   return (
     <Pressable
       onPress={onPress}
-      className={`${baseButton} ${buttonVariants[variant]} ${className ?? ''}`}
+      className={`${buttonVariants({ variant })} ${className ?? ''}`}
       style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
       {...props}
     >
-      <Text className={buttonTitle[variant]}>{title}</Text>
+      <Text className={buttonTitle({ variant })}>{title}</Text>
+      {children}
     </Pressable>
   );
 };

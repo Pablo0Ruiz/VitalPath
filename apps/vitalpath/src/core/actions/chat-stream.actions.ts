@@ -1,5 +1,7 @@
 import { fetch } from 'expo/fetch';
-import { FileType, promptWithFiles } from './helpers/prompt-with-images';
+import * as SecureStore from 'expo-secure-store';
+import { FileType } from './helpers/prompt-with-images';
+import { ACCESS_TOKEN_KEY } from '@/src/context/AuthContext';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -9,24 +11,27 @@ export const getChatStream = async (
   chatId: string,
   onChunk: (text: string) => void,
 ) => {
-  if (files.length > 0) {
-    const response = await promptWithFiles(
-      '/api/gemini/chat-stream',
-      { prompt, chatId },
-      files,
-    );
-    onChunk(response);
-    return;
-  }
   const formData = new FormData();
   formData.append('prompt', prompt);
   formData.append('chatId', chatId);
 
+  files.forEach((file, index) => {
+    const fileData = {
+      uri: file.uri,
+      name: file.fileName || `file_${index}`,
+      type: file.type || 'image/jpeg',
+    };
+    formData.append('files', fileData as any);
+  });
+
   try {
+    const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+
     const response = await fetch(`${API_URL}/api/gemini/chat-stream`, {
       method: 'POST',
       headers: {
         Accept: 'text/plain',
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });

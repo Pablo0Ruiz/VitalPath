@@ -1,10 +1,10 @@
-import { Alert, ScrollView, View } from 'react-native';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader } from '@/src/components/ui/molecules';
-import { useRecoverPassword } from '@/src/hooks/useRecoverPassword';
+import { useRecoverPassword } from '@/src/hooks/auth/useRecoverPassword';
 import { ROUTES } from '@/src/routes/routes';
 import { Octicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Alert, ScrollView, View } from 'react-native';
 
 const RecoverPasswordEmailSent = () => {
   const { email } = useLocalSearchParams<Record<string, string>>();

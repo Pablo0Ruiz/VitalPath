@@ -38,7 +38,7 @@ const FormField = ({
         {rightLabel && (
           <TextField
             variants="caption"
-            className="text-brand-violet-600"
+            className="text-brand-violet-900"
             onPress={rightLabelOnPress}
           >
             {rightLabel}

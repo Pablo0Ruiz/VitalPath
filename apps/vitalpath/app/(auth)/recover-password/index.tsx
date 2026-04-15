@@ -1,19 +1,18 @@
-import { View, ScrollView, Alert } from 'react-native';
-import Octicons from '@expo/vector-icons/Octicons';
-import { useRouter } from 'expo-router';
-import { ROUTES } from '@/src/routes/routes';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader, FormField } from '@/src/components/ui/molecules';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useRecoverPassword } from '@/src/hooks/auth/useRecoverPassword';
 import {
   RecoverPasswordFormValues,
   recoverPasswordSchema,
 } from '@/src/interfaces/auth';
-import { useRecoverPassword } from '@/src/hooks/useRecoverPassword';
+import { ROUTES } from '@/src/routes/routes';
+import Octicons from '@expo/vector-icons/Octicons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, ScrollView, View } from 'react-native';
 
 const RecoverPassword = () => {
-  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -97,13 +96,13 @@ const RecoverPassword = () => {
         />
 
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-center text-sm text-brand-slate-400"
           onPress={handleGoBack}
         >
           ¿Recordaste tu contraseña?{' '}
           <TextField
-            variants="caption"
+            variant="caption"
             className="text-brand-violet-600 font-semibold"
           >
             Iniciar sesión

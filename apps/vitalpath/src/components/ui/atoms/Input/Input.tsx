@@ -4,7 +4,7 @@ import { inputVariants } from './Input.variants';
 
 export interface InputProps extends TextInputProps {
   placeholder?: string;
-  variant?: keyof typeof inputVariants;
+  variant?: 'primary' | 'secondary';
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
 }
@@ -17,15 +17,13 @@ const Input = ({
   rightIcon,
   ...props
 }: InputProps) => {
-  const styles = inputVariants[variant];
-
   return (
     <View
-      className={`flex-row items-center px-4 py-1 ${styles.container} ${className ?? ''}`}
+      className={`flex-row items-center px-4 py-1 ${inputVariants({ variant })} ${className ?? ''}`}
     >
       {leftIcon && <View className="mr-3 opacity-50">{leftIcon}</View>}
       <TextInput
-        className={`flex-1 py-3 text-base ${styles.input}`}
+        className={`flex-1 py-3 text-base tracking-[0.3px] ${inputVariants({ variant })}`}
         placeholder={placeholder}
         placeholderTextColor="#gray"
         {...props}

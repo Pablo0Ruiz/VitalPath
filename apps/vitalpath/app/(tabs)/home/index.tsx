@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Octicons } from '@expo/vector-icons';
 
@@ -11,9 +10,11 @@ import {
   Divider,
 } from '@/src/components/ui/molecules';
 import { useAuth } from '@/src/context/AuthContext';
+import { useLogout } from '@/src/hooks/auth';
 
 export default function DashboardScreen() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { logout } = useLogout();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -26,23 +27,23 @@ export default function DashboardScreen() {
           />
           <View className="ml-2.5">
             <TextField
-              variants="caption"
+              variant="caption"
               className="text-left text-brand-slate-400"
             >
               Buenos días,
             </TextField>
             <TextField
-              variants="body"
-              className="text-left text-brand-slate-900 font-bold"
+              variant="body"
+              className="text-left text-black font-bold"
             >
               {user?.name}
             </TextField>
           </View>
         </View>
-        <Pressable className="w-10 h-10 rounded-full bg-brand-slate-100 items-center justify-center">
+        <Button className="w-10 h-10 rounded-full bg-brand-slate-100 items-center justify-center">
           <Octicons name="bell" size={22} color="#7C3AED" />
           <View className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
-        </Pressable>
+        </Button>
       </View>
 
       <ScrollView
@@ -50,8 +51,6 @@ export default function DashboardScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* <HealthScoreBanner score={84} maxScore={100} status="Muy bueno" /> */}
-
         <SectionHeader
           title="Próximas citas"
           linkLabel="Ver todas"

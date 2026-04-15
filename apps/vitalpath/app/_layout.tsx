@@ -4,20 +4,21 @@ import { useColorScheme } from 'nativewind';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { Stack } from 'expo-router';
 
 import { themes } from '@/src/constants/theme';
 import '../global.css';
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
 import { AuthProvider } from '@/src/context/AuthContext';
+import { useSession } from '@/src/hooks/auth';
+import { SessionGate } from '@/src/components/utils/authGate';
 
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const { colorScheme } = useColorScheme();
 
   const [loaded, error] = useFonts({
@@ -40,17 +41,21 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <QueryClientProvider client={queryClient}>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
-        </QueryClientProvider>
-      </SafeAreaView>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SessionGate>
+          <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+          </SafeAreaView>
+        </SessionGate>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
+
+export default RootLayout;

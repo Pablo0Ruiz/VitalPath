@@ -1,62 +1,45 @@
-import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { RingProgress } from '../RingProgress';
-import { TextField } from '../../atoms';
+import { Avatar, Tabs, TextField } from '../../atoms';
 
-export interface HealthScoreBannerProps extends ViewProps {
-  score: number;
-  maxScore: number;
-  status: string;
-}
+export type BannerProps = ViewProps;
 
-const HealthScoreBanner = ({
-  score,
-  maxScore = 100,
-  status,
-  className,
-  ...props
-}: HealthScoreBannerProps) => {
-  const progressPercent = Math.round((score / maxScore) * 100);
-
+const Banner = ({ className, ...props }: BannerProps) => {
   return (
     <View
-      className={`bg-brand-violet-600 rounded-[20px] p-5 flex-row items-center mb-4 ${
+      className={`bg-white rounded-[20px] p-4 flex-row  mb-4 ${
         className ?? ''
       }`}
       {...props}
     >
-      <View className="flex-1">
+      <View className="items-start">
+        <Tabs label="OCT 12" variant="date" className="ml-80" />
         <TextField
           variants="caption"
-          className="text-white opacity-70 mb-1 text-left text-xs"
+          className="text-slate-800 mb-1 text-left mt-2 text-xs"
         >
-          Tu puntaje de salud
+          Cita completada
         </TextField>
         <TextField
           variants="body"
-          className="text-white font-extrabold text-[48px] leading-[52px] text-left"
+          className="text-slate-800 font-extrabold text-[48px] leading-[52px]"
         >
-          {score}
+          09:00 Am
         </TextField>
-        <TextField
-          variants="caption"
-          className="text-white opacity-85 mb-2.5 text-left text-[13px]"
-        >
-          de {maxScore} · {status}
-        </TextField>
-        <View className="h-1.5 bg-white opacity-25 rounded-full overflow-hidden w-full">
-          <View
-            className="h-full bg-white opacity-100 rounded-full"
-            style={{ width: `${progressPercent}%` }}
+        <View className="flex-row items-center">
+          <Avatar
+            image={require('@/assets/images/vitalpath-logo.png')}
+            size="md"
           />
+          <TextField
+            variants="caption"
+            className="text-slate-800 mb-1 text-left mt-2 text-xs"
+          >
+            Nombre del doctor
+          </TextField>
         </View>
-      </View>
-
-      <View className="ml-4">
-        <RingProgress value={score} max={maxScore} label="Score" unit="pts" />
       </View>
     </View>
   );
 };
 
-export default HealthScoreBanner;
+export default Banner;
