@@ -52,16 +52,9 @@ export class GeminiController {
       parts: [{ text: data }],
     };
 
-    const imageParts = (files ?? []).map(f => ({
-      fileData: {
-        mimeType: f.mimetype,
-        fileUri: '',
-      },
-    }));
-
     const userMessage = {
       role: 'user',
-      parts: [{ text: chatPromptDto.prompt }, ...imageParts],
+      parts: [{ text: chatPromptDto.prompt }],
     };
     this.geminiService.saveMesssage(chatPromptDto.chatId, userMessage);
     this.geminiService.saveMesssage(chatPromptDto.chatId, geminiMessage);

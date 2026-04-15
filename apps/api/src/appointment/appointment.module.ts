@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { AppointmentController } from './appointment.controller';
 import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   Appointment,
@@ -12,6 +13,7 @@ import {
   controllers: [AppointmentController],
   providers: [AppointmentService],
   imports: [
+    AuthModule,
     UserModule,
     MongooseModule.forFeature([
       {

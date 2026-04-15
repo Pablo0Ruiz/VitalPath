@@ -8,4 +8,10 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
+
+  async getUserProfile(id: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new Error('Error al obtener el perfil');
+    return user;
+  }
 }

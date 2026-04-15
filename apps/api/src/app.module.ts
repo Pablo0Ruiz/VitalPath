@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { GeminiModule } from './gemini/gemini.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AppointmentModule } from './appointment/appointment.module';
+import { MedicationsModule } from './medications/medications.module';
 
 @Module({
   imports: [
@@ -34,6 +35,8 @@ import { AppointmentModule } from './appointment/appointment.module';
     SupabaseModule,
 
     AppointmentModule,
+
+    MedicationsModule,
   ],
 })
 export class AppModule {}

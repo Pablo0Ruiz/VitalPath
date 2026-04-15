@@ -43,6 +43,19 @@ export class User extends Document {
     required: true,
   })
   genero: UserGenero;
+
+  @Prop({ type: String, required: false })
+  fotoPerfil: string;
+
+  @Prop({ type: String, required: false })
+  telefono: string;
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: 'Medication' }],
+    required: false,
+    default: [],
+  })
+  medications: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
