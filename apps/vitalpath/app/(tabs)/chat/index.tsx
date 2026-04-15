@@ -10,7 +10,7 @@ const Chat = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ChatMessages messages={messages} />
+      <ChatMessages messages={messages} isGeminiWriting={geminiWriting} />
 
       <CustomInputBox onSendMessage={addMessage} />
     </View>

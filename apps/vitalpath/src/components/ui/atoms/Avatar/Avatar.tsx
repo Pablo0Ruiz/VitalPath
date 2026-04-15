@@ -1,12 +1,13 @@
 import React from 'react';
 import { Image, ImageSourcePropType, View, ViewProps } from 'react-native';
 import { TextField } from '../TextFiled';
-import { baseAvatar, avatarSizes } from './Avatar.variants';
+import { avatarSizes, avatarText } from './Avatar.variants';
+import { VariantProps } from 'class-variance-authority';
 
-export interface AvatarProps extends ViewProps {
+export interface AvatarProps
+  extends ViewProps, VariantProps<typeof avatarSizes> {
   initials?: string;
   image?: ImageSourcePropType | undefined;
-  size?: keyof typeof avatarSizes;
   textColor?: string;
 }
 
@@ -18,18 +19,14 @@ const Avatar = ({
   className,
   ...props
 }: AvatarProps) => {
-  const sizeStyles = avatarSizes[size];
   return (
-    <View
-      className={`${baseAvatar} ${sizeStyles.container} ${className ?? ''}`}
-      {...props}
-    >
+    <View className={`${avatarSizes({ size })} ${className ?? ''}`} {...props}>
       {image ? (
         <Image source={image} className="w-12 h-12" />
       ) : (
         <TextField
           variant="caption"
-          className={`${sizeStyles.text} text-center`}
+          className={`${avatarText({ size })} text-center`}
           style={textColor ? { color: textColor } : undefined}
         >
           {initials}

@@ -1,10 +1,11 @@
 import { Pressable, PressableProps, Text } from 'react-native';
 import { buttonVariants, buttonTitle } from './Button.variants';
+import { VariantProps } from 'class-variance-authority';
 
-export interface ButtonProps extends PressableProps {
+export interface ButtonProps
+  extends PressableProps, VariantProps<typeof buttonVariants> {
   title?: string;
   onPress?: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
   children?: React.ReactNode;
 }
 

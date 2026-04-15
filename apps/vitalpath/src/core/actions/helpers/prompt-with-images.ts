@@ -1,4 +1,4 @@
-import { myApi } from '@/src/core/api/myApi';
+import { geminiApi } from '@/src/core/api/myApi';
 
 export interface FileType {
   uri: string;
@@ -31,7 +31,7 @@ export const promptWithFiles = async (
       formData.append('files', fileData as any);
     });
 
-    const response = await myApi.post(endpoint, formData);
+    const response = await geminiApi.post(endpoint, formData);
     return response.data;
   } catch (error) {
     console.error('Error al obtener la respuesta del modelo:', error);

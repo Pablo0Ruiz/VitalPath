@@ -17,7 +17,7 @@ const createMessage = (
   sender: 'user' | 'gemini',
   attachments: any[] = [],
 ): Message => {
-  if (attachments && attachments.length > 0) {
+  if (attachments) {
     return {
       id: uuid.v4(),
       text: text,
@@ -40,6 +40,7 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
   geminiWriting: false,
   chatId: uuid.v4(),
   messages: [],
+
   addMessage: async (prompt: string, attachments: any[]) => {
     const userMessage = createMessage(prompt, 'user', attachments);
     const geminiMessage = createMessage('Generando respuesta...', 'gemini');
@@ -47,7 +48,6 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
 
     set(state => ({
       messages: [geminiMessage, userMessage, ...state.messages],
-      geminiWriting: true,
     }));
 
     try {

@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
 import { TextField } from '../TextFiled';
-import { baseBadge, badgeVariants } from './Badge.variants';
+import { badgeVariants, badgeVariantsText } from './Badge.variants';
+import { VariantProps } from 'class-variance-authority';
 
-export interface BadgeProps extends ViewProps {
+export interface BadgeProps
+  extends ViewProps, VariantProps<typeof badgeVariants> {
   label: string;
-  variant?: keyof typeof badgeVariants;
 }
 
 const Badge = ({
@@ -14,13 +15,15 @@ const Badge = ({
   className,
   ...props
 }: BadgeProps) => {
-  const styles = badgeVariants[variant];
   return (
     <View
-      className={`${baseBadge} ${styles.container} ${className ?? ''}`}
+      className={`${badgeVariants({ variant })} ${className ?? ''}`}
       {...props}
     >
-      <TextField variants="caption" className={`${styles.text}`}>
+      <TextField
+        variant="caption"
+        className={`${badgeVariantsText({ variant })}`}
+      >
         {label}
       </TextField>
     </View>

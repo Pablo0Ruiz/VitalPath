@@ -42,24 +42,22 @@ const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
       behavior={isAndroid ? 'height' : 'padding'}
       keyboardVerticalOffset={isAndroid ? 0 : 85}
     >
-      {images.length > 0 && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-          }}
-        >
-          {images.map(image => (
-            <Image
-              key={image.uri}
-              source={{ uri: image.uri }}
-              style={{ width: 50, height: 50, marginTop: 5, borderRadius: 5 }}
-            />
-          ))}
-        </View>
-      )}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
+        }}
+      >
+        {images.map(image => (
+          <Image
+            key={image.uri}
+            source={{ uri: image.uri }}
+            style={{ width: 50, height: 50, marginTop: 5, borderRadius: 5 }}
+          />
+        ))}
+      </View>
 
       <View
         style={{

@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { baseIconBox, iconBoxSizes } from './IconBox.variants';
+import { iconBoxVariants } from './IconBox.variants';
+import { VariantProps } from 'class-variance-authority';
 
-export interface IconBoxProps extends ViewProps {
+export interface IconBoxProps
+  extends ViewProps, VariantProps<typeof iconBoxVariants> {
   children: React.ReactNode;
-  size?: keyof typeof iconBoxSizes;
 }
 
 const IconBox = ({
@@ -15,7 +16,7 @@ const IconBox = ({
 }: IconBoxProps) => {
   return (
     <View
-      className={`${baseIconBox} ${iconBoxSizes[size]} ${className ?? ''}`}
+      className={`${iconBoxVariants({ size })} ${className ?? ''}`}
       {...props}
     >
       {children}

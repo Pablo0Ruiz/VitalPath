@@ -1,6 +1,7 @@
 import { TextMessage } from '@/src/interfaces/chat/chat.interface';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import Markdown from 'react-native-markdown-display';
+import { TextField } from '../TextFiled';
 
 export interface MessageItemProps {
   message: TextMessage;
@@ -35,9 +36,9 @@ const MessageItem = ({ message, userColor }: MessageItemProps) => {
         alignSelf: isCurrentUser ? 'flex-end' : 'flex-start',
       }}
     >
-      <Text style={{ color: isCurrentUser ? 'white' : 'black' }}>
+      <TextField style={{ color: isCurrentUser ? 'white' : 'black' }}>
         <Markdown style={markdownStyles}>{message.text}</Markdown>
-      </Text>
+      </TextField>
     </View>
   );
 };

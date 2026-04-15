@@ -12,6 +12,25 @@ export const myApi = axios.create({
   },
 });
 
+export const geminiApi = axios.create({
+  baseURL: process.env.EXPO_PUBLIC_API_URL_GEMINI,
+});
+
+// geminiApi.interceptors.request.use(
+//   async (config: InternalAxiosRequestConfig) => {
+//     try {
+//       const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+//       if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//       }
+//     } catch {
+//       console.error('[API] Error al obtener el token');
+//     }
+//     return config;
+//   },
+//   (error: AxiosError) => Promise.reject(error),
+// );
+
 myApi.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {

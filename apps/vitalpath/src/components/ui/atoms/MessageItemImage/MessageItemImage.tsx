@@ -6,13 +6,12 @@ import { Fragment } from 'react';
 import { Image, View } from 'react-native';
 import { MessageItem } from '../MessageItem';
 
-const MessageItemImage = ({
-  message,
-  userColor,
-}: {
+export interface MessageItemImageProps {
   message: ImagesMessage;
   userColor: string;
-}) => {
+}
+
+const MessageItemImage = ({ message, userColor }: MessageItemImageProps) => {
   const isCurrentUser = message.sender === 'user';
   const isMultipleImages = message.images && message.images.length > 1;
 

@@ -1,12 +1,13 @@
 import { View, TextInputProps, TextInput } from 'react-native';
-import React, { ReactNode } from 'react';
-import { inputVariants } from './Input.variants';
+import { VariantProps } from 'class-variance-authority';
 
-export interface InputProps extends TextInputProps {
+import { inputVariantsContainer, inputVariantsText } from './Input.variants';
+
+export interface InputProps
+  extends TextInputProps, VariantProps<typeof inputVariantsContainer> {
   placeholder?: string;
-  variant?: 'primary' | 'secondary';
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const Input = ({
@@ -19,11 +20,11 @@ const Input = ({
 }: InputProps) => {
   return (
     <View
-      className={`flex-row items-center px-4 py-1 ${inputVariants({ variant })} ${className ?? ''}`}
+      className={`${inputVariantsContainer({ variant })} ${className ?? ''}`}
     >
       {leftIcon && <View className="mr-3 opacity-50">{leftIcon}</View>}
       <TextInput
-        className={`flex-1 py-3 text-base tracking-[0.3px] ${inputVariants({ variant })}`}
+        className={`${inputVariantsText({ variant })}`}
         placeholder={placeholder}
         placeholderTextColor="#gray"
         {...props}

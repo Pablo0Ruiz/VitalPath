@@ -23,4 +23,5 @@ const Tabs = ({ label, variant = 'date', className, ...props }: TabsProps) => {
   );
 };
 
+Tabs.displayName = 'Tabs';
 export default Tabs;
