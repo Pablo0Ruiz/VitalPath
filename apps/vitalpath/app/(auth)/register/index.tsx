@@ -1,50 +1,41 @@
-import { useState } from 'react';
-import { View, ScrollView, Alert, Pressable } from 'react-native';
-
 import Octicons from '@expo/vector-icons/Octicons';
-import { router } from 'expo-router';
-
 import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
+import { ScrollView, View } from 'react-native';
 
-import { ROUTES } from '@/src/routes/routes';
-import { Button, SocialButton, TextField } from '@/src/components/ui/atoms';
+import {
+  Button,
+  ProgressBar,
+  SocialButton,
+  TextField,
+} from '@/src/components/ui/atoms';
 import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
-import { RegisterFormValues, registerSchema } from '@/src/interfaces/auth';
-import { useAuth } from '@/src/context/AuthContext';
+import {
+  Step1FormValues,
+  step1Schema,
+} from '@/src/interfaces/auth/register/register.interface';
+import { ROUTES } from '@/src/routes/routes';
+import { useRegisterStore } from '@/src/store/registerStore';
 
-const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+const RegisterStep1 = () => {
+  const { draft, setStep1 } = useRegisterStore();
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<Step1FormValues>({
+    resolver: zodResolver(step1Schema),
     defaultValues: {
-      name: '',
-      lastName: '',
-      email: '',
-      password: '',
-      fechaNacimiento: '',
-      genero: 'Otro',
+      name: draft.name ?? '',
+      lastName: draft.lastName ?? '',
     },
   });
 
-  const onSubmit = async (data: RegisterFormValues) => {
-    setIsLoading(true);
-    const response = await register(data);
-    //TODO:esto se va a cambiar por toast
-    if (!response) {
-      Alert.alert('Error', 'Error al registrar');
-      setIsLoading(false);
-      return;
-    }
-
-    router.replace(ROUTES.HOME);
-    setIsLoading(false);
+  const onSubmit = (data: Step1FormValues) => {
+    setStep1(data);
+    router.push(ROUTES.REGISTER_STEP_2);
   };
 
   return (
@@ -55,10 +46,13 @@ const Register = () => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        <ProgressBar progress={33} className="mb-6 max-w-[200px] self-center" />
+
         <AuthHeader
           title="Crear cuenta"
-          subtitle="Comienza a monitorear tu salud de forma personalizada"
+          subtitle="Comienza a monitorear tu salud (1/3)"
         />
+
         <Controller
           control={control}
           name="name"
@@ -76,6 +70,7 @@ const Register = () => {
             />
           )}
         />
+
         <Controller
           control={control}
           name="lastName"
@@ -90,105 +85,21 @@ const Register = () => {
               autoCorrect={false}
               leftIcon={<Octicons name="person" size={24} color="black" />}
               helperText={errors.lastName?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Correo electrónico"
-              placeholder="nombre@ejemplo.com"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              leftIcon={<Octicons name="mail" size={24} color="black" />}
-              helperText={errors.email?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="fechaNacimiento"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Fecha de nacimiento"
-              placeholder="DD/MM/AAAA"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              autoCapitalize="none"
-              autoCorrect={false}
-              leftIcon={<Octicons name="calendar" size={24} color="black" />}
-              helperText={errors.fechaNacimiento?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="genero"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Género"
-              placeholder="Masculino"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              keyboardType="default"
-              autoCapitalize="none"
-              autoCorrect={false}
-              leftIcon={<Octicons name="person" size={24} color="black" />}
-              helperText={errors.genero?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Contraseña"
-              placeholder="Mínimo 8 caracteres"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoCorrect={false}
-              leftIcon={<Octicons name="lock" size={24} color="black" />}
-              rightIcon={
-                <Pressable onPress={() => setShowPassword(!showPassword)}>
-                  <Octicons
-                    name={showPassword ? 'eye' : 'eye-closed'}
-                    size={22}
-                    color="black"
-                  />
-                </Pressable>
-              }
-              helperText={errors.password?.message}
+              className="mb-8"
             />
           )}
         />
 
         <Button
-          title={isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
+          title="Siguiente"
           onPress={handleSubmit(onSubmit)}
           variant="primary"
-          disabled={isLoading}
           className="mb-6"
         />
 
         <Divider text="O regístrate con" className="mb-6" />
 
-        <View className="flex-row gap-3 mb-7">
+        <View className="flex-row justify-center gap-3 mb-7">
           <SocialButton label="G" />
           <SocialButton label="A" />
           <SocialButton label="F" />
@@ -196,7 +107,7 @@ const Register = () => {
 
         <TextField
           variants="caption"
-          className="text-sm"
+          className="text-sm self-center"
           onPress={() => router.replace(ROUTES.LOGIN)}
         >
           ¿Ya tienes una cuenta?{' '}
@@ -212,4 +123,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterStep1;

@@ -1,4 +1,1 @@
-export {
-  default as HealthScoreBanner,
-  type HealthScoreBannerProps,
-} from './HealthScoreBanner';
+export { default as Banner, type BannerProps } from './HealthScoreBanner';

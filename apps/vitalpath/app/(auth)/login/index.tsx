@@ -1,18 +1,17 @@
-import { Alert, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
-import Octicons from '@expo/vector-icons/Octicons';
+import { Alert, ScrollView, View } from 'react-native';
 
-import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, SocialButton, TextField } from '@/src/components/ui/atoms';
+import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
-import { ROUTES } from '@/src/routes/routes';
+import { useLogin } from '@/src/hooks/auth';
 import { LoginFormValues, loginSchema } from '@/src/interfaces/auth';
-import { useAuth } from '@/src/context/AuthContext';
+import { ROUTES } from '@/src/routes/routes';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { mutate: login, isPending } = useLogin();
   const {
     control,
     handleSubmit,
@@ -25,15 +24,12 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    const response = await login(data);
-
-    if (!response) {
-      Alert.alert('Error', 'Credenciales incorrectas');
-      return;
-    }
-
-    router.replace(ROUTES.HOME);
+  const onSubmit = (data: LoginFormValues) => {
+    login(data, {
+      onError: () => {
+        Alert.alert('Error', 'Credenciales incorrectas');
+      },
+    });
   };
 
   return (
@@ -57,7 +53,7 @@ const Login = () => {
               placeholder="name@example.com"
               keyboardType="email-address"
               autoCapitalize="none"
-              leftIcon={<Octicons name="mail" size={24} color="black" />}
+              // leftIcon={<Octicons name="mail" size={24} color="black" />}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -90,29 +86,20 @@ const Login = () => {
           variant="primary"
           className="mb-6"
           onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPending}
         />
 
         <TextField
           className="mb-6"
           onPress={() => router.push(ROUTES.REGISTER)}
         >
-          ¿No tienes una cuenta?
-          <TextField
-            variants="caption"
-            className="text-brand-violet-600 font-semibold"
-          >
+          ¿No tienes una cuenta?{'  '}
+          <TextField variant="caption" className="text-brand-violet-900">
             Registrarse
           </TextField>
         </TextField>
 
         <Divider text="Or continue with" className="mb-6" />
-
-        <View className="flex-row gap-3">
-          <SocialButton label="G" />
-          <SocialButton label="A" />
-          <SocialButton label="F" />
-        </View>
       </ScrollView>
     </View>
   );

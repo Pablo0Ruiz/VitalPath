@@ -16,11 +16,11 @@ const AuthHeader = ({ title, subtitle, className }: AuthHeaderProps) => {
         />
       </View>
 
-      <TextField variants="title">{title}</TextField>
+      <TextField variant="title">{title}</TextField>
 
       {subtitle && (
         <TextField
-          variants="caption"
+          variant="caption"
           className="text-sm text-brand-slate-500 mb-8"
         >
           {subtitle}

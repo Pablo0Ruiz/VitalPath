@@ -1,27 +1,25 @@
 import { Text, TextProps } from 'react-native';
+import { textFieldVariants } from './TextField.variants';
 
-export interface TextFiledProps extends TextProps {
+export interface TextFieldProps extends TextProps {
   children: React.ReactNode;
-  variants?: 'title' | 'body' | 'caption';
+  variant?: 'title' | 'subtitle' | 'body' | 'caption' | 'label';
 }
 
-const textFiledVariants = {
-  title: 'text-center text-3xl font-bold text-brand-slate-900 mb-1',
-  body: 'text-center text-base font-medium text-brand-slate-700',
-  caption: 'text-center text-xs font-medium text-brand-slate-400',
-};
-
-const TextFiled = ({
+const TextField = ({
   children,
   className,
-  variants = 'body',
+  variant = 'body',
   ...props
-}: TextFiledProps) => {
+}: TextFieldProps) => {
   return (
-    <Text className={`${textFiledVariants[variants]} ${className}`} {...props}>
+    <Text
+      className={`${textFieldVariants({ variant })} ${className ?? ''}`}
+      {...props}
+    >
       {children}
     </Text>
   );
 };
 
-export default TextFiled;
+export default TextField;

@@ -8,3 +8,6 @@ export { Avatar } from './Avatar';
 export { IconBox } from './IconBox';
 export { MessageItem } from './MessageItem';
 export { MessageItemImage } from './MessageItemImage';
+export { Tabs } from './Tabs';
+export { TimelineIcon } from './TimeLineIcon';
+export { ProgressBar } from './ProgressBar';
