@@ -29,3 +29,13 @@ export interface Cita {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Appointment {
+  id: string;
+  doctor: string;
+  specialty: string;
+  time: string;
+  date: string;
+  avatarInitials?: string;
+  avatarClassName?: string;
+}

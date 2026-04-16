@@ -19,12 +19,14 @@ const CustomModal = ({ visible, onClose }: CustomModalProps) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormValues>();
 
   const { mutateAsync: createMedication } = useCreateMedication();
 
   const onSubmit = (data: FormValues) => {
     createMedication(data);
+    reset();
     onClose();
   };
 
