@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { Avatar, TextField } from '../../atoms';
+import { Avatar, Badge, TextField } from '../../atoms';
 
 export interface AppointmentRowProps extends ViewProps {
   doctor: string;
@@ -23,7 +23,7 @@ const AppointmentRow = ({
 }: AppointmentRowProps) => {
   return (
     <View
-      className={`flex-row items-center py-1.5 ${className ?? ''}`}
+      className={`flex-row items-center py-2 ${className ?? ''}`}
       {...props}
     >
       <Avatar initials={avatarInitials} className={avatarClassName} />
@@ -34,17 +34,16 @@ const AppointmentRow = ({
         >
           {doctor}
         </TextField>
-        <TextField
-          variant="caption"
-          className="text-left text-brand-slate-400 text-xs mt-0.5"
-        >
-          {specialty}
-        </TextField>
+        <Badge
+          label={specialty}
+          variant="primary"
+          className="self-start mt-1"
+        />
       </View>
-      <View className="items-end">
+      <View className="items-end ml-2">
         <TextField
           variant="body"
-          className="text-brand-violet-600 font-bold text-[13px]"
+          className="text-brand-violet-600 font-bold text-sm"
         >
           {time}
         </TextField>

@@ -44,17 +44,17 @@ export default function AppointmentsScreen() {
   const handleAgendar = () => {
     const newAppointmentDate = new Date(selectedDate);
     newAppointmentDate.setHours(10, 0, 0, 0);
-    //TODO:Falta definir el popUp para seleccionar el medico y el centro de salud
     agendarCita({
       fechaHora: newAppointmentDate.toISOString(),
       medico_ID: '69c08cce875c20a70bd4f3db',
       centroSalud_ID: '69c08cfe875c20a70bd4f3dd',
     });
   };
+
   const handleCancelar = (citaId: string) => {
     Alert.alert(
       'Cancelar cita',
-      '¿Estás seguro de que quieres cancelar esta cita?',
+      '¿Estás seguro de que querés cancelar esta cita?',
       [
         { text: 'No', style: 'cancel' },
         {
@@ -67,28 +67,30 @@ export default function AppointmentsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-surface-low">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-5 pt-6 pb-10"
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mb-6">
+        {/* ── Header ───────────────────────────────────────────── */}
+        <View className="px-5 pt-6 pb-4 border-b border-brand-slate-100">
           <TextField
             variant="title"
-            className="mb-1 text-slate-900 font-extrabold text-[30px] leading-tight tracking-tight"
+            className="text-brand-slate-900 font-bold text-[28px] leading-tight text-left mb-1"
           >
             Citas
           </TextField>
           <TextField
-            variant="subtitle"
-            className="text-slate-500 text-base font-normal"
+            variant="caption"
+            className="text-brand-slate-400 text-sm text-left"
           >
-            Gestiona tus citas médicas.
+            Gestioná tus citas médicas
           </TextField>
         </View>
 
-        <View className="mb-8">
+        {/* ── Calendar ─────────────────────────────────────────── */}
+        <View className="px-5 pt-5 mb-5">
           <CalendarWidget
             appointmentsMap={appointmentsMap}
             onDateChange={date => setSelectedDate(date)}
@@ -96,41 +98,54 @@ export default function AppointmentsScreen() {
           />
         </View>
 
-        <View className="flex-row justify-between flex-wrap items-center mb-4">
-          <SectionHeader title="Citas Seleccionadas" className="flex-1" />
-          <Button
-            title={isCreating ? '...' : '+ Agendar Cita'}
-            variant="primary"
-            onPress={handleAgendar}
-            disabled={isCreating}
-            className="py-2 px-3 rounded-lg"
-          />
-        </View>
+        {/* ── Citas del día ────────────────────────────────────── */}
+        <View className="px-5">
+          <View className="flex-row items-center justify-between mb-3">
+            <SectionHeader
+              title="Citas seleccionadas"
+              className="flex-1 mb-0"
+            />
+            <Button
+              title={isCreating ? '...' : 'Agendar'}
+              variant="primary"
+              size="sm"
+              onPress={handleAgendar}
+              disabled={isCreating}
+              loading={isCreating}
+            />
+          </View>
 
-        <View className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          {isLoading && !isRefetching ? (
-            <ActivityIndicator size="small" color="#7c3aed" className="my-4" />
-          ) : todaysAppointments.length > 0 ? (
-            todaysAppointments.map((appt: Cita, idx: number) => (
-              <View key={appt._id}>
-                <AppointmentCard
-                  appointment={appt}
-                  onCancel={handleCancelar}
-                  isCancelling={isCancelling}
-                />
-                {idx < todaysAppointments.length - 1 && (
-                  <Divider className="my-2 bg-slate-100" />
-                )}
+          <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
+            {isLoading && !isRefetching ? (
+              <View className="py-8 items-center">
+                <ActivityIndicator size="small" color="#7c3aed" />
               </View>
-            ))
-          ) : (
-            <TextField
-              variant="body"
-              className="text-center text-slate-400 py-4"
-            >
-              No hay citas agendadas para este día.
-            </TextField>
-          )}
+            ) : todaysAppointments.length > 0 ? (
+              <View className="px-4">
+                {todaysAppointments.map((appt: Cita, idx: number) => (
+                  <View key={appt._id}>
+                    <AppointmentCard
+                      appointment={appt}
+                      onCancel={handleCancelar}
+                      isCancelling={isCancelling}
+                    />
+                    {idx < todaysAppointments.length - 1 && (
+                      <Divider className="bg-brand-slate-100" />
+                    )}
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View className="py-10 items-center">
+                <TextField
+                  variant="caption"
+                  className="text-brand-slate-400 text-sm text-center"
+                >
+                  No hay citas para este día
+                </TextField>
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

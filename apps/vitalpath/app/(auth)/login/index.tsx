@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, Image, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
-import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
+import { Divider, FormField } from '@/src/components/ui/molecules';
 import { useLogin } from '@/src/hooks/auth';
 import { LoginFormValues, loginSchema } from '@/src/interfaces/auth';
 import { ROUTES } from '@/src/routes/routes';
@@ -33,75 +34,114 @@ const Login = () => {
   };
 
   return (
-    <View className="flex-1 bg-brand-background">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView
-        className="flex-1 rounded-t-3xl bg-brand-background px-6 pt-8"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <AuthHeader
-          title="Welcome back"
-          subtitle="Access your personalized health metrics"
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Email Address"
-              placeholder="name@example.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              // leftIcon={<Octicons name="mail" size={24} color="black" />}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              helperText={errors.email?.message}
+        <View className="items-center pt-12 pb-10 px-6">
+          <View className="w-16 h-16 rounded-2xl bg-brand-violet-600 items-center justify-center mb-5">
+            <Image
+              source={require('@/assets/images/vitalpath-logo.png')}
+              className="w-10 h-10"
+              resizeMode="contain"
             />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Password"
-              placeholder="••••••••"
-              secureTextEntry
-              rightLabel="Olvidaste tu contraseña?"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
-              className="mb-6"
-              helperText={errors.password?.message}
-            />
-          )}
-        />
-
-        <Button
-          title="Sign In"
-          variant="primary"
-          className="mb-6"
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting || isPending}
-        />
-
-        <TextField
-          className="mb-6"
-          onPress={() => router.push(ROUTES.REGISTER)}
-        >
-          ¿No tienes una cuenta?{'  '}
-          <TextField variant="caption" className="text-brand-violet-900">
-            Registrarse
+          </View>
+          <TextField
+            variant="title"
+            className="text-brand-slate-900 font-bold text-[28px] text-center mb-1"
+          >
+            VitalPath
           </TextField>
-        </TextField>
+          <TextField
+            variant="caption"
+            className="text-brand-slate-400 text-sm text-center"
+          >
+            Tu salud, guiada con inteligencia
+          </TextField>
+        </View>
 
-        <Divider text="Or continue with" className="mb-6" />
+        <View className="px-6">
+          <TextField
+            variant="body"
+            className="text-brand-slate-900 font-semibold text-[17px] text-left mb-1"
+          >
+            Iniciar sesión
+          </TextField>
+          <TextField
+            variant="caption"
+            className="text-brand-slate-400 text-sm text-left mb-6"
+          >
+            Accedé a tus métricas de salud personalizadas
+          </TextField>
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <FormField
+                label="Correo electrónico"
+                placeholder="nombre@ejemplo.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                helperText={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <FormField
+                label="Contraseña"
+                placeholder="••••••••"
+                secureTextEntry
+                rightLabel="¿Olvidaste tu contraseña?"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
+                className="mb-6"
+                helperText={errors.password?.message}
+              />
+            )}
+          />
+
+          <Button
+            title="Iniciar sesión"
+            variant="primary"
+            className="mb-4"
+            onPress={handleSubmit(onSubmit)}
+            loading={isSubmitting || isPending}
+            disabled={isSubmitting || isPending}
+          />
+
+          <Divider text="o continuá con" className="mb-4" />
+
+          <View className="items-center mt-2">
+            <TextField
+              variant="caption"
+              className="text-brand-slate-500 text-sm text-center"
+              onPress={() => router.push(ROUTES.REGISTER)}
+            >
+              ¿No tenés cuenta?{'  '}
+              <TextField
+                variant="caption"
+                className="text-brand-violet-600 font-semibold"
+              >
+                Registrate
+              </TextField>
+            </TextField>
+          </View>
+        </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

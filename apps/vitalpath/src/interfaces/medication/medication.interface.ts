@@ -11,5 +11,5 @@ export interface CreateMedicationPayload {
 }
 
 export interface UpdateMedicationPayload extends Partial<CreateMedicationPayload> {
-  isDone?: boolean;
+  id: string;
 }

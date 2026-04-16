@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import postCreateMedication from '@/src/core/actions/medication/create-medication.action';
-import { getMedicaments } from '@/src/core/actions/medication/get-medication.action';
+import {
+  getMedicament,
+  getMedicaments,
+} from '@/src/core/actions/medication/get-medication.action';
 import patchUpdateMedication from '@/src/core/actions/medication/update-medication.action';
 import {
   CreateMedicationPayload,
@@ -14,8 +17,17 @@ export const MEDICAMENTS_QUERY_KEY = ['medicaments'] as const;
 export const useMedicaments = () => {
   return useQuery({
     queryKey: MEDICAMENTS_QUERY_KEY,
-    queryFn: getMedicaments,
+    queryFn: () => getMedicaments(),
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useMedicament = (id: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: [...MEDICAMENTS_QUERY_KEY, id],
+    queryFn: () => getMedicament(id),
+    staleTime: 1000 * 60 * 5,
+    enabled,
   });
 };
 
@@ -38,13 +50,8 @@ export const useUpdateMedication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateMedicationPayload;
-    }) => patchUpdateMedication(id, payload),
+    mutationFn: (payload: UpdateMedicationPayload) =>
+      patchUpdateMedication(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MEDICAMENTS_QUERY_KEY });
     },

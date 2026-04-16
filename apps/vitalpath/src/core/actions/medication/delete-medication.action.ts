@@ -1,7 +1,7 @@
 import { myApi } from '../../api/myApi';
 
 const deleteMedication = async (id: string) => {
-  const response = await myApi.delete(`/api/medicaments/${id}`);
+  const response = await myApi.delete(`/api/medications/${id}`);
   return response;
 };
 

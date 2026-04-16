@@ -1,16 +1,24 @@
 import { Octicons } from '@expo/vector-icons';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar, Button, TextField } from '@/src/components/ui/atoms';
 import {
-  SectionHeader,
-  CustomModal,
   CustomList,
+  CustomModal,
+  SectionHeader,
 } from '@/src/components/ui/molecules';
 import { useAuth } from '@/src/context/AuthContext';
 import { useLogout } from '@/src/hooks/auth';
 import { useMedicaments } from '@/src/hooks/medicaments/useMedication';
+import { Appointment } from '@/src/interfaces/appointments/appointments.interface';
 
 const MOCK_APPOINTMENTS: Appointment[] = [
   {
@@ -41,8 +49,6 @@ const MOCK_APPOINTMENTS: Appointment[] = [
     avatarClassName: 'bg-amber-100',
   },
 ];
-import { useState } from 'react';
-import { Appointment } from '@/src/interfaces/appointments/appointments.interface';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
@@ -53,71 +59,130 @@ export default function DashboardScreen() {
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
 
+  const handleAvatarLongPress = () => {
+    Alert.alert('Sesión', '¿Cerrar sesión?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Cerrar sesión', style: 'destructive', onPress: logout },
+    ]);
+  };
+
+  const medicamentCount = medicaments?.length ?? 0;
+  const doneMeds = 0;
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
-        <View className="flex-row items-center">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <View className="flex-row items-center justify-between px-5 pt-4 pb-3 border-b border-brand-slate-100">
+        <Pressable
+          className="flex-row items-center"
+          onLongPress={handleAvatarLongPress}
+          delayLongPress={1}
+        >
           <Avatar
             image={require('@/assets/images/vitalpath-logo.png')}
-            size="lg"
-            className="bg-brand-violet-600"
+            size="md"
+            className="bg-brand-violet-50"
           />
-          <View className="ml-2.5">
+          <View className="ml-3">
             <TextField
               variant="caption"
-              className="text-left text-brand-slate-400"
+              className="text-brand-slate-400 text-left text-xs"
             >
               Buenos días
             </TextField>
             <TextField
               variant="body"
-              className="text-left text-black font-bold"
+              className="text-brand-slate-900 font-semibold text-left text-[15px]"
             >
               {user?.name}
             </TextField>
           </View>
-        </View>
-        <Button className="w-14 h-full rounded-full bg-brand-slate-200 items-center justify-center">
-          <Octicons name="bell" size={22} color="white" />
-        </Button>
+        </Pressable>
+
+        <Pressable className="w-9 h-9 items-center justify-center rounded-full bg-brand-slate-50">
+          <Octicons name="bell" size={18} color="#64748b" />
+        </Pressable>
       </View>
 
-      <View className="flex-1 px-4 pt-2">
-        <View className="flex-[0.50] mb-4">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-row gap-3 px-5 pt-5 pb-2">
+          <View className="flex-1 bg-brand-violet-50 rounded-2xl px-4 py-3">
+            <TextField
+              variant="caption"
+              className="text-brand-violet-400 text-xs text-left mb-0.5"
+            >
+              Citas hoy
+            </TextField>
+            <TextField
+              variant="body"
+              className="text-brand-violet-700 font-bold text-[28px] leading-tight text-left"
+            >
+              {MOCK_APPOINTMENTS.filter(a => a.date === 'Hoy').length}
+            </TextField>
+          </View>
+
+          <View className="flex-1 bg-brand-teal-50 rounded-2xl px-4 py-3">
+            <TextField
+              variant="caption"
+              className="text-brand-teal-600 text-xs text-left mb-0.5"
+            >
+              Medicamentos
+            </TextField>
+            <TextField
+              variant="body"
+              className="text-brand-teal-700 font-bold text-[28px] leading-tight text-left"
+            >
+              {doneMeds}
+              <TextField
+                variant="caption"
+                className="text-brand-teal-400 text-[14px] font-normal"
+              >
+                /{medicamentCount}
+              </TextField>
+            </TextField>
+          </View>
+        </View>
+
+        <View className="px-5 pt-5">
           <SectionHeader
             title="Próximas citas"
             linkLabel="Ver todas"
             onLinkPress={() => {}}
           />
-          <View className="flex-1 bg-white rounded-[16px] p-4 border border-brand-slate-200 shadow-sm">
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <CustomList type="appointment" data={MOCK_APPOINTMENTS} />
-            </ScrollView>
+          <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
+            <CustomList type="appointment" data={MOCK_APPOINTMENTS} />
           </View>
         </View>
 
-        <View className="flex-1 mb-4">
-          <View className="flex-row items-center justify-between mb-2">
-            <SectionHeader title="Medicamentos de hoy" />
-            <Button title="Agregar" onPress={openModal} />
+        <View className="px-5 pt-6">
+          <View className="flex-row items-center justify-between mb-2.5">
+            <SectionHeader
+              title="Medicamentos de hoy"
+              className="flex-1 mb-0"
+            />
+            <Button
+              title="Agregar"
+              onPress={openModal}
+              size="sm"
+              variant="outline"
+            />
             <CustomModal visible={isModalVisible} onClose={closeModal} />
           </View>
 
           {isLoading ? (
-            <ActivityIndicator size="large" color="#7C3AED" className="my-8" />
+            <View className="py-8 items-center">
+              <ActivityIndicator size="small" color="#7c3aed" />
+            </View>
           ) : (
-            <View className="flex-1 bg-white rounded-[16px] p-4 border border-brand-slate-200 shadow-sm">
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <CustomList type="medication" data={medicaments} />
-              </ScrollView>
+            <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
+              <CustomList type="medication" data={medicaments} />
             </View>
           )}
         </View>
-        <View className="flex-[0.24] justify-center pb-2">
-          <Button title="Cerrar sesión" onPress={logout} />
-        </View>
-        <View style={{ height: 40 }} />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -1,6 +1,10 @@
+import { Octicons } from '@expo/vector-icons';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { TextField } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { CustomInputBox } from '@/src/components/ui/molecules';
-import { View } from 'react-native';
 import { useChatContextStore } from '@/src/store/chat-context/chatContext.store';
 
 const Chat = () => {
@@ -9,11 +13,35 @@ const Chat = () => {
   const geminiWriting = useChatContextStore(state => state.geminiWriting);
 
   return (
-    <View style={{ flex: 1 }}>
-      <ChatMessages messages={messages} isGeminiWriting={geminiWriting} />
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <View className="flex-row items-center px-5 py-3 border-b border-brand-slate-100">
+        <View className="w-8 h-8 rounded-full bg-brand-violet-600 items-center justify-center mr-3">
+          <Octicons name="dependabot" size={15} color="white" />
+        </View>
+        <View>
+          <TextField
+            variant="body"
+            className="text-brand-slate-900 font-semibold text-[15px] text-left"
+          >
+            VitalPath AI
+          </TextField>
+          <View className="flex-row items-center">
+            <View className="w-1.5 h-1.5 rounded-full bg-success mr-1" />
+            <TextField
+              variant="caption"
+              className="text-brand-slate-400 text-xs text-left"
+            >
+              En línea
+            </TextField>
+          </View>
+        </View>
+      </View>
 
+      <View className="flex-1 bg-white">
+        <ChatMessages messages={messages} isGeminiWriting={geminiWriting} />
+      </View>
       <CustomInputBox onSendMessage={addMessage} />
-    </View>
+    </SafeAreaView>
   );
 };
 

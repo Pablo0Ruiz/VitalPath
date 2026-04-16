@@ -41,11 +41,51 @@ export const ChatMessages = ({ messages, isGeminiWriting }: Props) => {
           entering={FadeInDown}
           style={{
             paddingHorizontal: 16,
-            paddingVertical: 10,
-            backgroundColor: 'red',
+            paddingVertical: 8,
           }}
         >
-          <TextField>Gemini esta escribiendo...</TextField>
+          <View
+            style={{
+              alignSelf: 'flex-start',
+              backgroundColor: '#f8fafc',
+              borderWidth: 1,
+              borderColor: '#e2e8f0',
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+              borderRadius: 16,
+              borderBottomLeftRadius: 4,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <View
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: '#7c3aed',
+                opacity: 0.5,
+              }}
+            />
+            <View
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: '#7c3aed',
+                opacity: 0.7,
+              }}
+            />
+            <View
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: '#7c3aed',
+              }}
+            />
+          </View>
         </Animated.View>
       )}
     </View>

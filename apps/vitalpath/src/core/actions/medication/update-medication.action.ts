@@ -7,12 +7,12 @@ export interface UpdateMedicationResponse {
 }
 
 const patchUpdateMedication = async (
-  id: string,
   payload: UpdateMedicationPayload,
 ): Promise<AxiosResponse<UpdateMedicationResponse>> => {
+  const { id, ...rest } = payload;
   const response = await myApi.patch<UpdateMedicationResponse>(
-    `/api/medicaments/${id}`,
-    payload,
+    `/api/medications/${id}`,
+    rest,
   );
   return response;
 };
