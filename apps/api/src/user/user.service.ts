@@ -9,8 +9,9 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async getUserProfile(id: string) {
-    const user = await this.userModel.findById(id);
+  async getUserProfile(userId: string) {
+    const user = await this.userModel.findById(userId);
+
     if (!user) throw new Error('Error al obtener el perfil');
     return user;
   }

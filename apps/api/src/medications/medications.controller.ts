@@ -38,7 +38,7 @@ export class MedicationsController {
   @Auth()
   @Get(':id')
   findOne(@Param('id') id: string, @GetUser('_id') userId: string) {
-    return this.medicationsService.findOneMedication(id, userId);
+    return this.medicationsService.findOneMedication(userId, id);
   }
 
   @Auth()
