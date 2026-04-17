@@ -12,7 +12,7 @@ import {
   Step3FormValues,
   step3Schema,
 } from '@/src/interfaces/auth/register/register.interface';
-import { useRegisterStore } from '@/src/store/registerStore';
+import { useRegisterStore } from '@repo/store';
 import { useRegister } from '@/src/hooks/auth';
 
 const RegisterStep3 = () => {

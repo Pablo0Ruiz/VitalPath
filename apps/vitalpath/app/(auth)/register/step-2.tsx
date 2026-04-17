@@ -11,7 +11,7 @@ import {
   Step2FormValues,
   step2Schema,
 } from '@/src/interfaces/auth/register/register.interface';
-import { useRegisterStore } from '@/src/store/registerStore';
+import { useRegisterStore } from '@repo/store';
 import { ROUTES } from '@/src/routes/routes';
 import { GENDER } from '@/src/constants/gender';
 

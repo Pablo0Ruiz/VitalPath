@@ -16,7 +16,7 @@ import {
   step1Schema,
 } from '@/src/interfaces/auth/register/register.interface';
 import { ROUTES } from '@/src/routes/routes';
-import { useRegisterStore } from '@/src/store/registerStore';
+import { useRegisterStore } from '@repo/store';
 
 const RegisterStep1 = () => {
   const { draft, setStep1 } = useRegisterStore();

@@ -5,12 +5,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextField } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { CustomInputBox } from '@/src/components/ui/molecules';
-import { useChatContextStore } from '@/src/store/chat-context/chatContext.store';
+import { useChatContextStore } from '@repo/store';
+import { getChatStream } from '@/src/core/actions/chat-stream.actions';
 
 const Chat = () => {
   const messages = useChatContextStore(state => state.messages);
   const addMessage = useChatContextStore(state => state.addMessage);
   const geminiWriting = useChatContextStore(state => state.geminiWriting);
+
+  const handleSendMessage = (prompt: string, attachments: any[]) => {
+    addMessage(prompt, attachments, getChatStream);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
@@ -40,7 +45,7 @@ const Chat = () => {
       <View className="flex-1 bg-white">
         <ChatMessages messages={messages} isGeminiWriting={geminiWriting} />
       </View>
-      <CustomInputBox onSendMessage={addMessage} />
+      <CustomInputBox onSendMessage={handleSendMessage} />
     </SafeAreaView>
   );
 };

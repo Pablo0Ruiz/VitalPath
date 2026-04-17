@@ -92,3 +92,14 @@ app-example
 
 .windsurf/*
 .atl/*
+
+# next.js
+/.next/
+/out/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
