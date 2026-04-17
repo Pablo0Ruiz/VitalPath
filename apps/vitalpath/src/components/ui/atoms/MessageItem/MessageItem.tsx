@@ -1,4 +1,4 @@
-import { TextMessage } from '@/src/interfaces/chat/chat.interface';
+import { TextMessage } from '@repo/types';
 import { View } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { TextField } from '../TextFiled';

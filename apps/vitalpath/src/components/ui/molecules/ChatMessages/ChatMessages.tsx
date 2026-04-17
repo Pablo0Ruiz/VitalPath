@@ -5,11 +5,7 @@ import {
   TextField,
 } from '@/src/components/ui/atoms';
 
-import {
-  ImagesMessage,
-  Message,
-  TextMessage,
-} from '@/src/interfaces/chat/chat.interface';
+import { ImagesMessage, Message, TextMessage } from '@repo/types';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 interface Props {

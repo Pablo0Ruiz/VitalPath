@@ -1,7 +1,4 @@
-import {
-  ImagesMessage,
-  TextMessage,
-} from '@/src/interfaces/chat/chat.interface';
+import { ImagesMessage, TextMessage } from '@repo/types';
 import { Fragment } from 'react';
 import { Image, View } from 'react-native';
 import { MessageItem } from '../MessageItem';
