@@ -1,0 +1,89 @@
+'use client';
+
+import { useState } from 'react';
+import { Search01Icon } from '@hugeicons/core-free-icons';
+import { Card } from '@/components/ui/atoms/Card';
+import { Input } from '@/components/ui/atoms/Input';
+import { Tabs } from '@/components/ui/atoms/Tabs';
+import { Avatar } from '@/components/ui/atoms/Avatar';
+import { Badge } from '@/components/ui/atoms/Badge';
+import { mockPatients } from '@/lib/mock-data';
+
+const statusTabs = [
+  { value: 'all', label: 'Todos' },
+  { value: 'activo', label: 'Activos' },
+  { value: 'inactivo', label: 'Inactivos' },
+];
+
+const PatientList = () => {
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filtered = mockPatients.filter(p => {
+    const fullName = `${p.name} ${p.lastName}`.toLowerCase();
+    const matchSearch =
+      fullName.includes(search.toLowerCase()) ||
+      p.email.includes(search.toLowerCase());
+    const matchStatus = statusFilter === 'all' || p.estado === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <Input
+            type="search"
+            placeholder="Buscar por nombre o email..."
+            leftIcon={Search01Icon}
+            value={search}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearch(e.target.value)
+            }
+          />
+        </div>
+        <Tabs
+          tabs={statusTabs}
+          value={statusFilter}
+          onChange={setStatusFilter}
+          variant="pill"
+        />
+      </div>
+
+      <Card padding="none" className="overflow-hidden">
+        <div className="px-5 py-4 border-b border-brand-border">
+          <span className="text-sm font-semibold text-brand-text-primary">
+            Pacientes ({filtered.length})
+          </span>
+        </div>
+        <div className="divide-y divide-brand-border">
+          {filtered.map(patient => (
+            <div
+              key={patient._id}
+              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"
+            >
+              <Avatar name={`${patient.name} ${patient.lastName}`} size="md" />
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                <span className="text-sm font-semibold text-brand-text-primary">
+                  {patient.name} {patient.lastName}
+                </span>
+                <span className="text-xs text-brand-text-secondary truncate">
+                  {patient.email}
+                </span>
+              </div>
+              <Badge
+                variant={patient.estado === 'activo' ? 'success' : 'neutral'}
+                size="sm"
+                className="capitalize shrink-0"
+              >
+                {patient.estado}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default PatientList;
