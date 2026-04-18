@@ -5,3 +5,4 @@ export * from './useLogout';
 export * from './useRecoverPassword';
 export * from './useMedication';
 export * from './useCitas';
+export * from './useDoctor';

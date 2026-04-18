@@ -51,3 +51,19 @@ export type Step3FormValues = z.infer<typeof step3Schema>;
 
 export const registerSchema = step1Schema.and(step2Schema).and(step3Schema);
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+
+export const inviteSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'El email es obligatorio')
+    .email('Introduce un email válido'),
+  role: z.enum(['medico', 'trabajador_centro', 'admin']),
+  codigoVerificacion: z.string().min(1, 'El codigo es obligatorio'),
+});
+export type InviteFormValues = z.infer<typeof inviteSchema>;
+
+export type InviteDoctorDto = {
+  email: string;
+  role: string;
+  codigoVerificacion: string;
+};

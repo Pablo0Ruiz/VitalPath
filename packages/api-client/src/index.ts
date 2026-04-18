@@ -2,4 +2,5 @@ export * from './client';
 export * from './actions/auth.actions';
 export * from './actions/medication.actions';
 export * from './actions/appointment.actions';
+export * from './actions/doctor.actions';
 export * from './hooks';

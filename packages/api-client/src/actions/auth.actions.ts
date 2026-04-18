@@ -5,6 +5,7 @@ import type {
   UserCredentials,
   UserSession,
   RegisterCredentials,
+  InviteDoctorDto,
 } from '@repo/types';
 
 export const postLogin = async (
@@ -49,6 +50,16 @@ export const postRegister = async (
   const { data } = await apiClient.post<UserCredentials>(
     '/api/auth/register',
     payload,
+  );
+  return data;
+};
+
+export const postInviteVerification = async (
+  payload: InviteDoctorDto,
+): Promise<UserCredentials> => {
+  const { data } = await apiClient.post<UserCredentials>(
+    `/api/auth/verify-doctor/${payload.codigoVerificacion}`,
+    { email: payload.email, role: payload.role },
   );
   return data;
 };
