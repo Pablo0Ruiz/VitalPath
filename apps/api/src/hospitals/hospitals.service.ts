@@ -30,4 +30,8 @@ export class HospitalsService {
       verificationCode,
     };
   }
+
+  getDoctors() {
+    return this.userModel.find({ role: 'medico' });
+  }
 }

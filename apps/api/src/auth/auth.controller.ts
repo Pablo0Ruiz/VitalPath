@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto, InviteDoctorDto, LoginUserDto } from './dto';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 
@@ -29,7 +29,10 @@ export class AuthController {
   }
 
   @Post('verify-doctor/:verificationCode')
-  verifyDoctor(@Param('verificationCode') verificationCode: string) {
-    return this.authService.verifyDoctor(verificationCode);
+  verifyDoctor(
+    @Body() inviteDoctorDto: InviteDoctorDto,
+    @Param('verificationCode') verificationCode: string,
+  ) {
+    return this.authService.verifyDoctor(inviteDoctorDto, verificationCode);
   }
 }

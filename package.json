@@ -6,7 +6,8 @@
     "start": "turbo run start",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && pnpm install"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",
@@ -25,5 +26,12 @@
   },
   "prettier": "@repo/prettier-config",
   "packageManager": "pnpm@8.15.6",
+  "pnpm": {
+    "overrides": {
+      "@tanstack/react-query": "^5.90.21",
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0"
+    }
+  },
   "name": "vitalpathai"
 }

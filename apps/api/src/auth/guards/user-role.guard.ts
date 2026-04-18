@@ -29,10 +29,8 @@ export class UserRoleGuard implements CanActivate {
 
     if (!user) throw new BadRequestException('Usuario no encontrado');
 
-    for (const role of user.roles) {
-      if (validRole.includes(role)) {
-        return true;
-      }
+    if (validRole.includes(user.role)) {
+      return true;
     }
     throw new ForbiddenException(
       'El usuario no tiene autorizacion para esta ruta',

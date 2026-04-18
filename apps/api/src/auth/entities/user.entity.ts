@@ -62,6 +62,9 @@ export class User extends Document {
 
   @Prop({ type: Boolean, default: false })
   isActive: boolean;
+
+  @Prop({ type: String, required: false })
+  especialidad: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

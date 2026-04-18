@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto, InviteDoctorDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
@@ -107,9 +107,17 @@ export class AuthService {
     }
   }
 
-  async verifyDoctor(verificationCode: string) {
+  async verifyDoctor(
+    inviteDoctorDto: InviteDoctorDto,
+    verificationCode: string,
+  ) {
     const user = await this.userModel.findOne({ verificationCode });
-    if (!user) throw new UnauthorizedException('El código es incorrecto');
+    if (
+      !user ||
+      user.email !== inviteDoctorDto.email ||
+      user.role !== inviteDoctorDto.role
+    )
+      throw new UnauthorizedException('Los datos son incorrectos');
     user.isActive = true;
     user.verificationCode = undefined;
     await user.save();

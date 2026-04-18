@@ -30,6 +30,10 @@ export class CreateUserDto {
   })
   password: string;
 
+  @IsString()
+  @IsOptional()
+  role: string;
+
   @IsDate()
   fechaNacimiento: Date;
 
@@ -40,4 +44,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   genero: string;
+
+  @IsString()
+  @IsOptional()
+  especialidad: string;
 }
