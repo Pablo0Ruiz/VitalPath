@@ -1,7 +1,7 @@
 import { Modal, View } from 'react-native';
 import { Button, TextField } from '../../atoms';
 import { Controller, useForm } from 'react-hook-form';
-import { useCreateMedication } from '@/src/hooks/medicaments/useMedication';
+import { useCreateMedication } from '@repo/api-client';
 import { FormField } from '../FormField';
 
 export interface CustomModalProps {

@@ -9,13 +9,9 @@ import {
   Divider,
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organism';
-import {
-  useCitas,
-  useCreateCita,
-  useCancelCita,
-} from '@/src/hooks/dashboard/useCitas';
+import { useCitas, useCreateCita, useCancelCita } from '@repo/api-client';
 import { extractDateKey } from '@/src/utils/date';
-import { Cita } from '@/src/interfaces/appointments/appointments.interface';
+import { Cita } from '@repo/types';
 
 export default function AppointmentsScreen() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());

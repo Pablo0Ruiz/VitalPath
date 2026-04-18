@@ -11,10 +11,7 @@ import {
   TextField,
 } from '@/src/components/ui/atoms';
 import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
-import {
-  Step1FormValues,
-  step1Schema,
-} from '@/src/interfaces/auth/register/register.interface';
+import { Step1FormValues, step1Schema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import { useRegisterStore } from '@repo/store';
 

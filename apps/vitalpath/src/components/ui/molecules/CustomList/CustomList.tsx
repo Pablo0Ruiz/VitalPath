@@ -1,10 +1,9 @@
 import { View } from 'react-native';
 
 import { TextField } from '../../atoms';
-import { Medication } from '@/src/interfaces/medication/medication.interface';
-import { Appointment } from '@/src/interfaces/appointments/appointments.interface';
+import { Medication, Appointment } from '@repo/types';
 import { RawAppointments, RawMedications } from './rawData';
-import { useDeleteMedication } from '@/src/hooks/medicaments/useMedication';
+import { useDeleteMedication } from '@repo/api-client';
 
 type MedicationListProps = {
   type: 'medication';

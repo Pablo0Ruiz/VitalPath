@@ -1,7 +1,7 @@
 import { View, ViewProps } from 'react-native';
 import { Button, TextField } from '../../atoms';
 import { ESTADO_CONFIG } from '@/src/constants/appointments';
-import { CitaEstado } from '@/src/interfaces/appointments/appointments.interface';
+import { CitaEstado } from '@repo/types';
 
 export interface AppointmentStatusProps extends ViewProps {
   status: CitaEstado;

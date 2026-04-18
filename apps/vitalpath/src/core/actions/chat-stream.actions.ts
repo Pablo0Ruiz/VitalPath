@@ -1,7 +1,5 @@
 import { fetch } from 'expo/fetch';
-import * as SecureStore from 'expo-secure-store';
-import { type FileType, promptWithFiles } from './helpers/prompt-with-images';
-import { ACCESS_TOKEN_KEY } from '@/src/context/AuthContext';
+import { type FileType, promptWithFiles } from '@/src/utils/prompt-with-images';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL_GEMINI;
 

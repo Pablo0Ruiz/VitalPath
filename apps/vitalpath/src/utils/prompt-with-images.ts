@@ -1,4 +1,4 @@
-import { geminiApi } from '@/src/core/api/myApi';
+import { geminiApi } from '@repo/api-client';
 
 export interface FileType {
   uri: string;

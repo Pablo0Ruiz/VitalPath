@@ -1,4 +1,4 @@
-import { Appointment } from '@/src/interfaces/appointments/appointments.interface';
+import { Appointment } from '@repo/types';
 import { AppointmentRow } from '../../AppointmentRow';
 import { Divider } from '../../Divider';
 import { View } from 'react-native';

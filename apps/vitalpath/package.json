@@ -20,6 +20,7 @@
     "@ui-kitten/components": "^5.3.1",
     "@repo/store": "workspace:*",
     "@repo/types": "workspace:*",
+    "@repo/api-client": "workspace:*",
     "axios": "^1.13.6",
     "class-variance-authority": "^0.7.1",
     "expo": "~54.0.33",

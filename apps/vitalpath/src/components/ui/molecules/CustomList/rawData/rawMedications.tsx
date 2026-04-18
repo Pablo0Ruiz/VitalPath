@@ -1,9 +1,8 @@
 import { View } from 'react-native';
-import { Medication } from '@/src/interfaces/medication/medication.interface';
+import { Medication } from '@repo/types';
 import { MedicationRow } from '../../MedicationRow';
 import { Divider } from '../../Divider';
 import { useState } from 'react';
-import { Button } from '../../../atoms';
 import CustomUpdateModal from '../../CustomUpdateModal/CustomUpdateModal';
 
 interface RawMedicationsProps {

@@ -1,4 +1,4 @@
-import { CitaEstado } from '@/src/interfaces/appointments/appointments.interface';
+import { CitaEstado } from '@repo/types';
 
 export const ESTADO_CONFIG: Record<
   CitaEstado,

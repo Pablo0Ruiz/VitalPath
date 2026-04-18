@@ -2,10 +2,7 @@ import { Modal, View } from 'react-native';
 import { useEffect } from 'react';
 import { Button, TextField } from '../../atoms';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  useMedicament,
-  useUpdateMedication,
-} from '@/src/hooks/medicaments/useMedication';
+import { useMedicament, useUpdateMedication } from '@repo/api-client';
 import { FormField } from '../FormField';
 
 export interface CustomUpdateModalProps {

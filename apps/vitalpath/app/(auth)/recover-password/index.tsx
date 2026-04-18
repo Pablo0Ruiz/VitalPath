@@ -1,10 +1,7 @@
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader, FormField } from '@/src/components/ui/molecules';
-import { useRecoverPassword } from '@/src/hooks/auth/useRecoverPassword';
-import {
-  RecoverPasswordFormValues,
-  recoverPasswordSchema,
-} from '@/src/interfaces/auth';
+import { useRecoverPassword } from '@repo/api-client';
+import { RecoverPasswordFormValues, recoverPasswordSchema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';

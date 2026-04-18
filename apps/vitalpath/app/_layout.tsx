@@ -10,9 +10,10 @@ import { Stack } from 'expo-router';
 
 import { themes } from '@/src/constants/theme';
 import '../global.css';
-import { AuthProvider } from '@/src/context/AuthContext';
-import { useSession } from '@/src/hooks/auth';
 import { SessionGate } from '@/src/components/utils/authGate';
+import { setupApiInterceptors } from '@/src/lib/api-setup';
+
+setupApiInterceptors();
 
 const queryClient = new QueryClient();
 
@@ -42,18 +43,16 @@ function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SessionGate>
-          <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-          </SafeAreaView>
-        </SessionGate>
-      </AuthProvider>
+      <SessionGate>
+        <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </SafeAreaView>
+      </SessionGate>
     </QueryClientProvider>
   );
 }

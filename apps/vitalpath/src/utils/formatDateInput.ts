@@ -1,4 +1,4 @@
-export function formatDateInput(raw: string): string {
+export const formatDateInput = (raw: string): string => {
   const digits = raw.replace(/\D/g, '').slice(0, 8);
 
   let result = '';
@@ -10,4 +10,4 @@ export function formatDateInput(raw: string): string {
     result = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
   }
   return result;
-}
+};

@@ -15,10 +15,11 @@ import {
   CustomModal,
   SectionHeader,
 } from '@/src/components/ui/molecules';
-import { useAuth } from '@/src/context/AuthContext';
-import { useLogout } from '@/src/hooks/auth';
-import { useMedicaments } from '@/src/hooks/medicaments/useMedication';
-import { Appointment } from '@/src/interfaces/appointments/appointments.interface';
+import { useAuthStore } from '@repo/store';
+import { useLogout, useMedicaments } from '@repo/api-client';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
+import { ROUTES } from '@/src/routes/routes';
+import { Appointment } from '@repo/types';
 
 const MOCK_APPOINTMENTS: Appointment[] = [
   {
@@ -51,8 +52,12 @@ const MOCK_APPOINTMENTS: Appointment[] = [
 ];
 
 export default function DashboardScreen() {
-  const { user } = useAuth();
-  const { logout } = useLogout();
+  const { user, clearSession } = useAuthStore();
+  const { logout } = useLogout(
+    mobileTokenAdapter,
+    { clearSession },
+    { loginRoute: ROUTES.LOGIN },
+  );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { data: medicaments, isLoading } = useMedicaments();
 

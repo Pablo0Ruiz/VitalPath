@@ -8,17 +8,22 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
 import { FormField } from '@/src/components/ui/molecules';
-import {
-  Step3FormValues,
-  step3Schema,
-} from '@/src/interfaces/auth/register/register.interface';
+import { Step3FormValues, step3Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
-import { useRegister } from '@/src/hooks/auth';
+import { useRegister } from '@repo/api-client';
+import { useAuthStore } from '@repo/store';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
+import { ROUTES } from '@/src/routes/routes';
 
 const RegisterStep3 = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { draft, setStep3, getAll, reset } = useRegisterStore();
-  const { mutate: registerMutation, isPending } = useRegister();
+  const { setSession } = useAuthStore();
+  const { mutate: registerMutation, isPending } = useRegister(
+    mobileTokenAdapter,
+    { setSession },
+    { successRoute: ROUTES.HOME },
+  );
 
   const {
     control,

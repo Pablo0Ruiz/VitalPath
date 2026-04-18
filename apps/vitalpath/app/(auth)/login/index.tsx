@@ -7,12 +7,19 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { Divider, FormField } from '@/src/components/ui/molecules';
-import { useLogin } from '@/src/hooks/auth';
-import { LoginFormValues, loginSchema } from '@/src/interfaces/auth';
+import { useLogin } from '@repo/api-client';
+import { useAuthStore } from '@repo/store';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
+import { LoginFormValues, loginSchema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 
 const Login = () => {
-  const { mutate: login, isPending } = useLogin();
+  const { setSession } = useAuthStore();
+  const { mutate: login, isPending } = useLogin(
+    mobileTokenAdapter,
+    { setSession },
+    { successRoute: ROUTES.HOME },
+  );
   const {
     control,
     handleSubmit,

@@ -6,11 +6,8 @@ import { View } from 'react-native';
 
 import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
 import { FormField, GenderForm } from '@/src/components/ui/molecules';
-import { formatDateInput } from '@/src/core/actions/helpers/formatDateInput';
-import {
-  Step2FormValues,
-  step2Schema,
-} from '@/src/interfaces/auth/register/register.interface';
+import { formatDateInput } from '@/src/utils/formatDateInput';
+import { Step2FormValues, step2Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
 import { ROUTES } from '@/src/routes/routes';
 import { GENDER } from '@/src/constants/gender';
