@@ -6,6 +6,8 @@ import { ArrowDown01Icon, Logout03Icon } from '@hugeicons/core-free-icons';
 import { Avatar } from '@/components/ui/atoms/Avatar';
 import { Badge } from '@/components/ui/atoms/Badge';
 import { cn } from '@/lib/utils';
+import { useLogout } from '@repo/api-client';
+import { webTokenAdapter } from '@/adapters/webTokenAdapter';
 
 type TopbarUserProps = {
   name: string;
@@ -20,6 +22,17 @@ const roleLabel: Record<string, string> = {
 
 const TopbarUser = ({ name, role }: TopbarUserProps) => {
   const [open, setOpen] = useState(false);
+  const { logout } = useLogout(
+    webTokenAdapter,
+    {
+      clearSession: () => {
+        setOpen(false);
+      },
+    },
+    {
+      loginRoute: '/login',
+    },
+  );
 
   return (
     <div className="relative">
@@ -36,6 +49,7 @@ const TopbarUser = ({ name, role }: TopbarUserProps) => {
             {roleLabel[role] ?? role}
           </Badge>
         </div>
+
         <HugeiconsIcon
           icon={ArrowDown01Icon}
           size={16}
@@ -49,7 +63,7 @@ const TopbarUser = ({ name, role }: TopbarUserProps) => {
         <div className="absolute right-0 top-full mt-1 w-44 bg-brand-background border border-brand-border rounded-xl shadow-(--brand-shadow-md) z-50 py-1">
           <button
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-brand-state-error hover:bg-brand-neutral-50 transition-colors"
-            onClick={() => setOpen(false)}
+            onClick={logout}
           >
             <HugeiconsIcon icon={Logout03Icon} size={16} />
             Cerrar sesión

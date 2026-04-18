@@ -13,10 +13,14 @@ import { Card, Tabs, Button, Input, Select } from '@/components/ui/atoms';
 import { FormField } from '@/components/ui/molecules/FormField';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginSchemaValues } from '@repo/types';
+import { inviteSchema, loginSchema, type LoginSchemaValues } from '@repo/types';
 import { useMutation } from '@tanstack/react-query';
-import { postLogin, ACCESS_TOKEN_KEY } from '@repo/api-client';
-import type { UserCredentials } from '@repo/types';
+import {
+  postLogin,
+  ACCESS_TOKEN_KEY,
+  postInviteVerification,
+} from '@repo/api-client';
+import type { InviteFormValues, UserCredentials } from '@repo/types';
 import HeaderLogin from '../../atoms/HeaderLogin/HeaderLogin';
 
 const roleTabs = [
@@ -42,6 +46,13 @@ const LoginForm = () => {
   } = useForm<LoginSchemaValues>({
     resolver: zodResolver(loginSchema),
   });
+  const {
+    register: registerInvite,
+    handleSubmit: handleSubmitInvite,
+    formState: { errors: errorsInvite },
+  } = useForm<InviteFormValues>({
+    resolver: zodResolver(inviteSchema),
+  });
 
   const {
     mutate,
@@ -57,9 +68,28 @@ const LoginForm = () => {
       console.error('Error al iniciar sesión:', err);
     },
   });
+  const {
+    mutate: inviteMutate,
+    isPending: inviteIsPending,
+    error: inviteError,
+  } = useMutation<UserCredentials, Error, InviteFormValues>({
+    mutationFn: postInviteVerification,
+    onSuccess: data => {
+      document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(data.token)}; path=/; SameSite=Lax`;
+      window.location.href = '/dashboard';
+    },
+    onError: err => {
+      console.error('Error al iniciar sesión:', err);
+    },
+  });
 
   const onSubmit = (data: LoginSchemaValues) => {
     mutate(data);
+  };
+
+  const onSubmitInvite = (data: InviteFormValues) => {
+    console.log('invite data', data);
+    inviteMutate(data);
   };
 
   return (
@@ -154,30 +184,50 @@ const LoginForm = () => {
           {showLinkForm && (
             <div className="flex flex-col gap-4 p-4 bg-brand-neutral-50 rounded-xl border border-brand-border">
               <div className="grid grid-cols-2 gap-3">
-                <FormField label="Nombre">
-                  <Input type="text" placeholder="Pablo" />
-                </FormField>
-                <FormField label="Apellido">
-                  <Input type="text" placeholder="Ruiz" />
+                <FormField label="email" error={errorsInvite.email?.message}>
+                  <Input
+                    type="email"
+                    placeholder="example@example.com"
+                    {...registerInvite('email')}
+                  />
                 </FormField>
               </div>
 
-              <FormField label="Rol">
-                <Select options={roleOptions} placeholder="Seleccioná tu rol" />
+              <FormField label="Rol" error={errorsInvite.role?.message}>
+                <Select
+                  options={roleOptions}
+                  placeholder="Seleccioná tu rol"
+                  {...registerInvite('role')}
+                />
               </FormField>
 
-              <FormField label="Código del centro (4-6 dígitos)">
+              <FormField
+                label="Código del centro (4-6 dígitos)"
+                error={errorsInvite.codigoVerificacion?.message}
+              >
                 <Input
                   type="text"
                   placeholder="A4F-29K"
                   leftIcon={Hospital01Icon}
                   maxLength={7}
+                  {...registerInvite('codigoVerificacion')}
                 />
               </FormField>
 
-              <Button variant="secondary" size="md" fullWidth>
+              <Button
+                loading={inviteIsPending}
+                onClick={handleSubmitInvite(onSubmitInvite)}
+                variant="secondary"
+                size="md"
+                fullWidth
+              >
                 Vincular perfil
               </Button>
+              {inviteError && (
+                <p className="text-sm text-brand-error-500 text-center">
+                  Error al vincular perfil. Verificá tus credenciales.
+                </p>
+              )}
             </div>
           )}
         </div>
