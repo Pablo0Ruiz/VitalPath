@@ -56,6 +56,12 @@ export class User extends Document {
     default: [],
   })
   medications: Types.ObjectId[];
+
+  @Prop({ type: String, required: false })
+  verificationCode?: string;
+
+  @Prop({ type: Boolean, default: false })
+  isActive: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

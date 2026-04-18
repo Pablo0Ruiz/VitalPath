@@ -10,6 +10,7 @@ import { GeminiModule } from './gemini/gemini.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AppointmentModule } from './appointment/appointment.module';
 import { MedicationsModule } from './medications/medications.module';
+import { HospitalsModule } from './hospitals/hospitals.module';
 
 @Module({
   imports: [
@@ -37,6 +38,8 @@ import { MedicationsModule } from './medications/medications.module';
     AppointmentModule,
 
     MedicationsModule,
+
+    HospitalsModule,
   ],
 })
 export class AppModule {}

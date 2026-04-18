@@ -210,6 +210,9 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.8
         version: 7.1.28(react-native@0.81.5)(react@19.1.0)
+      '@repo/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@repo/store':
         specifier: workspace:*
         version: link:../../packages/store
@@ -358,12 +361,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^3.3.4
+        version: 3.10.0(react-hook-form@7.71.2)
       '@hugeicons/core-free-icons':
         specifier: ^4.1.1
         version: 4.1.1
       '@hugeicons/react':
         specifier: ^1.1.6
         version: 1.1.6(react@19.2.4)
+      '@repo/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@repo/store':
         specifier: workspace:*
         version: link:../../packages/store
@@ -432,6 +441,31 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/api-client:
+    dependencies:
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../types
+      axios:
+        specifier: ^1.6.8
+        version: 1.13.6
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../config/typescript
+      '@tanstack/react-query':
+        specifier: ^5.90.21
+        version: 5.90.21(react@18.3.1)
+      '@types/react':
+        specifier: ^18.0.0
+        version: 18.3.28
+      react:
+        specifier: ^18.0.0
+        version: 18.3.1
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   packages/config/eslint:
     dependencies:
       '@typescript-eslint/eslint-plugin':
@@ -469,47 +503,20 @@ importers:
     devDependencies:
       nativewind:
         specifier: ^4.2.1
-        version: 4.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@3.4.19)
+        version: 4.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@4.2.2)
       tailwindcss:
-        specifier: ^3.4.17
-        version: 3.4.19
+        specifier: ^4.0.0
+        version: 4.2.2
 
   packages/types:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-
-  packages/ui:
-    dependencies:
-      react:
-        specifier: ^18.2.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.3.1(react@18.3.1)
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../config/eslint
-      '@repo/prettier-config':
-        specifier: workspace:*
-        version: link:../config/prettier
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../config/typescript
-      '@types/react':
-        specifier: ^19.0.1
-        version: 19.1.17
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.1.17)
-      eslint:
-        specifier: ^9.18.0
-        version: 9.39.2
-      typescript:
-        specifier: 5.5.4
-        version: 5.5.4
 
 packages:
 
@@ -2446,6 +2453,14 @@ packages:
     resolution: {integrity: sha512-KR3rD5inZbGMrHmgPxsJ9dbi6zEK+C3ZwUwTa+eMwWLz7oijWUTWD2pMSNNYJAU6Qq+65NkxXjqHr/7LM2Xkqg==}
     dependencies:
       '@hapi/hoek': 11.0.7
+    dev: false
+
+  /@hookform/resolvers@3.10.0(react-hook-form@7.71.2):
+    resolution: {integrity: sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.71.2(react@19.2.4)
     dev: false
 
   /@hookform/resolvers@5.2.2(react-hook-form@7.71.2):
@@ -4779,7 +4794,15 @@ packages:
 
   /@tanstack/query-core@5.90.20:
     resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
-    dev: false
+
+  /@tanstack/react-query@5.90.21(react@18.3.1):
+    resolution: {integrity: sha512-0Lu6y5t+tvlTJMTO7oh5NSpJfpg/5D41LlThfepTixPYkJ0sE2Jj0m0f6yYqujBwIXlId87e234+MxG3D3g7kg==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.90.20
+      react: 18.3.1
+    dev: true
 
   /@tanstack/react-query@5.90.21(react@19.1.0):
     resolution: {integrity: sha512-0Lu6y5t+tvlTJMTO7oh5NSpJfpg/5D41LlThfepTixPYkJ0sE2Jj0m0f6yYqujBwIXlId87e234+MxG3D3g7kg==}
@@ -5024,6 +5047,10 @@ packages:
       '@types/express': 5.0.6
     dev: true
 
+  /@types/prop-types@15.7.15:
+    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+    dev: true
+
   /@types/pug@2.0.10:
     resolution: {integrity: sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==}
     requiresBuild: true
@@ -5042,6 +5069,13 @@ packages:
       '@types/react': ^19.2.0
     dependencies:
       '@types/react': 19.1.17
+    dev: true
+
+  /@types/react@18.3.28:
+    resolution: {integrity: sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==}
+    dependencies:
+      '@types/prop-types': 15.7.15
+      csstype: 3.2.3
     dev: true
 
   /@types/react@19.1.17:
@@ -12594,7 +12628,7 @@ packages:
       - supports-color
     dev: false
 
-  /nativewind@4.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@3.4.19):
+  /nativewind@4.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@4.2.2):
     resolution: {integrity: sha512-10uUB2Dlli3MH3NDL5nMHqJHz1A3e/E6mzjTj6cl7hHECClJ7HpE6v+xZL+GXdbwQSnWE+UWMIMsNz7yOQkAJQ==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -12602,8 +12636,8 @@ packages:
     dependencies:
       comment-json: 4.5.1
       debug: 4.4.3
-      react-native-css-interop: 0.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@3.4.19)
-      tailwindcss: 3.4.19
+      react-native-css-interop: 0.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@4.2.2)
+      tailwindcss: 4.2.2
     transitivePeerDependencies:
       - react
       - react-native
@@ -14128,16 +14162,6 @@ packages:
       - bufferutil
       - utf-8-validate
 
-  /react-dom@18.3.1(react@18.3.1):
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
-    peerDependencies:
-      react: ^18.3.1
-    dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
-    dev: false
-
   /react-dom@19.1.0(react@19.1.0):
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
@@ -14229,7 +14253,7 @@ packages:
       - supports-color
     dev: false
 
-  /react-native-css-interop@0.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@3.4.19):
+  /react-native-css-interop@0.2.1(react-native-reanimated@4.1.6)(react-native@0.81.5)(react@18.3.1)(tailwindcss@4.2.2):
     resolution: {integrity: sha512-B88f5rIymJXmy1sNC/MhTkb3xxBej1KkuAt7TiT9iM7oXz3RM8Bn+7GUrfR02TvSgKm4cg2XiSuLEKYfKwNsjA==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -14254,7 +14278,7 @@ packages:
       react-native: 0.81.5(@babel/core@7.29.0)(react@18.3.1)
       react-native-reanimated: 4.1.6(@babel/core@7.29.0)(react-native-worklets@0.5.1)(react-native@0.81.5)(react@18.3.1)
       semver: 7.7.3
-      tailwindcss: 3.4.19
+      tailwindcss: 4.2.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -14626,6 +14650,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: true
 
   /react@19.1.0:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
@@ -14924,12 +14949,6 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
-
-  /scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-    dependencies:
-      loose-envify: 1.4.0
-    dev: false
 
   /scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
@@ -16174,12 +16193,6 @@ packages:
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /typescript@5.5.4:
-    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
-    engines: {node: '>=14.17'}
-    hasBin: true
     dev: true
 
   /typescript@5.9.3:

@@ -27,4 +27,9 @@ export class AuthController {
   recoverPassword(@Body() recoverPasswordDto: RecoverPasswordDto) {
     return this.authService.recoverPassword(recoverPasswordDto);
   }
+
+  @Post('verify-doctor/:verificationCode')
+  verifyDoctor(@Param('verificationCode') verificationCode: string) {
+    return this.authService.verifyDoctor(verificationCode);
+  }
 }

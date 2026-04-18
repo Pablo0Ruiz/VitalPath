@@ -106,4 +106,16 @@ export class AuthService {
       handleServiceException(error);
     }
   }
+
+  async verifyDoctor(verificationCode: string) {
+    const user = await this.userModel.findOne({ verificationCode });
+    if (!user) throw new UnauthorizedException('El código es incorrecto');
+    user.isActive = true;
+    user.verificationCode = undefined;
+    await user.save();
+    return {
+      user: user,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
 }

@@ -103,3 +103,4 @@ app-example
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.next
