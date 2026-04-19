@@ -3,6 +3,7 @@ import { Content, GoogleGenAI } from '@google/genai';
 import { GeminiToolsService } from 'src/gemini-tools/gemini-tools.service';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
 import { chatPromptStreamUseCase } from './use-cases/chat-prompt-use-case';
+import { resumenPdf } from './use-cases/resumen-pdf-use-case';
 
 @Injectable()
 export class GeminiService {
@@ -31,5 +32,10 @@ export class GeminiService {
 
   getChatHistory(chatId: string) {
     return structuredClone(this.chatHistory.get(chatId) ?? []);
+  }
+
+  async resumenResultadoEstudio(fileUrl: string) {
+    const response = await resumenPdf(this.ai, fileUrl);
+    return response;
   }
 }

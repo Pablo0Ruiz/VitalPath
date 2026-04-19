@@ -104,3 +104,8 @@ app-example
 *.tsbuildinfo
 next-env.d.ts
 .next
+
+apps/api/skills-lock.json
+apps/api/.agents/*
+apps/api/.claude/*
+apps/api/.windsurf/*

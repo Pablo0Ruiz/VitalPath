@@ -8,6 +8,8 @@ import {
   ResultadoEstudio,
   ResultadoEstudioSchema,
 } from 'src/user/entities/resultado-estudio.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { GeminiModule } from 'src/gemini/gemini.module';
 
 @Module({
   controllers: [SupabaseController],
@@ -28,6 +30,8 @@ import {
   ],
   exports: [SupabaseService, SUPABASE_CLIENT],
   imports: [
+    AuthModule,
+    GeminiModule,
     MongooseModule.forFeature([
       {
         name: ResultadoEstudio.name,

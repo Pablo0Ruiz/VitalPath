@@ -23,7 +23,10 @@ export class GeminiToolsService {
     'updateAppointment',
     'cancelAppointment',
   ]);
-  private readonly hospitalToolNames = new Set(['getDoctors']);
+  private readonly hospitalToolNames = new Set([
+    'getDoctors',
+    'getCentrosSalud',
+  ]);
 
   private isAppointmentTool(name: string): boolean {
     return this.appointmentToolNames.has(name);
@@ -90,6 +93,9 @@ export class GeminiToolsService {
     switch (name) {
       case 'getDoctors':
         return this.hospitalsService.getDoctors();
+
+      case 'getCentrosSalud':
+        return this.hospitalsService.getCentrosSalud();
 
       default:
         throw new Error(`Herramienta de hospitales no reconocida: ${name}`);

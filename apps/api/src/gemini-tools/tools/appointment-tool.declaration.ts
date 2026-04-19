@@ -115,10 +115,26 @@ export const cancelAppointmentToolDeclaration: FunctionDeclaration = {
   },
 };
 
+/**
+ * Tool to list all available medical centers (centros de salud).
+ * Required: None.
+ */
+export const getCentrosSaludToolDeclaration: FunctionDeclaration = {
+  name: 'getCentrosSalud',
+  description:
+    'Lista todos los centros de salud disponibles para agendar una cita.',
+  parameters: {
+    type: Type.OBJECT,
+    properties: {},
+    required: [],
+  },
+};
+
 export const appointmentTools = [
   createAppointmentToolDeclaration,
   getAppointmentsToolDeclaration,
   getAppointmentByIdToolDeclaration,
   updateAppointmentToolDeclaration,
   cancelAppointmentToolDeclaration,
+  getCentrosSaludToolDeclaration,
 ];

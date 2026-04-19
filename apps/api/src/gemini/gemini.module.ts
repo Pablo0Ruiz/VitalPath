@@ -8,5 +8,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [GeminiToolsModule, AuthModule],
   controllers: [GeminiController],
   providers: [GeminiService],
+  exports: [GeminiService],
 })
 export class GeminiModule {}
