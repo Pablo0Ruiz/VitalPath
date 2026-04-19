@@ -9,7 +9,7 @@ import {
   ViewOffSlashIcon,
   Hospital01Icon,
 } from '@hugeicons/core-free-icons';
-import { Card, Tabs, Button, Input, Select } from '@/components/ui/atoms';
+import { Card, Button, Input, Select } from '@/components/ui/atoms';
 import { FormField } from '@/components/ui/molecules/FormField';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,11 +23,6 @@ import {
 import type { InviteFormValues, UserCredentials } from '@repo/types';
 import HeaderLogin from '../../atoms/HeaderLogin/HeaderLogin';
 
-const roleTabs = [
-  { value: 'medico', label: 'Personal Médico' },
-  { value: 'admin', label: 'Administración' },
-];
-
 const roleOptions = [
   { value: 'medico', label: 'Médico' },
   { value: 'trabajador_centro', label: 'Personal del centro' },
@@ -35,7 +30,6 @@ const roleOptions = [
 ];
 
 const LoginForm = () => {
-  const [activeRole, setActiveRole] = useState('medico');
   const [showPassword, setShowPassword] = useState(false);
   const [showLinkForm, setShowLinkForm] = useState(false);
 
@@ -96,14 +90,6 @@ const LoginForm = () => {
     <Card padding="none" className="w-full max-w-md overflow-hidden">
       <div className="p-8 flex flex-col gap-6">
         <HeaderLogin />
-
-        <Tabs
-          tabs={roleTabs}
-          value={activeRole}
-          onChange={setActiveRole}
-          variant="pill"
-        />
-
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FormField label="Correo electrónico" error={errors.email?.message}>
             <Input

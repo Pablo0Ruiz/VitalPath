@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import type { InviteDoctorDto, TokenAdapter, UserSession } from '@repo/types';
-import { postInviteVerification, postLogin } from '../actions/auth.actions';
+import type { TokenAdapter, UserSession } from '@repo/types';
+import { postLogin } from '../actions/auth.actions';
 
 interface LoginCallbacks {
   setSession: (user: UserSession) => void;
