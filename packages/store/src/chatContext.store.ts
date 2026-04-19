@@ -20,6 +20,20 @@ export interface ChatContextState {
   clearChat: () => void;
 }
 
+const generateId = (): string => {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const createMessage = (
   text: string,
   sender: 'user' | 'gemini',
@@ -27,7 +41,7 @@ const createMessage = (
 ): Message => {
   if (attachments && attachments.length > 0) {
     return {
-      id: crypto.randomUUID(),
+      id: generateId(),
       text: text,
       createdAt: new Date(),
       sender: sender,
@@ -36,7 +50,7 @@ const createMessage = (
     };
   }
   return {
-    id: crypto.randomUUID(),
+    id: generateId(),
     text: text,
     createdAt: new Date(),
     sender: sender,
@@ -46,7 +60,7 @@ const createMessage = (
 
 export const useChatContextStore = create<ChatContextState>()((set, get) => ({
   geminiWriting: false,
-  chatId: crypto.randomUUID(),
+  chatId: generateId(),
   messages: [],
 
   addMessage: async (
@@ -85,6 +99,6 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
   },
 
   clearChat: () => {
-    set({ messages: [], chatId: crypto.randomUUID() });
+    set({ messages: [], chatId: generateId() });
   },
 }));
