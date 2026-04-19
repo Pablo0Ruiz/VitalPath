@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { AUTH_REGISTER_ROUTES } from '@/src/routes/routes';
 
 export default function RegisterLayout() {
   return (
@@ -10,6 +11,14 @@ export default function RegisterLayout() {
         gestureEnabled: true,
         gestureDirection: 'horizontal',
       }}
-    />
+    >
+      {AUTH_REGISTER_ROUTES.map(route => (
+        <Stack.Screen
+          key={route.screenName}
+          name={route.screenName}
+          options={{ title: route.title }}
+        />
+      ))}
+    </Stack>
   );
 }

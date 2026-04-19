@@ -1,49 +1,49 @@
 export const darkTheme = {
   /* ── Brand Primary Scale ─────────────────────────────────────── */
-  '--brand-primary-50': '#f5f3ff',
-  '--brand-primary-100': '#ede9fe',
-  '--brand-primary-200': '#ddd6fe',
-  '--brand-primary-300': '#c4b5fd',
-  '--brand-primary-400': '#a78bfa',
-  '--brand-primary-500': '#8b5cf6',
-  '--brand-primary-600': '#7c3aed', // Base (Violet)
-  '--brand-primary-700': '#6d28d9',
-  '--brand-primary-800': '#5b21b6',
-  '--brand-primary-900': '#4c1d95',
-  '--brand-primary-950': '#2e1065',
+  '--brand-primary-50': '#F5F4FF',
+  '--brand-primary-100': '#E8E6FE',
+  '--brand-primary-200': '#D0CCFC',
+  '--brand-primary-300': '#AFA6FA',
+  '--brand-primary-400': '#9D94FF',
+  '--brand-primary-500': '#8B7FF8',
+  '--brand-primary-600': '#7B6FFF',
+  '--brand-primary-700': '#3B2FD9',
+  '--brand-primary-800': '#2820B5',
+  '--brand-primary-900': '#1A1580',
+  '--brand-primary-950': '#0D0A4A',
 
   /* ── Brand Secondary Scale ───────────────────────────────────── */
-  '--brand-secondary-50': '#f0fdfa',
-  '--brand-secondary-100': '#ccfbf1',
-  '--brand-secondary-200': '#99f6e4',
-  '--brand-secondary-300': '#5eead4',
-  '--brand-secondary-400': '#2dd4bf',
-  '--brand-secondary-500': '#14b8a6', // Base (Teal)
-  '--brand-secondary-600': '#0d9488',
-  '--brand-secondary-700': '#0f766e',
-  '--brand-secondary-800': '#115e59',
-  '--brand-secondary-900': '#134e4a',
-  '--brand-secondary-950': '#042f2e',
+  '--brand-secondary-50': '#F0FDF9',
+  '--brand-secondary-100': '#CCFBF0',
+  '--brand-secondary-200': '#99F5E1',
+  '--brand-secondary-300': '#4DE8C0',
+  '--brand-secondary-400': '#4DE8C0',
+  '--brand-secondary-500': '#1AD9A8',
+  '--brand-secondary-600': '#00A87D',
+  '--brand-secondary-700': '#008862',
+  '--brand-secondary-800': '#006649',
+  '--brand-secondary-900': '#004D37',
+  '--brand-secondary-950': '#002E20',
 
-  /* ── Neutral: Dark Tech Surface ───────────────────────────────── */
-  '--brand-neutral-50': '#f8fafc',
-  '--brand-neutral-100': '#f1f5f9',
-  '--brand-neutral-200': '#e2e8f0',
-  '--brand-neutral-300': '#cbd5e1',
-  '--brand-neutral-400': '#94a3b8',
-  '--brand-neutral-500': '#64748b',
-  '--brand-neutral-600': '#475569',
-  '--brand-neutral-700': '#334155',
-  '--brand-neutral-800': '#1e293b',
-  '--brand-neutral-900': '#0f172a',
-  '--brand-neutral-950': '#020617', // Deep midnight base
+  /* ── Neutral: Zinc Scale ──────────────────────────────────── */
+  '--brand-neutral-50': '#FAFAFA',
+  '--brand-neutral-100': '#F4F4F5',
+  '--brand-neutral-200': '#E4E4E7',
+  '--brand-neutral-300': '#D1D1D6',
+  '--brand-neutral-400': '#A1A1AA',
+  '--brand-neutral-500': '#71717A',
+  '--brand-neutral-600': '#52525B',
+  '--brand-neutral-700': '#3F3F46',
+  '--brand-neutral-800': '#27272A',
+  '--brand-neutral-900': '#18181B',
+  '--brand-neutral-950': '#09090B',
 
   /* ── State ───────────────────────────────────────────────────── */
-  '--brand-state-error': '#F87171',
+  '--brand-state-error': '#FF6B85',
   '--brand-state-error-light': '#450a0a',
   '--brand-state-error-dark': '#ef4444',
 
-  '--brand-state-success': '#34D399',
+  '--brand-state-success': '#1AD9A8',
   '--brand-state-success-light': '#064e3b',
   '--brand-state-success-dark': '#10b981',
 
@@ -60,23 +60,23 @@ export const darkTheme = {
   '--brand-shadow-md':
     '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4)',
   '--brand-shadow-lg':
-    '0 10px 15px -3px rgba(124, 58, 237, 0.2), 0 4px 6px -2px rgba(124, 58, 237, 0.1)',
+    '0 10px 15px -3px rgba(123, 111, 255, 0.2), 0 4px 6px -2px rgba(123, 111, 255, 0.1)',
 
   /* ── Semantic Tokens ─────────────────────────────────────────── */
-  '--brand-background': '#020617', // Absolute midnight for deep contrast
-  '--brand-surface': 'var(--brand-neutral-900)',
-  '--brand-text-primary': '#f9fafb',
+  '--brand-background': '#0C0E1A',
+  '--brand-surface': '#151826',
+  '--brand-text-primary': '#F4F6FF',
   '--brand-text-secondary': 'var(--brand-neutral-400)',
-  '--brand-text-inverse': '#020617',
+  '--brand-text-inverse': '#0C0E1A',
   '--brand-border': 'var(--brand-neutral-800)',
 
   /* Compatibility Mapping */
-  '--color-brand-primary': 'var(--brand-primary-400)', // Brighter for dark mode visibility
+  '--color-brand-primary': 'var(--brand-primary-400)',
   '--color-brand-secondary': 'var(--brand-secondary-400)',
   '--color-brand-muted': 'var(--brand-neutral-900)',
   '--color-bg-base': 'var(--brand-background)',
   '--color-bg-surface': 'var(--brand-surface)',
-  '--color-bg-subtle': '#111827',
+  '--color-bg-subtle': '#1A1D2E',
   '--color-text-primary': 'var(--brand-text-primary)',
   '--color-text-secondary': 'var(--brand-text-secondary)',
   '--color-text-inverse': 'var(--brand-text-inverse)',

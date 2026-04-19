@@ -89,7 +89,8 @@ app-example
 *.mobileprovision
 /ios
 /android
-
+apps/vitalpath/android/*
+apps/vitalpath/ios/*
 .windsurf/*
 .atl/*
 

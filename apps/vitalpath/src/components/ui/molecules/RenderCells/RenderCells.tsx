@@ -43,12 +43,12 @@ const RenderCells = ({
         key={`day-${i}`}
         onPress={() => onDayPress(date)}
         className={`w-[14%] aspect-square items-center justify-center rounded-full ${
-          isSelected ? 'bg-brand-violet-600' : 'bg-transparent'
+          isSelected ? 'bg-[#5B4CF5]' : 'bg-transparent'
         }`}
       >
         <TextField
           variant="body"
-          className={`text-center ${isSelected ? 'text-white' : 'text-slate-800'}`}
+          className={`text-center ${isSelected ? 'text-white' : 'text-[#0D0F1C]'}`}
         >
           {i}
         </TextField>
@@ -56,7 +56,7 @@ const RenderCells = ({
         <View className="h-1 flex-row mt-0.5 justify-center">
           {hasAppointment && (
             <View
-              className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-brand-violet-600'}`}
+              className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-[#5B4CF5]'}`}
             />
           )}
         </View>

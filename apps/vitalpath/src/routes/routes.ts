@@ -1,4 +1,8 @@
-import { Octicons } from '@expo/vector-icons';
+interface RouteConfig {
+  title: string;
+  icon: string;
+  screenName: string;
+}
 
 export const ROUTES = {
   LOGIN: '/(auth)/login',
@@ -15,11 +19,15 @@ export const ROUTES = {
 
 export const AUTH_SCREEN_NAMES = {
   LOGIN: 'login/index',
-  REGISTER: 'register/index',
-  REGISTER_STEP_2: 'register/step-2',
-  REGISTER_STEP_3: 'register/step-3',
+  REGISTER: 'register',
   RECOVER_PASSWORD: 'recover-password/index',
   RECOVER_PASSWORD_EMAIL_SENT: 'recover-password-email-sent/index',
+} as const;
+
+export const REGISTER_SCREEN_NAMES = {
+  INDEX: 'index',
+  STEP_2: 'step-2',
+  STEP_3: 'step-3',
 } as const;
 
 export const TAB_SCREEN_NAMES = {
@@ -30,12 +38,6 @@ export const TAB_SCREEN_NAMES = {
   RECORDS: 'records/index',
   APPOINTMENTS: 'appointments/index',
 } as const;
-
-interface RouteConfig {
-  title: string;
-  icon: keyof typeof Octicons.glyphMap;
-  screenName: string;
-}
 
 export const AUTH_ROUTES: RouteConfig[] = [
   {
@@ -60,30 +62,38 @@ export const AUTH_ROUTES: RouteConfig[] = [
   },
 ];
 
+export const AUTH_REGISTER_ROUTES: RouteConfig[] = [
+  {
+    title: 'Registrarse Step 2',
+    icon: 'person',
+    screenName: REGISTER_SCREEN_NAMES.STEP_2,
+  },
+  {
+    title: 'Registrarse Step 3',
+    icon: 'person',
+    screenName: REGISTER_SCREEN_NAMES.STEP_3,
+  },
+];
+
 export const TAB_ROUTES: RouteConfig[] = [
-  // {
-  //   title: 'Profile',
-  //   icon: 'person',
-  //   screenName: TAB_SCREEN_NAMES.PROFILE,
-  // },
   {
     title: 'Records',
-    icon: 'book',
+    icon: 'NoteIcon',
     screenName: TAB_SCREEN_NAMES.RECORDS,
   },
   {
     title: 'Home',
-    icon: 'home',
+    icon: 'Home01Icon',
     screenName: TAB_SCREEN_NAMES.HOME,
   },
   {
     title: 'Chat',
-    icon: 'comment',
+    icon: 'BubbleChatIcon',
     screenName: TAB_SCREEN_NAMES.CHAT,
   },
   {
     title: 'Citas',
-    icon: 'calendar',
+    icon: 'Calendar03Icon',
     screenName: TAB_SCREEN_NAMES.APPOINTMENTS,
   },
 ];

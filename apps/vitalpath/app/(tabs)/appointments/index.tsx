@@ -7,6 +7,7 @@ import {
   SectionHeader,
   AppointmentCard,
   Divider,
+  DoctorPickerSheet,
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organism';
 import { useCitas, useCreateCita, useCancelCita } from '@repo/api-client';
@@ -15,6 +16,8 @@ import { Cita } from '@repo/types';
 
 export default function AppointmentsScreen() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [sheetDate, setSheetDate] = useState<Date | null>(null);
 
   const { data: citas = [], isLoading, isRefetching } = useCitas();
   const { mutate: agendarCita, isPending: isCreating } = useCreateCita();
@@ -66,7 +69,7 @@ export default function AppointmentsScreen() {
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Header ───────────────────────────────────────────── */}
@@ -91,6 +94,10 @@ export default function AppointmentsScreen() {
             appointmentsMap={appointmentsMap}
             onDateChange={date => setSelectedDate(date)}
             initialDate={selectedDate}
+            onDayPressSheet={date => {
+              setSheetDate(date);
+              setIsSheetVisible(true);
+            }}
           />
         </View>
 
@@ -144,6 +151,11 @@ export default function AppointmentsScreen() {
           </View>
         </View>
       </ScrollView>
+      <DoctorPickerSheet
+        visible={isSheetVisible}
+        date={sheetDate}
+        onClose={() => setIsSheetVisible(false)}
+      />
     </SafeAreaView>
   );
 }

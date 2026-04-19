@@ -6,12 +6,14 @@ import { CalendarGrid } from './CalendarGrid';
 export interface CalendarWidgetProps extends ViewProps {
   appointmentsMap: Record<string, boolean>;
   onDateChange?: (date: Date) => void;
+  onDayPressSheet?: (date: Date) => void;
   initialDate?: Date;
 }
 
 export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   appointmentsMap,
   onDateChange,
+  onDayPressSheet,
   initialDate = new Date(),
   className,
   ...props
@@ -38,11 +40,21 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     if (onDateChange) {
       onDateChange(date);
     }
+    if (onDayPressSheet) {
+      onDayPressSheet(date);
+    }
   };
 
   return (
     <View
-      className={`bg-red-400 rounded-3xl p-5 shadow-sm border border-brand-violet-100 ${className ?? ''}`}
+      className={`bg-white rounded-3xl p-5 border border-zinc-100 ${className ?? ''}`}
+      style={{
+        elevation: 4,
+        shadowColor: '#5B4CF5',
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 4 },
+      }}
       {...props}
     >
       <CalendarHeader

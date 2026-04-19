@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Octicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, TextField } from '../../atoms';
 import { MONTH_NAMES } from '@/src/constants/monthAndDay';
 
@@ -21,15 +21,15 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     <View className="flex-row items-center justify-between mb-4">
       <Button
         onPress={onPrev}
-        className="w-10 h-10 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+        className="w-10 h-10 items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200"
       >
-        <Octicons name="chevron-left" size={20} color="#0f172a" />
+        <Ionicons name="chevron-back" size={20} color="#0D0F1C" />
       </Button>
 
       <View>
         <TextField
           variant="subtitle"
-          className="text-center font-bold text-lg text-slate-800"
+          className="text-center font-bold text-lg text-[#0D0F1C]"
         >
           {monthName} {year}
         </TextField>
@@ -37,9 +37,9 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
       <Button
         onPress={onNext}
-        className="w-10 h-10 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+        className="w-10 h-10 items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200"
       >
-        <Octicons name="chevron-right" size={20} color="#0f172a" />
+        <Ionicons name="chevron-forward" size={20} color="#0D0F1C" />
       </Button>
     </View>
   );

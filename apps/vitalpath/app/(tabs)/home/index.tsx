@@ -1,4 +1,3 @@
-import { Octicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -8,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Avatar, Button, TextField } from '@/src/components/ui/atoms';
 import {
@@ -76,7 +76,7 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <View className="flex-row items-center justify-between px-5 pt-4 pb-3 border-b border-brand-slate-100">
+      <View className="flex-row items-center justify-between px-5 pt-4 pb-3">
         <Pressable
           className="flex-row items-center"
           onLongPress={handleAvatarLongPress}
@@ -103,8 +103,8 @@ export default function DashboardScreen() {
           </View>
         </Pressable>
 
-        <Pressable className="w-9 h-9 items-center justify-center rounded-full bg-brand-slate-50">
-          <Octicons name="bell" size={18} color="#64748b" />
+        <Pressable className="w-9 h-9 items-center justify-center rounded-full bg-zinc-100">
+          <Ionicons name="notifications-outline" size={20} color="#71717A" />
         </Pressable>
       </View>
 
@@ -114,36 +114,36 @@ export default function DashboardScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="flex-row gap-3 px-5 pt-5 pb-2">
-          <View className="flex-1 bg-brand-violet-50 rounded-2xl px-4 py-3">
+          <View className="flex-1 bg-[#5B4CF5] rounded-2xl px-4 py-3">
             <TextField
               variant="caption"
-              className="text-brand-violet-400 text-xs text-left mb-0.5"
+              className="text-white text-xs text-left mb-0.5"
             >
               Citas hoy
             </TextField>
             <TextField
               variant="body"
-              className="text-brand-violet-700 font-bold text-[28px] leading-tight text-left"
+              className="text-white font-bold text-[28px] leading-tight text-left"
             >
               {MOCK_APPOINTMENTS.filter(a => a.date === 'Hoy').length}
             </TextField>
           </View>
 
-          <View className="flex-1 bg-brand-teal-50 rounded-2xl px-4 py-3">
+          <View className="flex-1 bg-[#00C896] rounded-2xl px-4 py-3">
             <TextField
               variant="caption"
-              className="text-brand-teal-600 text-xs text-left mb-0.5"
+              className="text-white text-xs text-left mb-0.5"
             >
               Medicamentos
             </TextField>
             <TextField
               variant="body"
-              className="text-brand-teal-700 font-bold text-[28px] leading-tight text-left"
+              className="text-white font-bold text-[28px] leading-tight text-left"
             >
               {doneMeds}
               <TextField
                 variant="caption"
-                className="text-brand-teal-400 text-[14px] font-normal"
+                className="text-white text-[14px] font-normal"
               >
                 /{medicamentCount}
               </TextField>
