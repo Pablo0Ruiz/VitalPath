@@ -3,6 +3,9 @@ import { useAuthStore } from '@repo/store';
 import * as SecureStore from 'expo-secure-store';
 
 export const setupApiInterceptors = () => {
+  apiClient.defaults.baseURL =
+    process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+
   apiClient.interceptors.request.use(
     async config => {
       try {
