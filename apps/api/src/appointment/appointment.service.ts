@@ -82,6 +82,7 @@ export class AppointmentService {
   async cancelAppointment(userId: string, citaId: string) {
     const appointment = await this.getAppointmentById(userId, citaId);
     appointment.estado = CitaState.CANCELADA;
-    return appointment.save();
+    await this.citaModel.findOneAndDelete({ _id: citaId });
+    return;
   }
 }

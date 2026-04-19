@@ -7,5 +7,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [AuthModule],
   controllers: [HospitalsController],
   providers: [HospitalsService],
+  exports: [HospitalsService],
 })
 export class HospitalsModule {}

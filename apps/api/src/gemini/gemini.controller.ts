@@ -14,6 +14,8 @@ import { GenerateContentResponse } from '@google/genai';
 import { type Response } from 'express';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
 @Controller('gemini')
 export class GeminiController {
@@ -36,15 +38,17 @@ export class GeminiController {
     return resultText;
   }
 
+  @Auth()
   @Post('chat-stream')
   @UseInterceptors(FilesInterceptor('files'))
   async chatStream(
     @Body() chatPromptDto: ChatPromptDto,
     @Res() res: Response,
     @UploadedFiles() files: Array<Express.Multer.File>,
+    @GetUser('_id') userId: string,
   ) {
     chatPromptDto.files = files;
-    const stream = await this.geminiService.chatStream(chatPromptDto);
+    const stream = await this.geminiService.chatStream(chatPromptDto, userId);
     const data = await this.outputStream(res, stream);
 
     const geminiMessage = {
@@ -61,6 +65,7 @@ export class GeminiController {
     console.log(data);
   }
 
+  @Auth()
   @Get('chat-history/:chatId')
   getChatHistory(@Param('chatId') chatId: string) {
     return this.geminiService.getChatHistory(chatId).map(message => ({

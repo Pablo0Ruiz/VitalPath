@@ -22,5 +22,6 @@ import {
       },
     ]),
   ],
+  exports: [AppointmentService],
 })
 export class AppointmentModule {}
