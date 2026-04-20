@@ -10,6 +10,8 @@ import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
 import { Appointment } from './entities/appointment.entity';
 import { User } from 'src/auth/entities/user.entity';
+import { Doctor } from '../user/entities/doctor.entity';
+import { Patient } from '../user/entities/patient.entity';
 
 @Injectable()
 export class AppointmentService {
@@ -18,6 +20,10 @@ export class AppointmentService {
     private readonly citaModel: Model<Appointment>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    @InjectModel(Doctor.name)
+    private readonly doctorModel: Model<Doctor>,
+    @InjectModel(Patient.name)
+    private readonly patientModel: Model<Patient>,
   ) {}
 
   async createAppointment(
@@ -28,7 +34,8 @@ export class AppointmentService {
       paciente_ID: userId,
       medico_ID: createAppointmentDto.medico_ID,
       centroSalud_ID: createAppointmentDto.centroSalud_ID,
-      fechaHora: new Date(createAppointmentDto.fechaHora),
+      fecha: createAppointmentDto.fecha,
+      hora: createAppointmentDto.hora,
       estado: CitaState.AGENDADA,
     });
 
@@ -37,12 +44,14 @@ export class AppointmentService {
     }
 
     await Promise.all([
-      this.userModel.findByIdAndUpdate(userId, {
-        $push: { citas: appointment._id },
-      }),
-      this.userModel.findByIdAndUpdate(createAppointmentDto.medico_ID, {
-        $push: { citas: appointment._id },
-      }),
+      this.patientModel.findOneAndUpdate(
+        { user: userId },
+        { $push: { citas: appointment._id } },
+      ),
+      this.doctorModel.findOneAndUpdate(
+        { user: createAppointmentDto.medico_ID },
+        { $push: { citas: appointment._id } },
+      ),
     ]);
 
     return appointment;
@@ -51,9 +60,9 @@ export class AppointmentService {
   async getAppointments(userId: string) {
     return this.citaModel
       .find({ paciente_ID: userId })
-      .populate('medico_ID', 'name lastName especialidad')
+      .populate('medico_ID', 'name lastName')
       .populate('centroSalud_ID', 'nombre direccion')
-      .sort({ fechaHora: 1 })
+      .sort({ fecha: 1, hora: 1 })
       .exec();
   }
 
@@ -64,7 +73,7 @@ export class AppointmentService {
 
     const cita = await this.citaModel
       .findById(citaId)
-      .populate('medico_ID', 'name lastName especialidad')
+      .populate('medico_ID', 'name lastName')
       .populate('centroSalud_ID', 'nombre direccion');
 
     if (!cita) throw new NotFoundException('La cita no existe');
@@ -88,8 +97,9 @@ export class AppointmentService {
       );
     }
 
-    if (updateAppointmentDto.fechaHora)
-      appointment.fechaHora = new Date(updateAppointmentDto.fechaHora);
+    if (updateAppointmentDto.fecha)
+      appointment.fecha = updateAppointmentDto.fecha;
+    if (updateAppointmentDto.hora) appointment.hora = updateAppointmentDto.hora;
 
     if (
       updateAppointmentDto.medico_ID &&
@@ -99,15 +109,22 @@ export class AppointmentService {
       const newMedicoId = new Types.ObjectId(updateAppointmentDto.medico_ID);
 
       await Promise.all([
-        this.userModel.findByIdAndUpdate(oldMedicoId, {
-          $pull: { citas: appointment._id },
-        }),
-        this.userModel.findByIdAndUpdate(newMedicoId, {
-          $push: { citas: appointment._id },
-        }),
+        this.doctorModel.findOneAndUpdate(
+          { user: oldMedicoId },
+          { $pull: { citas: appointment._id } },
+        ),
+        this.doctorModel.findOneAndUpdate(
+          { user: newMedicoId },
+          { $push: { citas: appointment._id } },
+        ),
       ]);
 
       appointment.medico_ID = newMedicoId;
+    }
+
+    if (updateAppointmentDto.estado === CitaState.CANCELADA) {
+      await this.cancelAppointment(userId, citaId);
+      return null;
     }
 
     if (updateAppointmentDto.centroSalud_ID)
@@ -130,14 +147,16 @@ export class AppointmentService {
     }
 
     await Promise.all([
-      this.userModel.findByIdAndUpdate(userId, {
-        $pull: { citas: appointment._id },
-      }),
-      this.userModel.findByIdAndUpdate(appointment.medico_ID, {
-        $pull: { citas: appointment._id },
-      }),
+      this.patientModel.findOneAndUpdate(
+        { user: userId },
+        { $pull: { citas: appointment._id } },
+      ),
+      this.doctorModel.findOneAndUpdate(
+        { user: appointment.medico_ID },
+        { $pull: { citas: appointment._id } },
+      ),
     ]);
 
-    await this.citaModel.findOneAndDelete({ _id: citaId });
+    await this.citaModel.findByIdAndDelete(citaId);
   }
 }

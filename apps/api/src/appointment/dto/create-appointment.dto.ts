@@ -1,9 +1,13 @@
-import { IsDateString, IsNotEmpty, IsMongoId } from 'class-validator';
+import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateAppointmentDto {
-  @IsNotEmpty({ message: 'La fecha y hora son requeridas' })
-  @IsDateString({}, { message: 'Formato de fecha inválido. Use ISO 8601.' })
-  fechaHora: string;
+  @IsNotEmpty({ message: 'La fecha es requerida' })
+  @IsString({ message: 'La fecha debe ser un string YYYY-MM-DD' })
+  fecha: string;
+
+  @IsNotEmpty({ message: 'La hora es requerida' })
+  @IsString({ message: 'La hora debe ser un string HH:mm' })
+  hora: string;
 
   @IsNotEmpty({ message: 'El ID del médico es requerido' })
   @IsMongoId({ message: 'El ID del médico debe ser un MongoId válido' })

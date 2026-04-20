@@ -19,12 +19,16 @@ export const createAppointmentToolDeclaration: FunctionDeclaration = {
         type: Type.STRING,
         description: 'ID del centro de salud.',
       },
-      fechaHora: {
+      fecha: {
         type: Type.STRING,
-        description: 'Fecha y hora en formato ISO (ej: 2026-05-10T14:30:00Z).',
+        description: 'Fecha en formato YYYY-MM-DD (ej: 2026-05-10).',
+      },
+      hora: {
+        type: Type.STRING,
+        description: 'Hora en formato HH:mm (ej: 14:30).',
       },
     },
-    required: ['medico_ID', 'centroSalud_ID', 'fechaHora'],
+    required: ['medico_ID', 'centroSalud_ID', 'fecha', 'hora'],
   },
 };
 
@@ -83,9 +87,13 @@ export const updateAppointmentToolDeclaration: FunctionDeclaration = {
         type: Type.STRING,
         description: 'Nuevo ID del centro de salud (opcional).',
       },
-      fechaHora: {
+      fecha: {
         type: Type.STRING,
-        description: 'Nueva fecha/hora (opcional).',
+        description: 'Nueva fecha (opcional).',
+      },
+      hora: {
+        type: Type.STRING,
+        description: 'Nueva hora (opcional).',
       },
       estado: {
         type: Type.STRING,

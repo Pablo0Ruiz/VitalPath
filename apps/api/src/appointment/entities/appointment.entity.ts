@@ -15,8 +15,11 @@ export class Appointment extends Document {
   @Prop({ type: Types.ObjectId, ref: 'CentroSalud', required: true })
   centroSalud_ID: Types.ObjectId;
 
-  @Prop({ type: Date, required: true })
-  fechaHora: Date;
+  @Prop({ type: String, required: true, index: true })
+  fecha: string;
+
+  @Prop({ type: String, required: true, index: true })
+  hora: string;
 
   @Prop({ type: String, enum: CitaState, default: CitaState.AGENDADA })
   estado: CitaState;

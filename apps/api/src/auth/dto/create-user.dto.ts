@@ -44,8 +44,4 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   genero: string;
-
-  @IsString()
-  @IsOptional()
-  especialidad: string;
 }

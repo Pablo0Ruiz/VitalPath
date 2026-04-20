@@ -4,6 +4,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
+import { Doctor, DoctorSchema } from 'src/user/entities/doctor.entity';
+import { Patient, PatientSchema } from 'src/user/entities/patient.entity';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -17,10 +19,9 @@ import { CommonModule } from 'src/common/common.module';
     CommonModule,
     ConfigModule,
     MongooseModule.forFeature([
-      {
-        name: User.name,
-        schema: UserSchema,
-      },
+      { name: User.name, schema: UserSchema },
+      { name: Doctor.name, schema: DoctorSchema },
+      { name: Patient.name, schema: PatientSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

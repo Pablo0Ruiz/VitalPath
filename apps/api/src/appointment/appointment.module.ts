@@ -9,6 +9,10 @@ import {
   AppointmentSchema,
 } from '../appointment/entities/appointment.entity';
 
+import { Doctor, DoctorSchema } from '../user/entities/doctor.entity';
+import { Patient, PatientSchema } from '../user/entities/patient.entity';
+import { User, UserSchema } from '../auth/entities/user.entity';
+
 @Module({
   controllers: [AppointmentController],
   providers: [AppointmentService],
@@ -16,10 +20,10 @@ import {
     AuthModule,
     UserModule,
     MongooseModule.forFeature([
-      {
-        name: Appointment.name,
-        schema: AppointmentSchema,
-      },
+      { name: Appointment.name, schema: AppointmentSchema },
+      { name: Doctor.name, schema: DoctorSchema },
+      { name: Patient.name, schema: PatientSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   exports: [AppointmentService],
