@@ -25,8 +25,12 @@ const EMPTY_MESSAGES: Record<ListProps['type'], string> = {
 const CustomList = ({ type, data }: ListProps) => {
   const { mutateAsync: deleteMedication } = useDeleteMedication();
 
-  const handleDelete = (id: string) => {
-    deleteMedication(id);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMedication(id);
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
   };
 
   if (!data || data.length === 0) {

@@ -113,44 +113,6 @@ export default function DashboardScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-row gap-3 px-5 pt-5 pb-2">
-          <View className="flex-1 bg-[#5B4CF5] rounded-2xl px-4 py-3">
-            <TextField
-              variant="caption"
-              className="text-white text-xs text-left mb-0.5"
-            >
-              Citas hoy
-            </TextField>
-            <TextField
-              variant="body"
-              className="text-white font-bold text-[28px] leading-tight text-left"
-            >
-              {MOCK_APPOINTMENTS.filter(a => a.date === 'Hoy').length}
-            </TextField>
-          </View>
-
-          <View className="flex-1 bg-[#00C896] rounded-2xl px-4 py-3">
-            <TextField
-              variant="caption"
-              className="text-white text-xs text-left mb-0.5"
-            >
-              Medicamentos
-            </TextField>
-            <TextField
-              variant="body"
-              className="text-white font-bold text-[28px] leading-tight text-left"
-            >
-              {doneMeds}
-              <TextField
-                variant="caption"
-                className="text-white text-[14px] font-normal"
-              >
-                /{medicamentCount}
-              </TextField>
-            </TextField>
-          </View>
-        </View>
-
         <View className="px-5 pt-5">
           <SectionHeader
             title="Próximas citas"

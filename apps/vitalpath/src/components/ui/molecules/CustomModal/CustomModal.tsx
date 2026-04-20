@@ -24,10 +24,15 @@ const CustomModal = ({ visible, onClose }: CustomModalProps) => {
 
   const { mutateAsync: createMedication } = useCreateMedication();
 
-  const onSubmit = (data: FormValues) => {
-    createMedication(data);
-    reset();
-    onClose();
+  const onSubmit = async (data: FormValues) => {
+    try {
+      await createMedication(data);
+      reset();
+      onClose();
+    } catch (error) {
+      // El error ya se loguea en el hook, pero acá podrías mostrar una alerta
+      console.error('Error al guardar:', error);
+    }
   };
 
   return (
@@ -53,7 +58,12 @@ const CustomModal = ({ visible, onClose }: CustomModalProps) => {
             borderRadius: 8,
           }}
         >
-          <TextField>Datos del medicamento</TextField>
+          <TextField
+            variant="title"
+            className="font-semibold text-center text-lg mb-2"
+          >
+            Datos del medicamento
+          </TextField>
           <Controller
             name="name"
             control={control}
@@ -80,8 +90,10 @@ const CustomModal = ({ visible, onClose }: CustomModalProps) => {
               />
             )}
           />
-          <Button title="Guardar" onPress={handleSubmit(onSubmit)} />
-          <Button title="Cerrar" onPress={onClose} />
+          <View className="gap-2 mt-2">
+            <Button title="Guardar" onPress={handleSubmit(onSubmit)} />
+            <Button title="Cerrar" onPress={onClose} />
+          </View>
         </View>
       </View>
     </Modal>

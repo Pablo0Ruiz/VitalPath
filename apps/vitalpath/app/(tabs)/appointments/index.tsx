@@ -69,7 +69,6 @@ export default function AppointmentsScreen() {
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header ───────────────────────────────────────────── */}
         <View className="px-5 pt-6 pb-4 border-b border-brand-slate-100">
           <TextField
             variant="title"
@@ -85,7 +84,6 @@ export default function AppointmentsScreen() {
           </TextField>
         </View>
 
-        {/* ── Calendar ─────────────────────────────────────────── */}
         <View className="px-5 pt-5 mb-5">
           <CalendarWidget
             appointmentsMap={appointmentsMap}
@@ -98,7 +96,6 @@ export default function AppointmentsScreen() {
           />
         </View>
 
-        {/* ── Citas del día ────────────────────────────────────── */}
         <View className="px-5">
           <View className="flex-row items-center justify-between mb-3">
             <SectionHeader
