@@ -4,7 +4,7 @@ export interface UserSession {
   lastName?: string;
   email: string;
   role?: string;
-  medicaments: string[];
+  medicaments?: string[];
 }
 
 export interface TokenAdapter {

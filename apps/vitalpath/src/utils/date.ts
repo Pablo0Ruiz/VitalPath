@@ -14,6 +14,7 @@ export const formatTime = (isoString: string): string => {
   });
 };
 
-export const formatDate = (isoString: string): string => {
-  return new Date(isoString).toLocaleDateString();
+export const formatDate = (dateString: string): string => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString();
 };

@@ -11,20 +11,23 @@ export interface Cita {
   paciente_ID: string;
   medico_ID: string;
   centroSalud_ID: string;
-  fechaHora: string;
+  fecha: string;
+  hora: string;
   estado: CitaEstado;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateCitaPayload {
-  fechaHora: string;
+  fecha: string;
+  hora: string;
   medico_ID: string;
   centroSalud_ID: string;
 }
 
 export interface UpdateCitaPayload {
-  fechaHora?: string;
+  fecha?: string;
+  hora?: string;
   medico_ID?: string;
   centroSalud_ID?: string;
   estado?: CitaEstado;
