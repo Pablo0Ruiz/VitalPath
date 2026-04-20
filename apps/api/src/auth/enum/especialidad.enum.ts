@@ -1,7 +1,7 @@
 export enum Especialidad {
-  CARDIOLOGIA = 'Cardiología',
+  CARDIOLOGIA = 'Cardiologia',
   MEDICINA_GENERAL = 'Medicina General',
-  NUTRICION = 'Nutrición',
-  NEUROLOGIA = 'Neurología',
-  TRAUMATOLOGIA = 'Traumatología',
+  NUTRICION = 'Nutricion',
+  NEUROLOGIA = 'Neurologia',
+  TRAUMATOLOGIA = 'Traumatologia',
 }

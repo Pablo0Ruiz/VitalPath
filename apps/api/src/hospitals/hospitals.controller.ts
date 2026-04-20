@@ -15,8 +15,11 @@ export class HospitalsController {
   }
 
   @Post('doctors/:doctorId/invite')
-  inviteDoctor(@Param('doctorId') doctorId: string) {
-    return this.hospitalsService.inviteDoctor(doctorId);
+  inviteDoctor(
+    @Param('doctorId') doctorId: string,
+    @Body('hospitalId') hospitalId?: string,
+  ) {
+    return this.hospitalsService.inviteDoctor(doctorId, hospitalId);
   }
 
   @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)

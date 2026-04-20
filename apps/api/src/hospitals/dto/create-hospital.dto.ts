@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { HospitalType } from '../../user/entities/centro-salud.entity';
 
 export class CreateHospitalDto {
   @IsNotEmpty({ message: 'El nombre es requerido' })
@@ -8,6 +9,10 @@ export class CreateHospitalDto {
   @IsNotEmpty({ message: 'La dirección es requerida' })
   @IsString()
   direccion: string;
+
+  @IsOptional()
+  @IsEnum(HospitalType)
+  tipo?: HospitalType;
 
   @IsOptional()
   @IsString()

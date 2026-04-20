@@ -22,8 +22,12 @@ import { Doctor } from 'src/user/entities/doctor.entity';
 import { Patient } from 'src/user/entities/patient.entity';
 import { UserRoles } from './enum/user-role.enum';
 import { Especialidad } from './enum/especialidad.enum';
+import { CreatePatientDto } from './dto/create-patient.dto';
 
-type CreateDtoRegister = CreateUserDto | CreateDoctorDto;
+export type CreateDtoRegister =
+  | CreateUserDto
+  | CreateDoctorDto
+  | CreatePatientDto;
 
 @Injectable()
 export class AuthService {
@@ -52,9 +56,14 @@ export class AuthService {
       });
 
       if (user.role === UserRoles.PACIENTE) {
-        await this.patientModel.create({ user: user._id });
+        const patientData = userData as CreatePatientDto;
+        await this.patientModel.create({
+          user: user._id,
+          medications: patientData.medications || [],
+        });
       } else if (user.role === UserRoles.MEDICO) {
         const doctorData = userData as CreateDoctorDto;
+
         await this.doctorModel.create({
           user: user._id,
           especialidad:

@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto, InviteDoctorDto, LoginUserDto } from './dto';
+import { AuthService, type CreateDtoRegister } from './auth.service';
+import { InviteDoctorDto, LoginUserDto } from './dto';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 
@@ -9,7 +9,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() createAuthDto: CreateUserDto) {
+  register(@Body() createAuthDto: CreateDtoRegister) {
     return this.authService.create(createAuthDto);
   }
 

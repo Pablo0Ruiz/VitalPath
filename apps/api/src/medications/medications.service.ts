@@ -9,15 +9,17 @@ import { UpdateMedicationDto } from './dto/update-medication.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Medication } from './entities/medication.entity';
-import { User } from 'src/auth/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+
+import { Patient } from 'src/user/entities/patient.entity';
 
 @Injectable()
 export class MedicationsService {
   constructor(
     @InjectModel(Medication.name)
     private readonly medicationModel: Model<Medication>,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Patient.name)
+    private readonly patientModel: Model<Patient>,
     private readonly userService: UserService,
   ) {}
 
@@ -29,22 +31,17 @@ export class MedicationsService {
     if (!medication)
       throw new InternalServerErrorException('Error al crear el medicamento');
 
-    await this.userModel.findByIdAndUpdate(userId, {
-      $push: { medications: medication._id },
-    });
+    await this.patientModel.findOneAndUpdate(
+      { user: userId },
+      { $push: { medications: medication._id } },
+    );
 
     return { medication, message: 'Medicamento añadido exitosamente' };
   }
 
   async findAllMedications(userId: string) {
     const user = await this.validateUserAndMedication(userId);
-
-    const medications = await this.medicationModel.find({
-      _id: { $in: user.medications },
-    });
-    if (!medications)
-      throw new NotFoundException('No se encontraron medicamentos');
-    return medications;
+    return user.profile.medications;
   }
 
   async findOneMedication(userId: string, medicationId: string) {
@@ -82,9 +79,10 @@ export class MedicationsService {
     if (!medication)
       throw new NotFoundException('Error al eliminar el medicamento');
 
-    await this.userModel.findByIdAndUpdate(userId, {
-      $pull: { medications: medicationId },
-    });
+    await this.patientModel.findOneAndUpdate(
+      { user: userId },
+      { $pull: { medications: medicationId } },
+    );
     return { message: 'Medicamento eliminado exitosamente' };
   }
 
@@ -93,11 +91,12 @@ export class MedicationsService {
     medicationId?: string,
   ) {
     const user = await this.userService.getUserProfile(userId);
-    if (!user) throw new NotFoundException('Perfil de usuario no encontrado');
+    if (!user || !user.profile)
+      throw new NotFoundException('Perfil de paciente no encontrado');
 
-    if (medicationId) {
-      const hasMedication = user.medications.some(
-        id => id.toString() === medicationId,
+    if (medicationId && user.profile.medications) {
+      const hasMedication = user.profile.medications.some(
+        med => med._id.toString() === medicationId,
       );
 
       if (!hasMedication) {

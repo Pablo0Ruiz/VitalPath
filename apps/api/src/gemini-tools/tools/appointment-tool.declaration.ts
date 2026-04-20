@@ -2,7 +2,7 @@ import { FunctionDeclaration, Type } from '@google/genai';
 
 /**
  * Tool to create a new appointment.
- * Required: All fields in CreateAppointmentDto (medico_ID, centroSalud_ID, fechaHora)
+ * Required: All fields in CreateAppointmentDto (medico_ID, centroSalud_ID, fecha, hora)
  */
 export const createAppointmentToolDeclaration: FunctionDeclaration = {
   name: 'createAppointment',
