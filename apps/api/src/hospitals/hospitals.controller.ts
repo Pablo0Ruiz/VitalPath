@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 
 import { HospitalsService } from './hospitals.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
 
 @Controller('hospitals')
@@ -22,7 +21,7 @@ export class HospitalsController {
     return this.hospitalsService.inviteDoctor(doctorId, hospitalId);
   }
 
-  @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)
+  @Auth()
   @Get('doctors')
   async getDoctors() {
     return this.hospitalsService.getDoctors();

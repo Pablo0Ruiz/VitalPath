@@ -30,9 +30,11 @@ export class AppointmentService {
     userId: string,
     createAppointmentDto: CreateAppointmentDto,
   ) {
+    const pacienteId = new Types.ObjectId(userId);
+    const medicoId = new Types.ObjectId(createAppointmentDto.medico_ID);
     const appointment = await this.citaModel.create({
-      paciente_ID: userId,
-      medico_ID: createAppointmentDto.medico_ID,
+      paciente_ID: pacienteId,
+      medico_ID: medicoId,
       centroSalud_ID: createAppointmentDto.centroSalud_ID,
       fecha: createAppointmentDto.fecha,
       hora: createAppointmentDto.hora,
