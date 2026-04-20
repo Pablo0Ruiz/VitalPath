@@ -26,25 +26,22 @@ export default function AppointmentsScreen() {
   const appointmentsMap = useMemo(() => {
     const map: Record<string, boolean> = {};
     citas.forEach((cita: Cita) => {
-      const date = new Date(cita.fechaHora);
-      map[extractDateKey(date)] = true;
+      map[cita.fecha] = true;
     });
     return map;
   }, [citas]);
 
   const todaysAppointments = useMemo(() => {
     const targetKey = extractDateKey(selectedDate);
-    return citas.filter((cita: Cita) => {
-      const citaKey = extractDateKey(new Date(cita.fechaHora));
-      return citaKey === targetKey;
-    });
+    return citas.filter((cita: Cita) => cita.fecha === targetKey);
   }, [citas, selectedDate]);
 
   const handleAgendar = () => {
     const newAppointmentDate = new Date(selectedDate);
     newAppointmentDate.setHours(10, 0, 0, 0);
     agendarCita({
-      fechaHora: newAppointmentDate.toISOString(),
+      fecha: extractDateKey(newAppointmentDate),
+      hora: '10:00',
       medico_ID: '69c08cce875c20a70bd4f3db',
       centroSalud_ID: '69c08cfe875c20a70bd4f3dd',
     });

@@ -1,7 +1,7 @@
 import { View, ViewProps } from 'react-native';
 import { AppointmentRow } from '../AppointmentRow';
 import { AppointmentStatus } from '../AppointmentStatus';
-import { formatTime, formatDate } from '@/src/utils/date';
+import { formatDate } from '@/src/utils/date';
 import { Cita } from '@repo/types';
 
 export interface AppointmentCardProps extends ViewProps {
@@ -17,8 +17,8 @@ const AppointmentCard = ({
   className,
   ...props
 }: AppointmentCardProps) => {
-  const timeString = formatTime(appointment.fechaHora);
-  const dateString = formatDate(appointment.fechaHora);
+  const timeString = appointment.hora;
+  const dateString = formatDate(appointment.fecha);
 
   return (
     <View
