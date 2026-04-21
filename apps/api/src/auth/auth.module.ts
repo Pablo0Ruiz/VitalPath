@@ -11,6 +11,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommonModule } from 'src/common/common.module';
+import {
+  CentroSalud,
+  CentroSaludSchema,
+} from 'src/user/entities/centro-salud.entity';
 
 @Module({
   controllers: [AuthController],
@@ -22,6 +26,7 @@ import { CommonModule } from 'src/common/common.module';
       { name: User.name, schema: UserSchema },
       { name: Doctor.name, schema: DoctorSchema },
       { name: Patient.name, schema: PatientSchema },
+      { name: CentroSalud.name, schema: CentroSaludSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

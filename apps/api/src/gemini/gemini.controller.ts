@@ -62,7 +62,6 @@ export class GeminiController {
     };
     this.geminiService.saveMesssage(chatPromptDto.chatId, userMessage);
     this.geminiService.saveMesssage(chatPromptDto.chatId, geminiMessage);
-    console.log(data);
   }
 
   @Auth()

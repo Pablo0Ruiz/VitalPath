@@ -8,12 +8,14 @@ import {
   CentroSalud,
   HospitalType,
 } from '../user/entities/centro-salud.entity';
+import { Doctor } from '../user/entities/doctor.entity';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
 
 @Injectable()
 export class HospitalsService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Doctor.name) private readonly doctorModel: Model<Doctor>,
     @InjectModel(CentroSalud.name)
     private readonly centroSaludModel: Model<CentroSalud>,
   ) {}
@@ -39,7 +41,7 @@ export class HospitalsService {
   }
 
   async inviteDoctor(doctorId: string, hospitalId?: string) {
-    const doctor = await this.userModel.findById(doctorId);
+    const doctor = await this.doctorModel.findById(doctorId);
     if (!doctor) throw new NotFoundException('Médico no encontrado');
 
     let hospital;
@@ -52,8 +54,14 @@ export class HospitalsService {
     if (!hospital) throw new NotFoundException('No hay hospitales registrados');
     const verificationCode = hospital.codigoVinculacion;
 
-    doctor.verificationCode = verificationCode;
-    await doctor.save();
+    const userUpdate = await this.userModel.findByIdAndUpdate(
+      doctor.user,
+      { verificationCode },
+      { returnDocument: 'after' },
+    );
+
+    if (!userUpdate)
+      throw new NotFoundException('Usuario asociado no encontrado');
 
     return {
       message: 'Invitación enviada exitosamente',
@@ -66,6 +74,11 @@ export class HospitalsService {
   }
 
   getDoctors() {
-    return this.userModel.find({ role: 'medico' });
+    return this.doctorModel.find().populate({
+      path: 'user',
+      populate: {
+        path: 'centroSalud_ID',
+      },
+    });
   }
 }

@@ -63,7 +63,7 @@ export class MedicationsService {
     const medication = await this.medicationModel.findByIdAndUpdate(
       medicationId,
       updateMedicationDto,
-      { new: true },
+      { returnDocument: 'after' },
     );
     if (!medication)
       throw new NotFoundException('Error al actualizar el medicamento');

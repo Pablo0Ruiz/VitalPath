@@ -64,7 +64,7 @@ export class SupabaseService {
     const resultado = await this.resultadoEstudioModel.findByIdAndUpdate(
       id,
       { resumenMedico },
-      { new: true },
+      { returnDocument: 'after' },
     );
 
     if (!resultado)

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
@@ -23,6 +23,7 @@ import { Patient } from 'src/user/entities/patient.entity';
 import { UserRoles } from './enum/user-role.enum';
 import { Especialidad } from './enum/especialidad.enum';
 import { CreatePatientDto } from './dto/create-patient.dto';
+import { CentroSalud } from 'src/user/entities/centro-salud.entity';
 
 export type CreateDtoRegister =
   | CreateUserDto
@@ -40,6 +41,8 @@ export class AuthService {
     private readonly patientModel: Model<Patient>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    @InjectModel(CentroSalud.name)
+    private readonly centroSaludModel: Model<CentroSalud>,
   ) {}
 
   async create(createUserDto: CreateDtoRegister) {
@@ -68,6 +71,7 @@ export class AuthService {
           user: user._id,
           especialidad:
             doctorData.especialidad || Especialidad.MEDICINA_GENERAL,
+          slots: doctorData.slots || [],
         });
       }
 
@@ -152,15 +156,28 @@ export class AuthService {
     verificationCode: string,
   ) {
     const user = await this.userModel.findOne({ verificationCode });
+    const centroSalud = await this.centroSaludModel.findOne({
+      codigoVinculacion: verificationCode,
+    });
+
+    if (!centroSalud)
+      throw new UnauthorizedException('El código de vinculación no es válido');
+
     if (
       !user ||
       user.email !== inviteDoctorDto.email ||
       user.role !== inviteDoctorDto.role
-    )
+    ) {
       throw new UnauthorizedException('Los datos son incorrectos');
+    }
+
     user.isActive = true;
     user.verificationCode = undefined;
+    user.centroSalud_ID = centroSalud._id as Types.ObjectId;
+    centroSalud.listaMedicos_ID.push(user._id);
+    centroSalud.listaTrabajadores_ID.push(user._id);
     await user.save();
+    await centroSalud.save();
     return {
       user: user,
       token: this.getJwtToken({ id: user.id }),
