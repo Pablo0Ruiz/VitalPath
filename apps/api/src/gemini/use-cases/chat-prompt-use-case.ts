@@ -5,7 +5,7 @@ import { ChatPromptDto } from '../dto/chat-prompt.dto';
 import { geminiUploadFiles } from '../helpers/gemini-upload-file';
 
 const ALL_TOOLS = [...appointmentTools, ...medicosTools];
-
+const model_AI = 'gemini-3-flash-preview';
 interface Options {
   model?: string;
   systemInstruction?: string;
@@ -24,7 +24,7 @@ export const chatPromptStreamUseCase = async (
   const images = await geminiUploadFiles(ai, files);
 
   const {
-    model = 'gemini-3-flash-preview',
+    model = model_AI,
     history = [],
     systemInstruction = `
       Eres VitalPath AI, un asistente administrativo médico. 
@@ -35,7 +35,7 @@ export const chatPromptStreamUseCase = async (
   } = options ?? {};
 
   const chat = ai.chats.create({
-    model: model ?? 'gemini-3-flash-preview',
+    model: model ?? model_AI,
     config: {
       systemInstruction,
       tools: [{ functionDeclarations: ALL_TOOLS }],

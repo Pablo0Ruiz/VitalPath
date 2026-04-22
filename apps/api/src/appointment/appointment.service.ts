@@ -13,6 +13,14 @@ import { User } from 'src/auth/entities/user.entity';
 import { Doctor } from '../user/entities/doctor.entity';
 import { Patient } from '../user/entities/patient.entity';
 
+type LeanMedico = { _id: Types.ObjectId; name: string; lastName: string };
+type LeanCentro = { _id: Types.ObjectId; nombre: string; direccion: string };
+type LeanCita = Omit<Appointment, 'medico_ID' | 'centroSalud_ID'> & {
+  _id: Types.ObjectId;
+  medico_ID: LeanMedico;
+  centroSalud_ID: LeanCentro;
+};
+
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -60,12 +68,15 @@ export class AppointmentService {
   }
 
   async getAppointments(userId: string) {
-    return this.citaModel
+    const citas = await this.citaModel
       .find({ paciente_ID: userId })
       .populate('medico_ID', 'name lastName')
       .populate('centroSalud_ID', 'nombre direccion')
       .sort({ fecha: 1, hora: 1 })
+      .lean()
       .exec();
+
+    return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
   }
 
   async getAppointmentById(userId: string, citaId: string) {
@@ -76,14 +87,40 @@ export class AppointmentService {
     const cita = await this.citaModel
       .findById(citaId)
       .populate('medico_ID', 'name lastName')
-      .populate('centroSalud_ID', 'nombre direccion');
+      .populate('centroSalud_ID', 'nombre direccion')
+      .lean();
 
     if (!cita) throw new NotFoundException('La cita no existe');
     if (cita.paciente_ID.toString() !== userId.toString()) {
       throw new ForbiddenException('No tienes permisos para ver esta cita');
     }
 
-    return cita;
+    const [enriched] = await this.enrichWithEspecialidad([
+      cita,
+    ] as unknown as LeanCita[]);
+    return enriched;
+  }
+
+  private async enrichWithEspecialidad(citas: LeanCita[]) {
+    if (!citas.length) return citas;
+
+    const medicoIds = citas.map(c => c.medico_ID._id);
+    const doctors = await this.doctorModel
+      .find({ user: { $in: medicoIds } })
+      .select('user especialidad')
+      .lean();
+
+    const specialtyMap = new Map(
+      doctors.map(d => [d.user.toString(), d.especialidad]),
+    );
+
+    return citas.map(cita => ({
+      ...cita,
+      medico_ID: {
+        ...cita.medico_ID,
+        especialidad: specialtyMap.get(cita.medico_ID._id.toString()) ?? '',
+      },
+    }));
   }
 
   async updateAppointment(
