@@ -70,26 +70,29 @@ const DoctorList = () => {
               key={doctor._id}
               className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"
             >
-              <Avatar name={`${doctor.name} ${doctor.lastName}`} size="md" />
+              <Avatar
+                name={`${doctor.user.name} ${doctor.user.lastName}`}
+                size="md"
+              />
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <span className="text-sm font-semibold text-brand-text-primary">
-                  {doctor.name} {doctor.lastName}
+                  {doctor.user.name} {doctor.user.lastName}
                 </span>
                 <span className="text-xs text-brand-text-secondary truncate">
-                  {doctor.email}
+                  {doctor.user.email}
                 </span>
                 <span className="text-xs text-brand-text-secondary truncate">
                   {doctor.especialidad}
                 </span>
               </div>
               <Badge
-                variant={doctor.isActive ? 'success' : 'neutral'}
+                variant={doctor.user.isActive ? 'success' : 'neutral'}
                 size="sm"
                 className="capitalize shrink-0"
               >
-                Verificado : {doctor.isActive ? 'si' : 'no'}
+                Verificado : {doctor.user.isActive ? 'si' : 'no'}
               </Badge>
-              {doctor.isActive === false && (
+              {doctor.user.isActive === false && (
                 <Button
                   onClick={() => handleInviteDoctor(doctor._id)}
                   disabled={invitedIds.includes(doctor._id)}

@@ -46,6 +46,9 @@ const LoginForm = () => {
     formState: { errors: errorsInvite },
   } = useForm<InviteFormValues>({
     resolver: zodResolver(inviteSchema),
+    defaultValues: {
+      role: 'medico',
+    },
   });
 
   const {
@@ -81,8 +84,12 @@ const LoginForm = () => {
     mutate(data);
   };
 
-  const onSubmitInvite = (data: InviteFormValues) => {
-    console.log('invite data', data);
+  const onSubmitInvite = (
+    data: InviteFormValues,
+    e?: React.BaseSyntheticEvent,
+  ) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     inviteMutate(data);
   };
 
@@ -195,13 +202,14 @@ const LoginForm = () => {
                   type="text"
                   placeholder="A4F-29K"
                   leftIcon={Hospital01Icon}
-                  maxLength={7}
+                  maxLength={10}
                   {...registerInvite('codigoVerificacion')}
                 />
               </FormField>
 
               <Button
                 loading={inviteIsPending}
+                type="button"
                 onClick={handleSubmitInvite(onSubmitInvite)}
                 variant="secondary"
                 size="md"
