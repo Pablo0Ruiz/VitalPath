@@ -1,9 +1,14 @@
 import { apiClient } from '../client';
-import type { Cita, CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
+import type {
+  Cita,
+  CitaPopulated,
+  CreateCitaPayload,
+  UpdateCitaPayload,
+} from '@repo/types';
 
-export const getCitas = async (): Promise<Cita[]> => {
-  const { data } = await apiClient.get<Cita[]>('/api/appointment');
-  return data;
+export const getCitas = async (): Promise<CitaPopulated[]> => {
+  const { data } = await apiClient.get<CitaPopulated[]>('/api/appointment');
+  return data.map(cita => ({ ...cita, fecha: cita.fecha.split('T')[0] }));
 };
 
 export const postCita = async (payload: CreateCitaPayload): Promise<Cita> => {

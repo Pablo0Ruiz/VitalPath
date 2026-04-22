@@ -33,12 +33,23 @@ export interface UpdateCitaPayload {
   estado?: CitaEstado;
 }
 
-export interface Appointment {
-  id: string;
-  doctor: string;
-  specialty: string;
-  time: string;
-  date: string;
-  avatarInitials?: string;
-  avatarClassName?: string;
+export interface CitaMedicoPopulated {
+  _id: string;
+  name: string;
+  lastName: string;
+  especialidad: string;
+}
+
+export interface CitaCentroSaludPopulated {
+  _id: string;
+  nombre: string;
+  direccion: string;
+}
+
+export interface CitaPopulated extends Omit<
+  Cita,
+  'medico_ID' | 'centroSalud_ID'
+> {
+  medico_ID: CitaMedicoPopulated;
+  centroSalud_ID: CitaCentroSaludPopulated;
 }

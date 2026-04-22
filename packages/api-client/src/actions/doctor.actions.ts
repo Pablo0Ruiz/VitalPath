@@ -1,10 +1,35 @@
 import { apiClient } from '../client';
 import type { UserSession } from '@repo/types';
 
-export interface DoctorSession extends Omit<UserSession, 'id'> {
+export interface HealthCenter {
+  _id: string;
+  nombre: string;
+  direccion: string;
+  tipo: string;
+  listaMedicos_ID: string[];
+  listaTrabajadores_ID: string[];
+  codigoVinculacion: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface DoctorSession {
   _id: string;
   especialidad: string;
-  isActive: boolean;
+  slots: string[];
+  citas: any[];
+  user: {
+    _id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+    genero: string;
+    centroSalud_ID?: HealthCenter;
+    fechaNacimiento: string;
+  };
 }
 
 export const getDoctors = async (): Promise<DoctorSession[]> => {
