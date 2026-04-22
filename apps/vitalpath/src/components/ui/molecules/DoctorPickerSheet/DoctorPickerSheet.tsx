@@ -6,7 +6,10 @@ import { useCreateCita, useDoctors } from '@repo/api-client';
 import { CreateCitaPayload } from '@repo/types';
 import { extractDateKey } from '@/src/utils/date';
 
-const DAY_NAMES = [
+import { MONTH_NAMES } from '@/src/constants/monthAndDay';
+import { DoctorCard } from '../DoctorCard/DoctorCard';
+
+const FULL_DAY_NAMES = [
   'Domingo',
   'Lunes',
   'Martes',
@@ -15,23 +18,9 @@ const DAY_NAMES = [
   'Viernes',
   'Sábado',
 ];
-const MONTH_NAMES = [
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre',
-];
 
 function formatDate(date: Date): string {
-  return `${DAY_NAMES[date.getDay()]}, ${date.getDate()} de ${MONTH_NAMES[date.getMonth()]}`;
+  return `${FULL_DAY_NAMES[date.getDay()]}, ${date.getDate()} de ${MONTH_NAMES[date.getMonth()]}`;
 }
 
 interface DoctorPickerSheetProps {
@@ -118,88 +107,17 @@ export const DoctorPickerSheet = ({
               showsVerticalScrollIndicator={false}
             >
               {doctor.map(doc => (
-                <Pressable
+                <DoctorCard
                   key={doc._id}
-                  onPress={() => handleDoctorSelect(doc._id)}
-                  className={`mb-3 p-4 rounded-2xl border ${
-                    selectedDoctorId === doc._id
-                      ? 'border-[#5B4CF5] bg-[#F5F4FF]'
-                      : 'border-zinc-100 bg-white'
-                  }`}
-                  style={{
-                    elevation: 1,
-                    shadowColor: '#000',
-                    shadowOpacity: 0.04,
-                    shadowRadius: 4,
-                    shadowOffset: { width: 0, height: 2 },
+                  doctor={doc}
+                  selectedSlot={selectedSlot}
+                  isSelected={selectedDoctorId === doc._id}
+                  onDoctorPress={handleDoctorSelect}
+                  onSlotPress={slot => {
+                    setSelectedDoctorId(doc._id);
+                    setSelectedSlot(slot);
                   }}
-                >
-                  <View className="flex-row items-center mb-3">
-                    <View
-                      className="w-11 h-11 rounded-full items-center justify-center mr-3"
-                      style={{ backgroundColor: '#5B4CF5' }}
-                    >
-                      <TextField
-                        variant="caption"
-                        className="font-bold text-sm text-[#3F3F46]"
-                      >
-                        {doc.user.name.slice(0, 2).toUpperCase()}
-                      </TextField>
-                    </View>
-                    <View className="flex-1">
-                      <TextField
-                        variant="body"
-                        className="text-[#0D0F1C] font-semibold text-[15px] text-left"
-                      >
-                        {doc.user.name} {doc.user.lastName}
-                      </TextField>
-                      <View className="flex-row items-center gap-1 mt-0.5">
-                        <Ionicons
-                          name="medkit-outline"
-                          size={13}
-                          color="#71717A"
-                        />
-                        <TextField
-                          variant="caption"
-                          className="text-zinc-500 text-xs text-left"
-                        >
-                          {doc.especialidad} - {doc.user.centroSalud_ID?.nombre}
-                        </TextField>
-                      </View>
-                    </View>
-                  </View>
-
-                  <FlatList
-                    data={doc.slots}
-                    horizontal
-                    keyExtractor={slot => slot}
-                    showsHorizontalScrollIndicator={false}
-                    scrollEnabled={false}
-                    renderItem={({ item: slot }) => {
-                      const isActive =
-                        selectedDoctorId === doc._id && selectedSlot === slot;
-                      return (
-                        <Pressable
-                          onPress={() => {
-                            setSelectedDoctorId(doc._id);
-                            setSelectedSlot(slot);
-                          }}
-                          className={`mr-2 px-4 py-2 rounded-full ${
-                            isActive ? 'bg-[#5B4CF5]' : 'bg-zinc-100'
-                          }`}
-                        >
-                          <TextField
-                            variant="caption"
-                            className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-zinc-700'}`}
-                          >
-                            {slot}
-                          </TextField>
-                        </Pressable>
-                      );
-                    }}
-                    ItemSeparatorComponent={() => null}
-                  />
-                </Pressable>
+                />
               ))}
             </ScrollView>
 

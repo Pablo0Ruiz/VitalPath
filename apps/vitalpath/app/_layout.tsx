@@ -20,10 +20,6 @@ import { setupApiInterceptors } from '@/src/lib/api-setup';
 
 setupApiInterceptors();
 
-AppState.addEventListener('change', (state: AppStateStatus) => {
-  focusManager.setFocused(state === 'active');
-});
-
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
@@ -45,6 +41,16 @@ function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded, error]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      (state: AppStateStatus) => {
+        focusManager.setFocused(state === 'active');
+      },
+    );
+    return () => subscription.remove();
+  }, []);
 
   if (!loaded && !error) {
     return null;

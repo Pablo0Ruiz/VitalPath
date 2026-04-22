@@ -17,3 +17,4 @@ export { RenderCells } from './RenderCells';
 export { CustomModal } from './CustomModal';
 export { CustomList } from './CustomList';
 export { DoctorPickerSheet } from './DoctorPickerSheet';
+export { DoctorCard } from './DoctorCard/DoctorCard';

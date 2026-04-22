@@ -12,7 +12,6 @@ import {
 import { CalendarWidget } from '@/src/components/ui/organism';
 import { useCitas, useCreateCita, useCancelCita } from '@repo/api-client';
 import { useAuthStore } from '@repo/store';
-import { useRefetchOnFocus } from '@/src/hooks/useRefetchOnFocus';
 import { extractDateKey } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 
@@ -26,10 +25,8 @@ export default function AppointmentsScreen() {
     data: citas = [],
     isLoading,
     isRefetching,
-    refetch,
   } = useCitas(user?.id ?? '');
 
-  useRefetchOnFocus(refetch);
   const { mutate: cancelarCita, isPending: isCancelling } = useCancelCita();
 
   const appointmentsMap = useMemo(() => {

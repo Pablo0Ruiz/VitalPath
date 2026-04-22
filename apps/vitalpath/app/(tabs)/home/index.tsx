@@ -22,7 +22,6 @@ import {
 } from '@/src/components/ui/molecules';
 import { useAuthStore } from '@repo/store';
 import { useCitas, useLogout, useMedicaments } from '@repo/api-client';
-import { useRefetchOnFocus } from '@/src/hooks/useRefetchOnFocus';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
 
@@ -35,13 +34,7 @@ export default function DashboardScreen() {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { data: medicaments, isLoading } = useMedicaments();
-  const {
-    data: citas = [],
-    isLoading: isLoadCitas,
-    refetch: refetchCitas,
-  } = useCitas(user?.id ?? '');
-
-  useRefetchOnFocus(refetchCitas);
+  const { data: citas = [], isLoading: isLoadCitas } = useCitas(user?.id ?? '');
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);

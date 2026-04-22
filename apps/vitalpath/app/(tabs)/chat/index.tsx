@@ -8,7 +8,7 @@ import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMes
 import { CustomInputBox } from '@/src/components/ui/molecules';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
-import { CITAS_BASE_KEY } from '@repo/api-client';
+import { appointmentKeys } from '@repo/api-client';
 
 const Chat = () => {
   const queryClient = useQueryClient();
@@ -18,7 +18,7 @@ const Chat = () => {
 
   const handleSendMessage = async (prompt: string, attachments: any[]) => {
     await addMessage(prompt, attachments, getChatStream);
-    queryClient.invalidateQueries({ queryKey: CITAS_BASE_KEY });
+    queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
   };
 
   return (
