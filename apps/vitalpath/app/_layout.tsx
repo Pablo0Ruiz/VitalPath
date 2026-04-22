@@ -3,9 +3,14 @@ import 'react-native-reanimated';
 import { useColorScheme } from 'nativewind';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import {
+  QueryClientProvider,
+  QueryClient,
+  focusManager,
+} from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 
 import { themes } from '@/src/constants/theme';
@@ -14,6 +19,10 @@ import { SessionGate } from '@/src/components/utils/authGate';
 import { setupApiInterceptors } from '@/src/lib/api-setup';
 
 setupApiInterceptors();
+
+AppState.addEventListener('change', (state: AppStateStatus) => {
+  focusManager.setFocused(state === 'active');
+});
 
 const queryClient = new QueryClient();
 

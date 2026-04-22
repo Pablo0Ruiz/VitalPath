@@ -1,11 +1,11 @@
 import { View, ViewProps } from 'react-native';
 import { AppointmentRow } from '../AppointmentRow';
 import { AppointmentStatus } from '../AppointmentStatus';
-import { formatDate } from '@/src/utils/date';
-import { Cita } from '@repo/types';
+import { formatDateShort } from '@/src/utils/date';
+import { CitaPopulated } from '@repo/types';
 
 export interface AppointmentCardProps extends ViewProps {
-  appointment: Cita;
+  appointment: CitaPopulated;
   onCancel?: (id: string) => void;
   isCancelling?: boolean;
 }
@@ -17,8 +17,8 @@ const AppointmentCard = ({
   className,
   ...props
 }: AppointmentCardProps) => {
-  const timeString = appointment.hora;
-  const dateString = formatDate(appointment.fecha);
+  const { name, lastName } = appointment.medico_ID;
+  const avatarInitials = `${name[0]}${lastName[0]}`.toUpperCase();
 
   return (
     <View
@@ -27,11 +27,11 @@ const AppointmentCard = ({
     >
       <View className="flex-1">
         <AppointmentRow
-          doctor="Dr(a). Asignado"
-          specialty="Pendiente"
-          time={timeString}
-          date={dateString}
-          avatarInitials="PR"
+          doctor={`${name} ${lastName}`}
+          specialty={appointment.medico_ID.especialidad}
+          time={appointment.hora}
+          date={formatDateShort(appointment.fecha)}
+          avatarInitials={avatarInitials}
         />
       </View>
       <AppointmentStatus

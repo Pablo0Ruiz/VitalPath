@@ -2,42 +2,9 @@ import { useState } from 'react';
 import { Modal, View, Pressable, ScrollView, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TextField } from '../../atoms';
-
-interface MockDoctor {
-  id: string;
-  name: string;
-  specialty: string;
-  slots: string[];
-  avatarColor: string;
-  initials: string;
-}
-
-const MOCK_DOCTORS: MockDoctor[] = [
-  {
-    id: '1',
-    name: 'Dra. Ana Martínez',
-    specialty: 'Cardiología',
-    slots: ['09:00', '10:30', '15:00'],
-    avatarColor: '#EDE9FE',
-    initials: 'AM',
-  },
-  {
-    id: '2',
-    name: 'Dr. Luis Herrera',
-    specialty: 'Medicina General',
-    slots: ['08:00', '11:00', '16:30'],
-    avatarColor: '#D1FAE5',
-    initials: 'LH',
-  },
-  {
-    id: '3',
-    name: 'Dra. Sofia Blanco',
-    specialty: 'Nutrición',
-    slots: ['10:00', '13:00', '17:00'],
-    avatarColor: '#FEF3C7',
-    initials: 'SB',
-  },
-];
+import { useCreateCita, useDoctors } from '@repo/api-client';
+import { CreateCitaPayload } from '@repo/types';
+import { extractDateKey } from '@/src/utils/date';
 
 const DAY_NAMES = [
   'Domingo',
@@ -80,10 +47,29 @@ export const DoctorPickerSheet = ({
 }: DoctorPickerSheetProps) => {
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const { data: doctor } = useDoctors();
+  const { mutate: agendarCita, isPending: isCreating } = useCreateCita();
+
+  if (!doctor) {
+    return null;
+  }
 
   const handleDoctorSelect = (doctorId: string) => {
     setSelectedDoctorId(doctorId);
     setSelectedSlot(null);
+  };
+
+  const handleAgendarCita = () => {
+    const selectedDoc = doctor.find(d => d._id === selectedDoctorId);
+    if (!selectedDoc || !selectedSlot || !date) return;
+
+    const payload: CreateCitaPayload = {
+      medico_ID: selectedDoc.user._id,
+      centroSalud_ID: selectedDoc.user.centroSalud_ID?._id || '',
+      fecha: extractDateKey(date),
+      hora: selectedSlot,
+    };
+    agendarCita(payload);
   };
 
   return (
@@ -131,12 +117,12 @@ export const DoctorPickerSheet = ({
               }}
               showsVerticalScrollIndicator={false}
             >
-              {MOCK_DOCTORS.map(doctor => (
+              {doctor.map(doc => (
                 <Pressable
-                  key={doctor.id}
-                  onPress={() => handleDoctorSelect(doctor.id)}
+                  key={doc._id}
+                  onPress={() => handleDoctorSelect(doc._id)}
                   className={`mb-3 p-4 rounded-2xl border ${
-                    selectedDoctorId === doctor.id
+                    selectedDoctorId === doc._id
                       ? 'border-[#5B4CF5] bg-[#F5F4FF]'
                       : 'border-zinc-100 bg-white'
                   }`}
@@ -151,13 +137,13 @@ export const DoctorPickerSheet = ({
                   <View className="flex-row items-center mb-3">
                     <View
                       className="w-11 h-11 rounded-full items-center justify-center mr-3"
-                      style={{ backgroundColor: doctor.avatarColor }}
+                      style={{ backgroundColor: '#5B4CF5' }}
                     >
                       <TextField
                         variant="caption"
                         className="font-bold text-sm text-[#3F3F46]"
                       >
-                        {doctor.initials}
+                        {doc.user.name.slice(0, 2).toUpperCase()}
                       </TextField>
                     </View>
                     <View className="flex-1">
@@ -165,7 +151,7 @@ export const DoctorPickerSheet = ({
                         variant="body"
                         className="text-[#0D0F1C] font-semibold text-[15px] text-left"
                       >
-                        {doctor.name}
+                        {doc.user.name} {doc.user.lastName}
                       </TextField>
                       <View className="flex-row items-center gap-1 mt-0.5">
                         <Ionicons
@@ -177,25 +163,25 @@ export const DoctorPickerSheet = ({
                           variant="caption"
                           className="text-zinc-500 text-xs text-left"
                         >
-                          {doctor.specialty}
+                          {doc.especialidad} - {doc.user.centroSalud_ID?.nombre}
                         </TextField>
                       </View>
                     </View>
                   </View>
 
                   <FlatList
-                    data={doctor.slots}
+                    data={doc.slots}
                     horizontal
                     keyExtractor={slot => slot}
                     showsHorizontalScrollIndicator={false}
                     scrollEnabled={false}
                     renderItem={({ item: slot }) => {
                       const isActive =
-                        selectedDoctorId === doctor.id && selectedSlot === slot;
+                        selectedDoctorId === doc._id && selectedSlot === slot;
                       return (
                         <Pressable
                           onPress={() => {
-                            setSelectedDoctorId(doctor.id);
+                            setSelectedDoctorId(doc._id);
                             setSelectedSlot(slot);
                           }}
                           className={`mr-2 px-4 py-2 rounded-full ${
@@ -222,7 +208,8 @@ export const DoctorPickerSheet = ({
                 className={`py-4 rounded-2xl items-center ${
                   selectedSlot ? 'bg-[#5B4CF5]' : 'bg-zinc-200'
                 }`}
-                disabled={!selectedSlot}
+                disabled={!selectedSlot || isCreating}
+                onPress={handleAgendarCita}
               >
                 <TextField
                   variant="body"

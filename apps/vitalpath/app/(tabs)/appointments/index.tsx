@@ -11,21 +11,30 @@ import {
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organism';
 import { useCitas, useCreateCita, useCancelCita } from '@repo/api-client';
+import { useAuthStore } from '@repo/store';
+import { useRefetchOnFocus } from '@/src/hooks/useRefetchOnFocus';
 import { extractDateKey } from '@/src/utils/date';
-import { Cita } from '@repo/types';
+import { CitaPopulated } from '@repo/types';
 
 export default function AppointmentsScreen() {
+  const { user } = useAuthStore();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [sheetDate, setSheetDate] = useState<Date | null>(null);
 
-  const { data: citas = [], isLoading, isRefetching } = useCitas();
-  const { mutate: agendarCita, isPending: isCreating } = useCreateCita();
+  const {
+    data: citas = [],
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useCitas(user?.id ?? '');
+
+  useRefetchOnFocus(refetch);
   const { mutate: cancelarCita, isPending: isCancelling } = useCancelCita();
 
   const appointmentsMap = useMemo(() => {
     const map: Record<string, boolean> = {};
-    citas.forEach((cita: Cita) => {
+    citas.forEach((cita: CitaPopulated) => {
       map[cita.fecha] = true;
     });
     return map;
@@ -33,19 +42,8 @@ export default function AppointmentsScreen() {
 
   const todaysAppointments = useMemo(() => {
     const targetKey = extractDateKey(selectedDate);
-    return citas.filter((cita: Cita) => cita.fecha === targetKey);
+    return citas.filter((cita: CitaPopulated) => cita.fecha === targetKey);
   }, [citas, selectedDate]);
-
-  const handleAgendar = () => {
-    const newAppointmentDate = new Date(selectedDate);
-    newAppointmentDate.setHours(10, 0, 0, 0);
-    agendarCita({
-      fecha: extractDateKey(newAppointmentDate),
-      hora: '10:00',
-      medico_ID: '69c08cce875c20a70bd4f3db',
-      centroSalud_ID: '69c08cfe875c20a70bd4f3dd',
-    });
-  };
 
   const handleCancelar = (citaId: string) => {
     Alert.alert(
@@ -102,14 +100,6 @@ export default function AppointmentsScreen() {
               title="Citas seleccionadas"
               className="flex-1 mb-0"
             />
-            <Button
-              title={isCreating ? '...' : 'Agendar'}
-              variant="primary"
-              size="sm"
-              onPress={handleAgendar}
-              disabled={isCreating}
-              loading={isCreating}
-            />
           </View>
 
           <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
@@ -119,7 +109,7 @@ export default function AppointmentsScreen() {
               </View>
             ) : todaysAppointments.length > 0 ? (
               <View className="px-4">
-                {todaysAppointments.map((appt: Cita, idx: number) => (
+                {todaysAppointments.map((appt: CitaPopulated, idx: number) => (
                   <View key={appt._id}>
                     <AppointmentCard
                       appointment={appt}

@@ -30,7 +30,6 @@ const CustomModal = ({ visible, onClose }: CustomModalProps) => {
       reset();
       onClose();
     } catch (error) {
-      // El error ya se loguea en el hook, pero acá podrías mostrar una alerta
       console.error('Error al guardar:', error);
     }
   };

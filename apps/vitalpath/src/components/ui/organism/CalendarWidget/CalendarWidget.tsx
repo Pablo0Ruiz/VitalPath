@@ -10,14 +10,14 @@ export interface CalendarWidgetProps extends ViewProps {
   initialDate?: Date;
 }
 
-export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
+export const CalendarWidget = ({
   appointmentsMap,
   onDateChange,
   onDayPressSheet,
   initialDate = new Date(),
   className,
   ...props
-}) => {
+}: CalendarWidgetProps) => {
   const [currentMonth, setCurrentMonth] = useState<Date>(
     new Date(initialDate.getFullYear(), initialDate.getMonth(), 1),
   );

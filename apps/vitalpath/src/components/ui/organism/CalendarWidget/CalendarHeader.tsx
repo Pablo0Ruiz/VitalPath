@@ -9,11 +9,11 @@ export interface CalendarHeaderProps {
   onNext: () => void;
 }
 
-export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
+export const CalendarHeader = ({
   currentMonth,
   onPrev,
   onNext,
-}) => {
+}: CalendarHeaderProps) => {
   const monthName = MONTH_NAMES[currentMonth.getMonth()];
   const year = currentMonth.getFullYear();
 
@@ -21,23 +21,22 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     <View className="flex-row items-center justify-between mb-4">
       <Button
         onPress={onPrev}
+        variant="ghost"
         className="w-10 h-10 items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200"
       >
         <Ionicons name="chevron-back" size={20} color="#0D0F1C" />
       </Button>
 
       <View>
-        <TextField
-          variant="subtitle"
-          className="text-center font-bold text-lg text-[#0D0F1C]"
-        >
+        <TextField className="text-center font-bold text-lg text-[#0D0F1C]">
           {monthName} {year}
         </TextField>
       </View>
 
       <Button
         onPress={onNext}
-        className="w-10 h-10 items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200"
+        variant="ghost"
+        className="w-10 h-10 p-0 items-center justify-center rounded-full bg-zinc-100 active:bg-zinc-200"
       >
         <Ionicons name="chevron-forward" size={20} color="#0D0F1C" />
       </Button>

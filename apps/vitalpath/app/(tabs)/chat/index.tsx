@@ -1,20 +1,24 @@
 import { Octicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { TextField } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { CustomInputBox } from '@/src/components/ui/molecules';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
+import { CITAS_BASE_KEY } from '@repo/api-client';
 
 const Chat = () => {
+  const queryClient = useQueryClient();
   const messages = useChatContextStore(state => state.messages);
   const addMessage = useChatContextStore(state => state.addMessage);
   const geminiWriting = useChatContextStore(state => state.geminiWriting);
 
-  const handleSendMessage = (prompt: string, attachments: any[]) => {
-    addMessage(prompt, attachments, getChatStream);
+  const handleSendMessage = async (prompt: string, attachments: any[]) => {
+    await addMessage(prompt, attachments, getChatStream);
+    queryClient.invalidateQueries({ queryKey: CITAS_BASE_KEY });
   };
 
   return (

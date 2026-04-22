@@ -12,3 +12,4 @@ export { MessageItemImage } from './MessageItemImage';
 export { Tabs } from './Tabs';
 export { TimelineIcon } from './TimeLineIcon';
 export { ProgressBar } from './ProgressBar';
+export { HeaderHome } from './HeaderHome';

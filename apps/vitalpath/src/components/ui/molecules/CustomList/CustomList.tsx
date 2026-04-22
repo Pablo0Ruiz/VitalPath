@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { TextField } from '../../atoms';
-import { Medication, Appointment } from '@repo/types';
+import { Medication, CitaPopulated } from '@repo/types';
 import { RawAppointments, RawMedications } from './rawData';
 import { useDeleteMedication } from '@repo/api-client';
 
@@ -11,21 +11,22 @@ type MedicationListProps = {
 };
 
 type AppointmentListProps = {
-  type: 'appointment';
-  data: Appointment[] | undefined;
+  type: 'cita';
+  data: CitaPopulated[] | undefined;
 };
 
 export type ListProps = MedicationListProps | AppointmentListProps;
 
 const EMPTY_MESSAGES: Record<ListProps['type'], string> = {
   medication: 'No tienes medicamentos programados para hoy.',
-  appointment: 'No tienes citas programadas.',
+  cita: 'No tienes citas programadas.',
 };
 
 const CustomList = ({ type, data }: ListProps) => {
   const { mutateAsync: deleteMedication } = useDeleteMedication();
 
   const handleDelete = async (id: string) => {
+    console.log('id delete medicamento:', id);
     try {
       await deleteMedication(id);
     } catch (error) {
