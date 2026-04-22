@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { TokenAdapter, UserSession } from '@repo/types';
 import { getMe } from '../actions/auth.actions';
+import { sessionKeys } from '../queryKeys';
 
 interface SessionCallbacks {
   setSession: (user: UserSession) => void;
@@ -17,7 +18,7 @@ export const useSession = (
   const { setSession, clearSession, setIsLoading } = callbacks;
 
   const { data, isError, isSuccess, isPending } = useQuery({
-    queryKey: ['session'],
+    queryKey: sessionKeys.current(),
     queryFn: async () => {
       const token = await adapter.getToken();
       if (!token) throw new Error('No token');

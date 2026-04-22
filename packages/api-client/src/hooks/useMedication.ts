@@ -10,12 +10,11 @@ import type {
   CreateMedicationPayload,
   UpdateMedicationPayload,
 } from '@repo/types';
-
-export const MEDICAMENTS_QUERY_KEY = ['medicaments'] as const;
+import { medicationKeys } from '../queryKeys';
 
 export const useMedicaments = () => {
   return useQuery({
-    queryKey: MEDICAMENTS_QUERY_KEY,
+    queryKey: medicationKeys.list(),
     queryFn: () => getMedicaments(),
     staleTime: 1000 * 60 * 5,
   });
@@ -23,7 +22,7 @@ export const useMedicaments = () => {
 
 export const useMedicament = (id: string, enabled: boolean = true) => {
   return useQuery({
-    queryKey: [...MEDICAMENTS_QUERY_KEY, id],
+    queryKey: medicationKeys.detail(id),
     queryFn: () => getMedicament(id),
     staleTime: 1000 * 60 * 5,
     enabled,
@@ -36,7 +35,7 @@ export const useCreateMedication = () => {
   return useMutation({
     mutationFn: (payload: CreateMedicationPayload) => createMedication(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: MEDICAMENTS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
       console.error('[useCreateMedication] Error al crear medicamento:', error);
@@ -50,7 +49,7 @@ export const useUpdateMedication = () => {
   return useMutation({
     mutationFn: (payload: UpdateMedicationPayload) => updateMedication(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: MEDICAMENTS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
       console.error(
@@ -67,7 +66,7 @@ export const useDeleteMedication = () => {
   return useMutation({
     mutationFn: (id: string) => deleteMedication(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: MEDICAMENTS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
       console.error(
