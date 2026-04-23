@@ -1,23 +1,23 @@
 import { Skeleton } from '@/components/ui/atoms/Skeleton';
 import { cn } from '@/lib/utils';
 
-type Column<T> = {
-  key: keyof T | string;
+export type Column<T> = {
+  key: string;
   label: string;
   render?: (row: T) => React.ReactNode;
 };
 
-type DataTableProps<T> = {
+export type DataTableProps<T> = {
   columns: Column<T>[];
-  data: T[];
+  data?: T[];
   loading?: boolean;
   className?: string;
   getRowKey?: (row: T) => string;
 };
 
-const DataTable = <T extends Record<string, unknown>>({
+const DataTable = <T,>({
   columns,
-  data,
+  data = [],
   loading,
   className,
   getRowKey,

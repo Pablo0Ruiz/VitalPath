@@ -2,63 +2,15 @@
 
 import { useState } from 'react';
 import { Calendar03Icon } from '@hugeicons/core-free-icons';
-import { Badge } from '@/components/ui/atoms/Badge';
 import { Tabs } from '@/components/ui/atoms/Tabs';
 import { EmptyState } from '@/components/ui/molecules/EmptyState';
-import { DataTable } from '@/components/ui/molecules/DataTable';
-import { mockAppointments } from '@/lib/mock-data';
-
-type Appointment = {
-  _id: string;
-  patientName: string;
-  doctorName: string;
-  fecha: string;
-  estado: string;
-  [key: string]: unknown;
-};
-
-const estadoConfig: Record<
-  string,
-  {
-    label: string;
-    variant: 'success' | 'warning' | 'info' | 'error' | 'neutral';
-  }
-> = {
-  agendada: { label: 'Agendada', variant: 'info' },
-  asistida: { label: 'Asistida', variant: 'success' },
-  en_proceso: { label: 'En proceso', variant: 'warning' },
-  cancelada: { label: 'Cancelada', variant: 'error' },
-};
-
-const viewTabs = [
-  { value: 'list', label: 'Lista' },
-  { value: 'calendar', label: 'Calendario' },
-];
-
-const columns = [
-  { key: 'patientName' as const, label: 'Paciente' },
-  { key: 'doctorName' as const, label: 'Médico' },
-  { key: 'fecha' as const, label: 'Fecha y hora' },
-  {
-    key: 'estado' as const,
-    label: 'Estado',
-    render: (row: Appointment) => {
-      const config = estadoConfig[String(row.estado)] ?? {
-        label: String(row.estado),
-        variant: 'neutral' as const,
-      };
-      return (
-        <Badge variant={config.variant} size="sm">
-          {config.label}
-        </Badge>
-      );
-    },
-  },
-];
+import DataTable from '@/components/ui/molecules/DataTable/DataTable';
+import { useCitasAdministrator } from '@repo/api-client';
+import { viewTabs, appointmentColumns } from './appointments.constants';
 
 export default function AppointmentsPage() {
   const [view, setView] = useState('list');
-  const appointments: Appointment[] = mockAppointments;
+  const { data: citas, isLoading } = useCitasAdministrator();
 
   return (
     <div className="flex flex-col gap-4">
@@ -71,8 +23,9 @@ export default function AppointmentsPage() {
 
       {view === 'list' ? (
         <DataTable
-          columns={columns}
-          data={appointments}
+          columns={appointmentColumns}
+          data={citas}
+          loading={isLoading}
           getRowKey={row => String(row._id)}
         />
       ) : (

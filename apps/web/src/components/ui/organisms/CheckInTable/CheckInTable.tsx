@@ -1,22 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading } from '@hugeicons/core-free-icons';
+
 import { Badge } from '@/components/ui/atoms/Badge';
 import { Button } from '@/components/ui/atoms/Button';
 import { Card } from '@/components/ui/atoms/Card';
-import { mockCheckIns } from '@/lib/mock-data';
 
-type CheckIn = (typeof mockCheckIns)[number] & { checked?: boolean };
+import { CitaEstadoEnum } from '@repo/types';
+import { useCitasAdministrator, useUpdateCita } from '@repo/api-client';
 
 const CheckInTable = () => {
-  const [rows, setRows] = useState<CheckIn[]>(mockCheckIns);
-
-  function handleCheckIn(id: string) {
-    setRows(prev =>
-      prev.map(r => (r._id === id ? { ...r, estado: 'asistido' } : r)),
+  const { data: citas, isLoading } = useCitasAdministrator();
+  const { mutateAsync: checkInCita } = useUpdateCita();
+  if (!isLoading && !citas) {
+    return (
+      <HugeiconsIcon
+        icon={Loading}
+        className="size-10 animate-spin text-brand-primary"
+      />
     );
   }
 
+  function handleCheckIn(id: string) {
+    checkInCita({ id, payload: { estado: CitaEstadoEnum.ASISTIDA } });
+  }
+
+  const rows = citas || [];
   return (
     <Card padding="none" className="flex flex-col gap-0 overflow-hidden">
       <div className="px-5 py-4 border-b border-brand-border">
@@ -48,21 +58,30 @@ const CheckInTable = () => {
                   {row.hora}
                 </td>
                 <td className="px-4 py-3 text-brand-text-primary">
-                  {row.patientName}
+                  {row.paciente_ID.name} {row.paciente_ID.lastName}
                 </td>
                 <td className="px-4 py-3 text-brand-text-secondary">
-                  {row.doctorName}
+                  {row.medico_ID.name} {row.medico_ID.lastName}
+                </td>
+                <td className="px-4 py-3 text-brand-text-secondary">
+                  {row.medico_ID.especialidad}
                 </td>
                 <td className="px-4 py-3">
                   <Badge
-                    variant={row.estado === 'asistido' ? 'success' : 'warning'}
+                    variant={
+                      row.estado === CitaEstadoEnum.ASISTIDA
+                        ? 'success'
+                        : 'warning'
+                    }
                     size="sm"
                   >
-                    {row.estado === 'asistido' ? 'Asistido' : 'Pendiente'}
+                    {row.estado === CitaEstadoEnum.ASISTIDA
+                      ? 'Asistido'
+                      : 'Agendada'}
                   </Badge>
                 </td>
                 <td className="px-4 py-3">
-                  {row.estado === 'pendiente' ? (
+                  {row.estado !== CitaEstadoEnum.ASISTIDA ? (
                     <Button
                       variant="secondary"
                       size="sm"
