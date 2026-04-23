@@ -6,6 +6,15 @@ export type CitaEstado =
   | 'completada'
   | 'cancelada';
 
+export const CitaEstadoEnum = {
+  AGENDADA: 'agendada',
+  ASISTIDA: 'asistida',
+  EN_PROCESO: 'en_proceso',
+  RESULTADOS_LISTOS: 'resultados_listos',
+  COMPLETADA: 'completada',
+  CANCELADA: 'cancelada',
+} as const;
+
 export interface Cita {
   _id: string;
   paciente_ID: string;
@@ -46,10 +55,17 @@ export interface CitaCentroSaludPopulated {
   direccion: string;
 }
 
+export interface CitaPacientePopulated {
+  _id: string;
+  name: string;
+  lastName: string;
+}
+
 export interface CitaPopulated extends Omit<
   Cita,
-  'medico_ID' | 'centroSalud_ID'
+  'medico_ID' | 'centroSalud_ID' | 'paciente_ID'
 > {
   medico_ID: CitaMedicoPopulated;
   centroSalud_ID: CitaCentroSaludPopulated;
+  paciente_ID: CitaPacientePopulated;
 }

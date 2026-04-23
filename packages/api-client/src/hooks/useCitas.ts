@@ -4,6 +4,7 @@ import {
   postCita,
   patchCita,
   deleteCita,
+  getCitasAdministrator,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -57,5 +58,13 @@ export const useCancelCita = () => {
     onError: (error: unknown) => {
       console.error('[useCancelCita] Error al cancelar cita:', error);
     },
+  });
+};
+
+export const useCitasAdministrator = () => {
+  return useQuery({
+    queryKey: appointmentKeys.list('all'),
+    queryFn: getCitasAdministrator,
+    staleTime: 1000 * 60 * 5,
   });
 };

@@ -30,3 +30,13 @@ export const patchCita = async (
 export const deleteCita = async (id: string): Promise<void> => {
   await apiClient.delete(`/api/appointment/${id}`);
 };
+
+export const getCitasAdministrator = async (): Promise<CitaPopulated[]> => {
+  const { data } = await apiClient.get<CitaPopulated[]>(
+    '/api/appointment/allCitas',
+  );
+  return data.map(cita => ({
+    ...cita,
+    fecha: cita.fecha ? cita.fecha.split('T')[0] : '',
+  }));
+};
