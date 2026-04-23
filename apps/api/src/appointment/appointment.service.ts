@@ -67,6 +67,31 @@ export class AppointmentService {
     return appointment;
   }
 
+  async getAppointmentsAdministrator() {
+    const citas = await this.citaModel
+      .find()
+      .populate('medico_ID', 'name lastName')
+      .populate('centroSalud_ID', 'nombre direccion')
+      .populate('paciente_ID', 'name lastName')
+      .sort({ fecha: 1, hora: 1 })
+      .lean()
+      .exec();
+
+    return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
+  }
+  async getAppointmentsMedico(userId: string) {
+    const citas = await this.citaModel
+      .find({ medico_ID: userId })
+      .populate('medico_ID', 'name lastName')
+      .populate('centroSalud_ID', 'nombre direccion')
+      .populate('paciente_ID', 'name lastName')
+      .sort({ fecha: 1, hora: 1 })
+      .lean()
+      .exec();
+
+    return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
+  }
+
   async getAppointments(userId: string) {
     const citas = await this.citaModel
       .find({ paciente_ID: userId })

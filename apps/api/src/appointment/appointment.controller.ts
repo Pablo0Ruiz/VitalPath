@@ -12,6 +12,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -33,6 +34,17 @@ export class AppointmentController {
   @Get()
   findAll(@GetUser('_id') userId: string) {
     return this.appointmentService.getAppointments(userId);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO)
+  @Get('allCitas')
+  findAllAdmin() {
+    return this.appointmentService.getAppointmentsAdministrator();
+  }
+  @Auth(UserRoles.MEDICO)
+  @Get('allCitasMedico')
+  findAllMedico(@GetUser('_id') userId: string) {
+    return this.appointmentService.getAppointmentsMedico(userId);
   }
 
   @Auth()
