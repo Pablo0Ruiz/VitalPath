@@ -8,8 +8,13 @@ import {
   ResultadoEstudio,
   ResultadoEstudioSchema,
 } from 'src/user/entities/resultado-estudio.entity';
+import { Patient, PatientSchema } from 'src/user/entities/patient.entity';
+import {
+  Appointment,
+  AppointmentSchema,
+} from 'src/appointment/entities/appointment.entity';
 import { AuthModule } from 'src/auth/auth.module';
-import { GeminiModule } from 'src/gemini/gemini.module';
+import { GroqModule } from 'src/groq/groq.module';
 
 @Module({
   controllers: [SupabaseController],
@@ -31,11 +36,19 @@ import { GeminiModule } from 'src/gemini/gemini.module';
   exports: [SupabaseService, SUPABASE_CLIENT],
   imports: [
     AuthModule,
-    GeminiModule,
+    GroqModule,
     MongooseModule.forFeature([
       {
         name: ResultadoEstudio.name,
         schema: ResultadoEstudioSchema,
+      },
+      {
+        name: Patient.name,
+        schema: PatientSchema,
+      },
+      {
+        name: Appointment.name,
+        schema: AppointmentSchema,
       },
     ]),
   ],

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -7,11 +8,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
-import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
-import { Appointment } from './entities/appointment.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { Doctor } from '../user/entities/doctor.entity';
 import { Patient } from '../user/entities/patient.entity';
+import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
+import { Appointment } from './entities/appointment.entity';
 
 type LeanMedico = { _id: Types.ObjectId; name: string; lastName: string };
 type LeanCentro = { _id: Types.ObjectId; nombre: string; direccion: string };
@@ -19,6 +20,13 @@ type LeanCita = Omit<Appointment, 'medico_ID' | 'centroSalud_ID'> & {
   _id: Types.ObjectId;
   medico_ID: LeanMedico;
   centroSalud_ID: LeanCentro;
+};
+
+const ALLOWED_TRANSITIONS: Partial<Record<CitaState, CitaState>> = {
+  [CitaState.AGENDADA]: CitaState.ASISTIDA,
+  [CitaState.ASISTIDA]: CitaState.EN_PROCESO,
+  [CitaState.EN_PROCESO]: CitaState.RESULTADOS_LISTOS,
+  [CitaState.RESULTADOS_LISTOS]: CitaState.COMPLETADA,
 };
 
 @Injectable()
@@ -40,10 +48,14 @@ export class AppointmentService {
   ) {
     const pacienteId = new Types.ObjectId(userId);
     const medicoId = new Types.ObjectId(createAppointmentDto.medico_ID);
+    const centroSaludId = new Types.ObjectId(
+      createAppointmentDto.centroSalud_ID,
+    );
+
     const appointment = await this.citaModel.create({
       paciente_ID: pacienteId,
       medico_ID: medicoId,
-      centroSalud_ID: createAppointmentDto.centroSalud_ID,
+      centroSalud_ID: centroSaludId,
       fecha: createAppointmentDto.fecha,
       hora: createAppointmentDto.hora,
       estado: CitaState.AGENDADA,
@@ -55,11 +67,11 @@ export class AppointmentService {
 
     await Promise.all([
       this.patientModel.findOneAndUpdate(
-        { user: userId },
+        { user: pacienteId },
         { $push: { citas: appointment._id } },
       ),
       this.doctorModel.findOneAndUpdate(
-        { user: createAppointmentDto.medico_ID },
+        { user: medicoId },
         { $push: { citas: appointment._id } },
       ),
     ]);
@@ -201,6 +213,21 @@ export class AppointmentService {
     return appointment.save();
   }
 
+  async updateEstadoWorker(citaId: string, estado: CitaState) {
+    const appointment = await this.citaModel.findById(citaId);
+    if (!appointment) throw new NotFoundException('La cita no existe');
+
+    const nextEstado = ALLOWED_TRANSITIONS[appointment.estado as CitaState];
+    if (!nextEstado || nextEstado !== estado) {
+      throw new BadRequestException(
+        `Transición inválida: ${appointment.estado} → ${estado}`,
+      );
+    }
+
+    appointment.estado = estado;
+    return appointment.save();
+  }
+
   async cancelAppointment(userId: string, citaId: string) {
     const appointment = await this.citaModel.findById(citaId);
     if (!appointment) throw new NotFoundException('La cita no existe');
@@ -212,7 +239,7 @@ export class AppointmentService {
 
     await Promise.all([
       this.patientModel.findOneAndUpdate(
-        { user: userId },
+        { user: new Types.ObjectId(userId) },
         { $pull: { citas: appointment._id } },
       ),
       this.doctorModel.findOneAndUpdate(

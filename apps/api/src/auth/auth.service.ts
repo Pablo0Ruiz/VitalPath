@@ -155,7 +155,10 @@ export class AuthService {
     inviteDoctorDto: InviteDoctorDto,
     verificationCode: string,
   ) {
-    const user = await this.userModel.findOne({ verificationCode });
+    const user = await this.userModel.findOne({
+      verificationCode,
+      email: inviteDoctorDto.email,
+    });
     const centroSalud = await this.centroSaludModel.findOne({
       codigoVinculacion: verificationCode,
     });

@@ -30,7 +30,8 @@
     "overrides": {
       "@tanstack/react-query": "^5.90.21",
       "react": "19.1.0",
-      "react-dom": "19.1.0"
+      "react-dom": "19.1.0",
+      "@react-navigation/native": "^7.1.28"
     }
   },
   "name": "vitalpathai"

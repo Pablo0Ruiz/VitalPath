@@ -48,10 +48,35 @@ export class HospitalsService {
     if (hospitalId) {
       hospital = await this.centroSaludModel.findById(hospitalId);
     } else {
-      hospital = await this.centroSaludModel.findOne();
+      const hospitals = await this.centroSaludModel.find();
+      if (hospitals.length === 0)
+        throw new NotFoundException('No hay hospitales registrados');
+      const hospitalsWithCount = await Promise.all(
+        hospitals.map(async h => {
+          const pendingInvites = await this.userModel.countDocuments({
+            verificationCode: h.codigoVinculacion,
+            isActive: false,
+          });
+
+          return {
+            hospital: h,
+            totalWeight: (h.listaMedicos_ID?.length || 0) + pendingInvites,
+          };
+        }),
+      );
+      const sorted = hospitalsWithCount.sort(
+        (a, b) => a.totalWeight - b.totalWeight,
+      );
+      hospital = sorted[0].hospital;
     }
 
-    if (!hospital) throw new NotFoundException('No hay hospitales registrados');
+    if (!hospital) {
+      throw new NotFoundException(
+        hospitalId
+          ? 'Hospital especificado no encontrado'
+          : 'No hay hospitales registrados',
+      );
+    }
     const verificationCode = hospital.codigoVinculacion;
 
     const userUpdate = await this.userModel.findByIdAndUpdate(

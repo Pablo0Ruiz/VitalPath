@@ -32,14 +32,9 @@ export class SupabaseController {
   @UseInterceptors(FilesInterceptor('files'))
   async uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @GetUser('_id') medicoId: string,
     @Body() ctx: UploadContextDto,
   ) {
-    const responseFile = await this.supabaseService.uploadFile(
-      files,
-      medicoId,
-      ctx,
-    );
+    const responseFile = await this.supabaseService.uploadFile(files, ctx);
     return { responseFile, message: 'Archivo subido correctamente' };
   }
 
@@ -51,11 +46,22 @@ export class SupabaseController {
   ) {
     return this.supabaseService.updateResumenMedico(id, resumenMedico);
   }
+  @Auth(UserRoles.PACIENTE)
+  @Get('resultado/mis-resultados')
+  async getMisResultados(@GetUser('_id') pacienteId: string) {
+    return this.supabaseService.getResultadosPaciente(pacienteId);
+  }
 
   @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.MEDICO)
+  @Get('resultado/pacientes')
+  async getAllResumen(@GetUser('_id') medicoId: string) {
+    return this.supabaseService.getAllResumen(medicoId);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.MEDICO, UserRoles.PACIENTE)
   @Get('get-pdf')
   async getPublicUrl(@Query('path') path: string) {
     const responseFile = await this.supabaseService.getPublicUrl(path);
-    return { responseFile, message: 'Archivo subido correctamente' };
+    return responseFile;
   }
 }
