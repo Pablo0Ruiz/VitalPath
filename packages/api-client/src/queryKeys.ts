@@ -20,3 +20,10 @@ export const sessionKeys = {
   all: ['session'] as const,
   current: () => [...sessionKeys.all, 'current'] as const,
 };
+export const resumeKeys = {
+  all: ['resume'] as const,
+  current: () => [...resumeKeys.all, 'current'] as const,
+  summary: (pdfBuffer: ArrayBuffer, id: string) =>
+    [...resumeKeys.all, 'summary', pdfBuffer, id] as const,
+  paciente: () => [...resumeKeys.all, 'paciente'] as const,
+};

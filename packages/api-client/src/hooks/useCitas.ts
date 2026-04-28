@@ -5,6 +5,8 @@ import {
   patchCita,
   deleteCita,
   getCitasAdministrator,
+  getCitasMedico,
+  patchCitaEstadoWorker,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -66,5 +68,28 @@ export const useCitasAdministrator = () => {
     queryKey: appointmentKeys.list('all'),
     queryFn: getCitasAdministrator,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useCitasMedico = () => {
+  return useQuery({
+    queryKey: appointmentKeys.list('all'),
+    queryFn: getCitasMedico,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useAvanzarCitaEstado = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, estado }: { id: string; estado: string }) =>
+      patchCitaEstadoWorker(id, estado),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useAvanzarCitaEstado] Error al avanzar estado:', error);
+    },
   });
 };

@@ -1,5 +1,5 @@
 export interface UserSession {
-  id: string;
+  _id: string;
   name: string;
   lastName?: string;
   email: string;

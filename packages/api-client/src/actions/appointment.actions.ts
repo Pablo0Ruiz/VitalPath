@@ -40,3 +40,23 @@ export const getCitasAdministrator = async (): Promise<CitaPopulated[]> => {
     fecha: cita.fecha ? cita.fecha.split('T')[0] : '',
   }));
 };
+export const patchCitaEstadoWorker = async (
+  id: string,
+  estado: string,
+): Promise<Cita> => {
+  const { data } = await apiClient.patch<Cita>(
+    `/api/appointment/${id}/estado`,
+    { estado },
+  );
+  return data;
+};
+
+export const getCitasMedico = async (): Promise<CitaPopulated[]> => {
+  const { data } = await apiClient.get<CitaPopulated[]>(
+    '/api/appointment/allCitasMedico',
+  );
+  return data.map(cita => ({
+    ...cita,
+    fecha: cita.fecha ? cita.fecha.split('T')[0] : '',
+  }));
+};

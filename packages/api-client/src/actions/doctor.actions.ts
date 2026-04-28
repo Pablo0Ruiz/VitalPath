@@ -1,5 +1,4 @@
 import { apiClient } from '../client';
-import type { UserSession } from '@repo/types';
 
 export interface HealthCenter {
   _id: string;
@@ -41,4 +40,17 @@ export const getDoctors = async (): Promise<DoctorSession[]> => {
 
 export const inviteDoctor = async (doctorId: string): Promise<void> => {
   await apiClient.post<void>(`/api/hospitals/doctors/${doctorId}/invite`);
+};
+
+export interface UploadContext {
+  paciente_ID?: string;
+  cita_ID?: string;
+}
+
+export const uploadFile = async (file: File, ctx: UploadContext) => {
+  const formData = new FormData();
+  formData.append('files', file);
+  formData.append('paciente_ID', ctx.paciente_ID ?? '');
+  formData.append('cita_ID', ctx.cita_ID ?? '');
+  await apiClient.post('/api/storage/upload-file', formData);
 };

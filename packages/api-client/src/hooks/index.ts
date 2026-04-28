@@ -6,3 +6,4 @@ export * from './useRecoverPassword';
 export * from './useMedication';
 export * from './useCitas';
 export * from './useDoctor';
+export * from './useMedicalResults';
