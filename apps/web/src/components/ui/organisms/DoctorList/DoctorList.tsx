@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import { Card } from '@/components/ui/atoms/Card';
 import { Input } from '@/components/ui/atoms/Input';
@@ -18,8 +18,30 @@ const statusTabs = [
 
 const DoctorList = () => {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('si');
-  const [invitedIds, setInvitedIds] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [invitedIds, setInvitedIds] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const saved = localStorage.getItem('vitalpath_invited_doctors');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing invited doctors:', e);
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (invitedIds.length > 0) {
+      localStorage.setItem(
+        'vitalpath_invited_doctors',
+        JSON.stringify(invitedIds),
+      );
+    }
+  }, [invitedIds]);
+
   const { data: doctors, isLoading, error } = useDoctors();
   const {
     mutateAsync: inviteDoctor,
@@ -31,9 +53,27 @@ const DoctorList = () => {
 
   if (isLoading) return <div>Cargando doctores...</div>;
 
-  const handleInviteDoctor = (doctorId: string) => {
-    setInvitedIds(prev => [...prev, doctorId]);
-    inviteDoctor(doctorId);
+  const filteredDoctors = doctors?.filter(doctor => {
+    const fullName =
+      `${doctor.user.name} ${doctor.user.lastName}`.toLowerCase();
+    const matchesSearch =
+      fullName.includes(search.toLowerCase()) ||
+      doctor.user.email.toLowerCase().includes(search.toLowerCase());
+
+    if (statusFilter === 'all') return matchesSearch;
+    if (statusFilter === 'activo') return matchesSearch && doctor.user.isActive;
+    if (statusFilter === 'inactivo')
+      return matchesSearch && !doctor.user.isActive;
+    return matchesSearch;
+  });
+
+  const handleInviteDoctor = async (doctorId: string) => {
+    try {
+      await inviteDoctor(doctorId);
+      setInvitedIds(prev => [...prev, doctorId]);
+    } catch (error) {
+      console.error('Error al enviar el código de verificación:', error);
+    }
   };
 
   return (
@@ -61,11 +101,11 @@ const DoctorList = () => {
       <Card padding="none" className="overflow-hidden">
         <div className="px-5 py-4 border-b border-brand-border">
           <span className="text-sm font-semibold text-brand-text-primary">
-            Doctores ({doctors?.length})
+            Doctores ({filteredDoctors?.length})
           </span>
         </div>
         <div className="divide-y divide-brand-border">
-          {doctors?.map(doctor => (
+          {filteredDoctors?.map(doctor => (
             <div
               key={doctor._id}
               className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"

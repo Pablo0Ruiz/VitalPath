@@ -175,7 +175,13 @@ const LoginForm = () => {
           </button>
 
           {showLinkForm && (
-            <div className="flex flex-col gap-4 p-4 bg-brand-neutral-50 rounded-xl border border-brand-border">
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                handleSubmitInvite(onSubmitInvite)(e);
+              }}
+              className="flex flex-col gap-4 p-4 bg-brand-neutral-50 rounded-xl border border-brand-border"
+            >
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="email" error={errorsInvite.email?.message}>
                   <Input
@@ -209,8 +215,7 @@ const LoginForm = () => {
 
               <Button
                 loading={inviteIsPending}
-                type="button"
-                onClick={handleSubmitInvite(onSubmitInvite)}
+                type="submit"
                 variant="secondary"
                 size="md"
                 fullWidth
@@ -222,7 +227,7 @@ const LoginForm = () => {
                   Error al vincular perfil. Verificá tus credenciales.
                 </p>
               )}
-            </div>
+            </form>
           )}
         </div>
       </div>

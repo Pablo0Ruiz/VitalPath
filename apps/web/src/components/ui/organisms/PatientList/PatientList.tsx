@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/atoms/Input';
 import { Tabs } from '@/components/ui/atoms/Tabs';
 import { Avatar } from '@/components/ui/atoms/Avatar';
 import { Badge } from '@/components/ui/atoms/Badge';
-import { mockPatients } from '@/lib/mock-data';
+import { useCitasMedico } from '@repo/api-client';
 
 const statusTabs = [
   { value: 'all', label: 'Todos' },
@@ -18,14 +18,31 @@ const statusTabs = [
 const PatientList = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const { data: citas, isLoading, isError, error } = useCitasMedico();
 
-  const filtered = mockPatients.filter(p => {
-    const fullName = `${p.name} ${p.lastName}`.toLowerCase();
-    const matchSearch =
-      fullName.includes(search.toLowerCase()) ||
-      p.email.includes(search.toLowerCase());
+  if (isLoading) {
+    return <div>Cargando pacientes...</div>;
+  }
+  if (isError) {
+    return <div>Error al cargar pacientes: {error.message}</div>;
+  }
+
+  const seenIds = new Set();
+  const filtered = citas?.filter(p => {
+    if (!p.paciente_ID || typeof p.paciente_ID === 'string') return false;
+
+    const fullName =
+      `${p.paciente_ID.name} ${p.paciente_ID.lastName}`.toLowerCase();
+    const matchSearch = fullName.includes(search.toLowerCase());
+
     const matchStatus = statusFilter === 'all' || p.estado === statusFilter;
-    return matchSearch && matchStatus;
+
+    if (matchSearch && matchStatus) {
+      if (seenIds.has(p.paciente_ID._id)) return false;
+      seenIds.add(p.paciente_ID._id);
+      return true;
+    }
+    return false;
   });
 
   return (
@@ -53,26 +70,26 @@ const PatientList = () => {
       <Card padding="none" className="overflow-hidden">
         <div className="px-5 py-4 border-b border-brand-border">
           <span className="text-sm font-semibold text-brand-text-primary">
-            Pacientes ({filtered.length})
+            Pacientes ({filtered?.length})
           </span>
         </div>
         <div className="divide-y divide-brand-border">
-          {filtered.map(patient => (
+          {filtered?.map(patient => (
             <div
               key={patient._id}
               className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"
             >
-              <Avatar name={`${patient.name} ${patient.lastName}`} size="md" />
+              <Avatar
+                name={`${patient.paciente_ID.name} ${patient.paciente_ID.lastName}`}
+                size="md"
+              />
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <span className="text-sm font-semibold text-brand-text-primary">
-                  {patient.name} {patient.lastName}
-                </span>
-                <span className="text-xs text-brand-text-secondary truncate">
-                  {patient.email}
+                  {patient.paciente_ID.name} {patient.paciente_ID.lastName}
                 </span>
               </div>
               <Badge
-                variant={patient.estado === 'activo' ? 'success' : 'neutral'}
+                variant={patient.estado === 'agendada' ? 'success' : 'neutral'}
                 size="sm"
                 className="capitalize shrink-0"
               >

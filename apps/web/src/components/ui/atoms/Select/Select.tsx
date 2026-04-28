@@ -20,8 +20,9 @@ const Select = ({
   options,
   error,
   placeholder,
+  ref,
   ...props
-}: SelectProps) => {
+}: SelectProps & { ref?: React.Ref<HTMLSelectElement> }) => {
   return (
     <div className="relative flex items-center">
       <select
@@ -30,6 +31,7 @@ const Select = ({
           error ? 'border-brand-state-error' : 'border-brand-border',
           className,
         )}
+        ref={ref}
         {...props}
       >
         {placeholder && (

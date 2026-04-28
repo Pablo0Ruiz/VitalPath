@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/atoms/Badge';
 type PatientRowProps = {
   name: string;
   lastName: string;
-  email: string;
+  email?: string;
   estado: string;
 };
 

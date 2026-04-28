@@ -11,7 +11,6 @@ import {
 import { StatCard } from '@/components/ui/molecules/StatCard';
 import { Input } from '@/components/ui/atoms/Input';
 import { CheckInTable } from '@/components/ui/organisms/CheckInTable';
-import { CenterCodePanel } from '@/components/ui/organisms/CenterCodePanel';
 
 const DashboardAdmin = () => {
   const [search, setSearch] = useState('');
@@ -45,27 +44,21 @@ const DashboardAdmin = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <Input
-                type="search"
-                placeholder="Buscar paciente..."
-                leftIcon={Search01Icon}
-                value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearch(e.target.value)
-                }
-              />
-            </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <Input
+              type="search"
+              placeholder="Buscar paciente..."
+              leftIcon={Search01Icon}
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearch(e.target.value)
+              }
+            />
           </div>
-          <CheckInTable />
         </div>
-
-        <div>
-          <CenterCodePanel />
-        </div>
+        <CheckInTable />
       </div>
     </div>
   );
