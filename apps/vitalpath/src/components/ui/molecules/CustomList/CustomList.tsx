@@ -1,13 +1,15 @@
 import { View } from 'react-native';
-
-import { TextField } from '../../atoms';
 import { Medication, CitaPopulated } from '@repo/types';
+import { EmptyState } from '../../atoms/EmptyState';
 import { RawAppointments, RawMedications } from './rawData';
-import { useDeleteMedication } from '@repo/api-client';
 
 type MedicationListProps = {
   type: 'medication';
   data: Medication[] | undefined;
+  onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
+  onTake: (id: string) => void;
+  completedIds: string[];
 };
 
 type AppointmentListProps = {
@@ -17,44 +19,39 @@ type AppointmentListProps = {
 
 export type ListProps = MedicationListProps | AppointmentListProps;
 
-const EMPTY_MESSAGES: Record<ListProps['type'], string> = {
-  medication: 'No tienes medicamentos programados para hoy.',
-  cita: 'No tienes citas programadas.',
-};
-
-const CustomList = ({ type, data }: ListProps) => {
-  const { mutateAsync: deleteMedication } = useDeleteMedication();
-
-  const handleDelete = async (id: string) => {
-    console.log('id delete medicamento:', id);
-    try {
-      await deleteMedication(id);
-    } catch (error) {
-      console.error('Error al eliminar:', error);
-    }
-  };
-
-  if (!data || data.length === 0) {
+const CustomList = (props: ListProps) => {
+  if (!props.data || props.data.length === 0) {
+    const isMed = props.type === 'medication';
     return (
-      <TextField
-        variant="caption"
-        className="text-center text-brand-slate-400 py-4"
-      >
-        {EMPTY_MESSAGES[type]}
-      </TextField>
+      <EmptyState
+        icon={isMed ? 'activity' : 'calendar'}
+        title={isMed ? 'Salud al día' : 'Agenda libre'}
+        subtitle={
+          isMed
+            ? 'No tienes medicamentos programados para hoy.'
+            : 'No tienes citas programadas.'
+        }
+      />
+    );
+  }
+
+  if (props.type === 'medication') {
+    return (
+      <View>
+        <RawMedications
+          data={props.data}
+          onDelete={props.onDelete}
+          onEdit={props.onEdit}
+          onTake={props.onTake}
+          completedIds={props.completedIds}
+        />
+      </View>
     );
   }
 
   return (
     <View>
-      {type === 'medication' ? (
-        <RawMedications
-          data={data}
-          onClick={(id: string) => handleDelete(id)}
-        />
-      ) : (
-        <RawAppointments data={data} />
-      )}
+      <RawAppointments data={props.data} />
     </View>
   );
 };

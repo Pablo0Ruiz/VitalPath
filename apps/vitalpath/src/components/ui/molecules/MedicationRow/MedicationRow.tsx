@@ -1,6 +1,7 @@
 import { Octicons } from '@expo/vector-icons';
-import { Pressable, View, ViewProps } from 'react-native';
+import { Pressable, StyleSheet, View, ViewProps } from 'react-native';
 import { Button, TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface MedicationRowProps extends ViewProps {
   name: string;
@@ -20,42 +21,47 @@ const MedicationRow = ({
   description,
   onDeletePress,
   onEditPress,
-  className,
+  style,
   ...props
 }: MedicationRowProps) => {
+  const t = useTheme();
+
   return (
-    <View
-      className={`flex-row items-center py-2.5 ${className ?? ''}`}
-      {...props}
-    >
+    <View style={[s.base, style]} {...props}>
       <Pressable
         onPress={!isDone ? onTakePress : undefined}
-        className={`w-8 h-8 rounded-full items-center justify-center mr-3 ${
+        style={[
+          s.checkbox,
           isDone
-            ? 'bg-success'
-            : 'border-2 border-brand-violet-300 bg-brand-violet-50'
-        }`}
+            ? { backgroundColor: t.success }
+            : {
+                borderColor: t.primary200,
+                backgroundColor: t.primary50,
+                borderWidth: 2,
+              },
+        ]}
       >
         {isDone && <Octicons name="check" size={14} color="white" />}
       </Pressable>
 
-      <View className="flex-1">
+      <View style={s.content}>
         <TextField
           variant="body"
-          className={`text-left font-semibold text-sm ${
+          style={[
+            s.name,
             isDone
-              ? 'text-brand-slate-400 line-through'
-              : 'text-brand-slate-800'
-          }`}
+              ? { color: t.textSecondary, textDecorationLine: 'line-through' }
+              : { color: t.textPrimary },
+          ]}
         >
           {name}
         </TextField>
         {time && (
-          <View className="flex-row items-center mt-0.5">
-            <Octicons name="clock" size={10} color="#94a3b8" />
+          <View style={s.timeWrapper}>
+            <Octicons name="clock" size={10} color={t.textSecondary} />
             <TextField
               variant="caption"
-              className="text-left text-brand-slate-400 text-xs ml-1"
+              style={[s.timeText, { color: t.textSecondary }]}
             >
               {time}
             </TextField>
@@ -64,23 +70,23 @@ const MedicationRow = ({
         {description && (
           <TextField
             variant="caption"
-            className="text-left text-brand-slate-400 text-xs mt-0.5"
+            style={[s.description, { color: t.textSecondary }]}
           >
             {description}
           </TextField>
         )}
       </View>
 
-      <View className="flex-row items-center gap-1.5">
+      <View style={s.actions}>
         {!isDone && onTakePress && (
           <Button
             onPress={onTakePress}
             size="sm"
-            className="bg-brand-violet-100 rounded-full px-3 py-1.5"
+            style={[s.takeButton, { backgroundColor: t.primary100 }]}
           >
             <TextField
               variant="caption"
-              className="text-brand-violet-700 font-semibold text-xs"
+              style={[s.takeText, { color: t.primary700 }]}
             >
               Tomar
             </TextField>
@@ -90,23 +96,50 @@ const MedicationRow = ({
         {onEditPress && (
           <Pressable
             onPress={onEditPress}
-            className="w-7 h-7 rounded-full bg-brand-slate-100 items-center justify-center"
+            style={[s.iconButton, { backgroundColor: t.neutral100 }]}
           >
-            <Octicons name="pencil" size={12} color="#64748b" />
+            <Octicons name="pencil" size={12} color={t.neutral600} />
           </Pressable>
         )}
 
         {onDeletePress && (
           <Pressable
             onPress={onDeletePress}
-            className="w-7 h-7 rounded-full bg-red-50 items-center justify-center"
+            style={[s.iconButton, { backgroundColor: t.errorLight }]}
           >
-            <Octicons name="trash" size={12} color="#ef4444" />
+            <Octicons name="trash" size={12} color={t.error} />
           </Pressable>
         )}
       </View>
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  base: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
+  checkbox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  content: { flex: 1 },
+  name: { fontSize: 14, fontWeight: '600' },
+  timeWrapper: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  timeText: { fontSize: 12, marginLeft: 4 },
+  description: { fontSize: 12, marginTop: 2 },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  takeButton: { borderRadius: 9999, paddingHorizontal: 12, paddingVertical: 6 },
+  takeText: { fontWeight: '600', fontSize: 12 },
+  iconButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default MedicationRow;

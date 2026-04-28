@@ -2,56 +2,89 @@ import {
   ActivityIndicator,
   Pressable,
   PressableProps,
+  StyleSheet,
   Text,
+  ViewStyle,
+  StyleProp,
 } from 'react-native';
-import { buttonVariants, buttonTitle } from './Button.variants';
-import { VariantProps } from 'class-variance-authority';
+import {
+  buttonContainerStyle,
+  buttonSizeStyle,
+  buttonTitleStyle,
+  buttonTitleSizeStyle,
+  buttonLoadingColor,
+  type ButtonVariant,
+  type ButtonSize,
+} from './Button.variants';
+import { useTheme } from '@/src/hooks/useTheme';
 
-export interface ButtonProps
-  extends PressableProps, VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends Omit<PressableProps, 'style'> {
   title?: string;
-  onPress?: () => void;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   loading?: boolean;
+  loadingPosition?: 'left' | 'right';
   children?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }
-
-const loadingColor: Record<string, string> = {
-  primary: '#ffffff',
-  secondary: '#ffffff',
-  outline: '#7c3aed',
-  ghost: '#7c3aed',
-  danger: '#dc2626',
-};
 
 const Button = ({
   title,
   onPress,
-  className,
   variant = 'primary',
   size = 'md',
   loading = false,
+  loadingPosition = 'left',
   children,
   disabled,
+  style,
   ...props
 }: ButtonProps) => {
+  const t = useTheme();
+
+  const spinner = loading ? (
+    <ActivityIndicator size="small" color={buttonLoadingColor(variant, t)} />
+  ) : null;
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      className={`${buttonVariants({ variant, size })} ${className ?? ''}`}
-      style={({ pressed }) => ({ opacity: pressed || loading ? 0.75 : 1 })}
+      style={({ pressed }) => [
+        s.base,
+        buttonSizeStyle[size],
+        buttonContainerStyle(variant, t),
+        { opacity: pressed || loading ? 0.75 : 1 },
+        style,
+      ]}
       {...props}
     >
-      {loading ? (
-        <ActivityIndicator color={loadingColor[variant ?? 'primary']} />
-      ) : (
-        <>
-          <Text className={buttonTitle({ variant, size })}>{title}</Text>
-          {children}
-        </>
+      {loading && loadingPosition === 'left' && spinner}
+      {title && (
+        <Text
+          style={[
+            s.title,
+            buttonTitleSizeStyle[size],
+            buttonTitleStyle(variant, t),
+          ]}
+        >
+          {title}
+        </Text>
       )}
+      {children}
+      {loading && loadingPosition === 'right' && spinner}
     </Pressable>
   );
 };
+
+const s = StyleSheet.create({
+  base: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+  },
+  title: { fontWeight: '600' },
+});
 
 export default Button;

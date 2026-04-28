@@ -1,18 +1,24 @@
-import { cva, type VariantProps } from 'class-variance-authority';
+import { StyleSheet, ViewStyle } from 'react-native';
+import { ThemeTokens } from '@/src/constants/tokens';
 
-export const checkboxVariants = cva(
-  'w-6 h-6 rounded-md border-2 mr-3 items-center justify-center',
-  {
-    variants: {
-      checked: {
-        true: 'bg-brand-violet-600 border-brand-violet-600',
-        false: 'border-brand-slate-200 bg-white',
-      },
-    },
-    defaultVariants: {
-      checked: false,
-    },
+export const checkboxContainerStyle = (
+  checked: boolean,
+  t: ThemeTokens,
+): ViewStyle => {
+  return {
+    backgroundColor: checked ? t.primary600 : t.surface,
+    borderColor: checked ? t.primary600 : t.border,
+  };
+};
+
+export const checkboxBaseStyles = StyleSheet.create({
+  container: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-);
-
-export type CheckboxVariants = VariantProps<typeof checkboxVariants>;
+});

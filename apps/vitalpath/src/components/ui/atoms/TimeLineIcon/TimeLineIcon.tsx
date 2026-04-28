@@ -1,6 +1,7 @@
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { iconConfig } from '@/src/constants/iconConfig';
+import { getIconConfig } from '@/src/constants/iconConfig';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export type TimelineStatus = 'completed' | 'sample' | 'processing' | 'locked';
 
@@ -8,16 +9,39 @@ export interface TimelineIconProps extends ViewProps {
   status: TimelineStatus;
 }
 
-const TimelineIcon = ({ status, className, ...props }: TimelineIconProps) => {
-  const { icon, bg, iconColor } = iconConfig[status];
+const TimelineIcon = ({ status, style, ...props }: TimelineIconProps) => {
+  const t = useTheme();
+  const config = getIconConfig(t)[status];
+
   return (
     <View
-      className={`w-10 h-10 rounded-full items-center justify-center ${bg} ${className ?? ''}`}
+      style={[
+        s.base,
+        { backgroundColor: config.bg },
+        config.borderColor
+          ? { borderWidth: 1, borderColor: config.borderColor }
+          : undefined,
+        style,
+      ]}
       {...props}
     >
-      <Feather name={icon as any} size={18} color={iconColor} />
+      <Feather
+        name={config.icon as keyof typeof Feather.glyphMap}
+        size={18}
+        color={config.iconColor}
+      />
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  base: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default TimelineIcon;

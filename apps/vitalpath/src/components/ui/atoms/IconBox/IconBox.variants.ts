@@ -1,16 +1,11 @@
-import { cva, type VariantProps } from 'class-variance-authority';
+import { StyleSheet, ViewStyle } from 'react-native';
 
-export const iconBoxVariants = cva('items-center justify-center rounded-xl', {
-  variants: {
-    size: {
-      sm: 'w-7 h-7',
-      md: 'w-8 h-8',
-      lg: 'w-10 h-10',
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-  },
+export type IconBoxSize = 'sm' | 'md' | 'lg';
+
+export const iconBoxSizeStyles = StyleSheet.create<
+  Record<IconBoxSize, ViewStyle>
+>({
+  sm: { width: 28, height: 28 },
+  md: { width: 32, height: 32 },
+  lg: { width: 40, height: 40 },
 });
-
-export type IconBoxVariants = VariantProps<typeof iconBoxVariants>;

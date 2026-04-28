@@ -1,21 +1,31 @@
-import { View, ViewProps } from 'react-native';
+import { DimensionValue, StyleSheet, View, ViewProps } from 'react-native';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface ProgressBarProps extends ViewProps {
   progress: number;
 }
 
-const ProgressBar = ({ progress, className, ...props }: ProgressBarProps) => {
+const ProgressBar = ({ progress, style, ...props }: ProgressBarProps) => {
+  const t = useTheme();
+
   return (
-    <View
-      className={`h-2 bg-slate-200 rounded-full w-full overflow-hidden ${className ?? ''}`}
-      {...props}
-    >
+    <View style={[s.track, { backgroundColor: t.border }, style]} {...props}>
       <View
-        className="h-full bg-blue-600 rounded-full"
-        style={{ width: `${progress}%` }}
+        style={[
+          s.fill,
+          {
+            width: `${progress}%` as DimensionValue,
+            backgroundColor: t.primary600,
+          },
+        ]}
       />
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  track: { height: 8, borderRadius: 9999, width: '100%', overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 9999 },
+});
 
 export default ProgressBar;

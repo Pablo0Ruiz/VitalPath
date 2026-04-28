@@ -1,4 +1,5 @@
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { Card } from '@/src/components/ui/atoms/Card';
 import { AppointmentRow } from '../AppointmentRow';
 import { AppointmentStatus } from '../AppointmentStatus';
 import { formatDateShort } from '@/src/utils/date';
@@ -14,18 +15,20 @@ const AppointmentCard = ({
   appointment,
   onCancel,
   isCancelling,
-  className,
+  style,
   ...props
 }: AppointmentCardProps) => {
   const { name, lastName } = appointment.medico_ID;
   const avatarInitials = `${name[0]}${lastName[0]}`.toUpperCase();
 
   return (
-    <View
-      className={`flex-row items-start justify-between ${className ?? ''}`}
+    <Card
+      variant="elevated"
+      padding="md"
+      style={[s.container, style]}
       {...props}
     >
-      <View className="flex-1">
+      <View style={s.row}>
         <AppointmentRow
           doctor={`${name} ${lastName}`}
           specialty={appointment.medico_ID.especialidad}
@@ -38,10 +41,20 @@ const AppointmentCard = ({
         status={appointment.estado}
         onCancel={onCancel ? () => onCancel(appointment._id) : undefined}
         isCancelling={isCancelling}
-        className="ml-2 mt-1"
+        style={s.status}
       />
-    </View>
+    </Card>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  row: { flex: 1 },
+  status: { marginLeft: 8, marginTop: 4 },
+});
 
 export default AppointmentCard;

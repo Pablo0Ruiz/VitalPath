@@ -1,31 +1,36 @@
 import { useState, useMemo } from 'react';
-import { ScrollView, View, ActivityIndicator, Alert } from 'react-native';
+import { FlatList, View, Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { TextField, Button } from '@/src/components/ui/atoms';
+import {
+  EmptyState,
+  LoadingScreen,
+  ScreenHeader,
+} from '@/src/components/ui/atoms';
 import {
   SectionHeader,
   AppointmentCard,
-  Divider,
   DoctorPickerSheet,
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organism';
-import { useCitas, useCreateCita, useCancelCita } from '@repo/api-client';
+import { useCitas, useCancelCita } from '@repo/api-client';
 import { useAuthStore } from '@repo/store';
 import { extractDateKey } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
+import { useTheme } from '@/src/hooks/useTheme';
+import { useDisclosure } from '@/src/hooks';
 
 export default function AppointmentsScreen() {
+  const t = useTheme();
   const { user } = useAuthStore();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [isSheetVisible, setIsSheetVisible] = useState(false);
-  const [sheetDate, setSheetDate] = useState<Date | null>(null);
+  const sheet = useDisclosure<Date>();
 
   const {
     data: citas = [],
     isLoading,
     isRefetching,
-  } = useCitas(user?.id ?? '');
+  } = useCitas(user?._id ?? '');
 
   const { mutate: cancelarCita, isPending: isCancelling } = useCancelCita();
 
@@ -57,86 +62,71 @@ export default function AppointmentsScreen() {
     );
   };
 
+  if (isLoading && !isRefetching) {
+    return <LoadingScreen size="small" />;
+  }
+
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 100 }}
+    <SafeAreaView
+      style={[s.container, { backgroundColor: t.background }]}
+      edges={['top']}
+    >
+      <FlatList
+        data={todaysAppointments}
+        keyExtractor={item => item._id}
+        contentContainerStyle={s.listContent}
         showsVerticalScrollIndicator={false}
-      >
-        <View className="px-5 pt-6 pb-4 border-b border-brand-slate-100">
-          <TextField
-            variant="title"
-            className="text-brand-slate-900 font-bold text-[28px] leading-tight text-left mb-1"
-          >
-            Citas
-          </TextField>
-          <TextField
-            variant="caption"
-            className="text-brand-slate-400 text-sm text-left"
-          >
-            Gestioná tus citas médicas
-          </TextField>
-        </View>
+        ListHeaderComponent={
+          <>
+            <ScreenHeader title="Citas" subtitle="Gestioná tus citas médicas" />
 
-        <View className="px-5 pt-5 mb-5">
-          <CalendarWidget
-            appointmentsMap={appointmentsMap}
-            onDateChange={date => setSelectedDate(date)}
-            initialDate={selectedDate}
-            onDayPressSheet={date => {
-              setSheetDate(date);
-              setIsSheetVisible(true);
-            }}
-          />
-        </View>
+            <View style={s.calendarWrapper}>
+              <CalendarWidget
+                appointmentsMap={appointmentsMap}
+                onDateChange={date => setSelectedDate(date)}
+                initialDate={selectedDate}
+                onDayPressSheet={date => sheet.open(date)}
+              />
+            </View>
 
-        <View className="px-5">
-          <View className="flex-row items-center justify-between mb-3">
-            <SectionHeader
-              title="Citas seleccionadas"
-              className="flex-1 mb-0"
+            <View style={s.sectionHeaderWrapper}>
+              <SectionHeader title="Citas seleccionadas" style={s.noMargin} />
+            </View>
+          </>
+        }
+        ItemSeparatorComponent={() => <View style={s.separator} />}
+        renderItem={({ item }) => (
+          <View style={s.rowPadding}>
+            <AppointmentCard
+              appointment={item}
+              onCancel={handleCancelar}
+              isCancelling={isCancelling}
             />
           </View>
-
-          <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
-            {isLoading && !isRefetching ? (
-              <View className="py-8 items-center">
-                <ActivityIndicator size="small" color="#7c3aed" />
-              </View>
-            ) : todaysAppointments.length > 0 ? (
-              <View className="px-4">
-                {todaysAppointments.map((appt: CitaPopulated, idx: number) => (
-                  <View key={appt._id}>
-                    <AppointmentCard
-                      appointment={appt}
-                      onCancel={handleCancelar}
-                      isCancelling={isCancelling}
-                    />
-                    {idx < todaysAppointments.length - 1 && (
-                      <Divider className="bg-brand-slate-100" />
-                    )}
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <View className="py-10 items-center">
-                <TextField
-                  variant="caption"
-                  className="text-brand-slate-400 text-sm text-center"
-                >
-                  No hay citas para este día
-                </TextField>
-              </View>
-            )}
-          </View>
-        </View>
-      </ScrollView>
+        )}
+        ListEmptyComponent={
+          <EmptyState
+            icon="calendar"
+            title="Agenda libre"
+            subtitle="No hay citas para este día"
+          />
+        }
+      />
       <DoctorPickerSheet
-        visible={isSheetVisible}
-        date={sheetDate}
-        onClose={() => setIsSheetVisible(false)}
+        visible={sheet.isOpen}
+        date={sheet.data}
+        onClose={sheet.close}
       />
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  listContent: { paddingBottom: 120 },
+  calendarWrapper: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 20 },
+  sectionHeaderWrapper: { paddingHorizontal: 20, marginBottom: 12 },
+  noMargin: { marginBottom: 0 },
+  separator: { height: 12 },
+  rowPadding: { paddingHorizontal: 20 },
+});

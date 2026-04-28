@@ -1,36 +1,58 @@
-import { ScrollView, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { useMedicalResultsPaciente } from '@repo/api-client';
+import type { IMedicalResults } from '@repo/types';
 
-import { TextField } from '@/src/components/ui/atoms';
-import { TrackingTimeline } from '@/src/components/ui/organism/TrackingTimeline';
+import {
+  EmptyState,
+  LoadingScreen,
+  ScreenHeader,
+} from '@/src/components/ui/atoms';
+import { StudyCard } from '@/src/components/ui/molecules/StudyCard';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export default function RecordsScreen() {
-  return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="px-5 pt-6 pb-4 border-b border-brand-slate-100">
-          <TextField
-            variant="title"
-            className="text-brand-slate-900 font-bold text-[28px] leading-tight text-left mb-1"
-          >
-            Análisis
-          </TextField>
-          <TextField
-            variant="caption"
-            className="text-brand-slate-400 text-sm text-left"
-          >
-            Seguimiento en tiempo real de tus resultados clínicos
-          </TextField>
-        </View>
+  const t = useTheme();
+  const { data: resultados, isLoading } = useMedicalResultsPaciente();
 
-        <View className="px-5 pt-5">
-          <TrackingTimeline onPrivacyPress={() => {}} />
-        </View>
-      </ScrollView>
+  return (
+    <SafeAreaView
+      style={[s.container, { backgroundColor: t.background }]}
+      edges={['top']}
+    >
+      <ScreenHeader
+        title="Análisis"
+        subtitle="Seguimiento en tiempo real de tus resultados clínicos"
+      />
+
+      {isLoading ? (
+        <LoadingScreen size="large" />
+      ) : !resultados?.length ? (
+        <EmptyState
+          icon="file-text"
+          title="Sin estudios"
+          subtitle="Aún no tienes estudios clínicos o análisis registrados en tu historial."
+        />
+      ) : (
+        <FlatList
+          data={resultados}
+          keyExtractor={(item: IMedicalResults) => item._id}
+          contentContainerStyle={s.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }: { item: IMedicalResults }) => (
+            <StudyCard
+              study={item}
+              onPress={() => router.push(`/records/${item._id}`)}
+            />
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  listContent: { padding: 20, gap: 12, paddingBottom: 100 },
+});

@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { TAB_ROUTES } from '@/src/routes/routes';
+import { TabBarPill } from '@/src/components/ui/atoms/TabBarPill';
 
 const ICON_MAP: Record<string, keyof typeof Ionicons.glyphMap> = {
   Home01Icon: 'home-outline',
@@ -13,27 +13,10 @@ const ICON_MAP: Record<string, keyof typeof Ionicons.glyphMap> = {
 export default function TabsLayout() {
   return (
     <Tabs
+      tabBar={props => <TabBarPill {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: '#5B4CF5',
-        tabBarInactiveTintColor: '#9CA3AF',
-        tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 0,
-          height: 60,
-          paddingBottom: 16,
-          paddingTop: 5,
-          marginBottom: Platform.OS === 'ios' ? 0 : 16,
-          elevation: 12,
-          shadowColor: '#5B4CF5',
-          shadowOpacity: 0.12,
-          shadowRadius: 20,
-          shadowOffset: { width: 0, height: -4 },
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: '600',
-          marginTop: 2,
-        },
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
       {TAB_ROUTES.map(route => (
@@ -51,6 +34,13 @@ export default function TabsLayout() {
           }}
         />
       ))}
+      <Tabs.Screen
+        name="medications"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

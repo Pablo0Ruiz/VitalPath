@@ -1,43 +1,52 @@
-import { PressableProps, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Button } from '../Button';
-import { Avatar } from '../Avatar';
-import { TextField } from '../TextFiled';
+import { TextField } from '../TextField';
+import { UserAvatar } from '../UserAvatar';
+import { useTheme } from '@/src/hooks/useTheme';
 
-export interface HeaderHomeProps extends PressableProps {
+export interface HeaderHomeProps {
   textLabel: string;
   onLogaut?: () => void;
   nameUser: string | undefined;
+  style?: StyleProp<ViewStyle>;
 }
 
 const HeaderHome = ({
-  textLabel = 'textLabel example',
+  textLabel = 'Welcome back',
   onLogaut,
-  nameUser = 'example',
-  className,
+  nameUser = 'User',
+  style,
 }: HeaderHomeProps) => {
+  const t = useTheme();
+
   return (
-    <Button variant="ghost" onLongPress={onLogaut} className={className}>
-      <Avatar
-        image={require('@/assets/images/vitalpath-logo.png')}
-        size="md"
-        className="bg-brand-violet-50"
-      />
-      <View className="ml-3">
+    <Button variant="ghost" onLongPress={onLogaut} style={[s.container, style]}>
+      <UserAvatar size="md" showStatus name={nameUser} />
+      <View style={s.content}>
         <TextField
           variant="caption"
-          className="text-brand-slate-400 text-left text-xs"
+          style={[s.label, { color: t.textSecondary }]}
         >
           {textLabel}
         </TextField>
-        <TextField
-          variant="body"
-          className="text-brand-slate-900 font-semibold text-left text-[15px]"
-        >
+        <TextField variant="body" style={[s.name, { color: t.textPrimary }]}>
           {nameUser}
         </TextField>
       </View>
     </Button>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 0,
+  },
+  content: { marginLeft: 12 },
+  label: { textAlign: 'left', fontSize: 12 },
+  name: { textAlign: 'left', fontSize: 15, fontWeight: '600' },
+});
 
 export default HeaderHome;

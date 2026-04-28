@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CalendarWidgetProps extends ViewProps {
   appointmentsMap: Record<string, boolean>;
@@ -15,9 +16,11 @@ export const CalendarWidget = ({
   onDateChange,
   onDayPressSheet,
   initialDate = new Date(),
-  className,
+  style,
   ...props
 }: CalendarWidgetProps) => {
+  const t = useTheme();
+
   const [currentMonth, setCurrentMonth] = useState<Date>(
     new Date(initialDate.getFullYear(), initialDate.getMonth(), 1),
   );
@@ -47,14 +50,11 @@ export const CalendarWidget = ({
 
   return (
     <View
-      className={`bg-white rounded-3xl p-5 border border-zinc-100 ${className ?? ''}`}
-      style={{
-        elevation: 4,
-        shadowColor: '#5B4CF5',
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 4 },
-      }}
+      style={[
+        s.container,
+        { backgroundColor: t.background, borderColor: t.border },
+        style,
+      ]}
       {...props}
     >
       <CalendarHeader
@@ -71,3 +71,16 @@ export const CalendarWidget = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+});

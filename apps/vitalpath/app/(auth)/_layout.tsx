@@ -1,16 +1,27 @@
 import { Stack } from 'expo-router';
-import { AUTH_ROUTES } from '@/src/routes/routes';
+import { BackButton } from '@/src/components/ui/atoms/BackButton';
 
 export default function AuthLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      {AUTH_ROUTES.map(route => (
-        <Stack.Screen
-          key={route.screenName}
-          name={route.screenName}
-          options={{ title: route.title }}
-        />
-      ))}
+    <Stack>
+      <Stack.Screen name="login/index" options={{ headerShown: false }} />
+
+      <Stack.Screen name="register" options={{ headerShown: false }} />
+
+      <Stack.Screen
+        name="recover-password/index"
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          headerTitle: '',
+          headerLeft: () => <BackButton />,
+        }}
+      />
+
+      <Stack.Screen
+        name="recover-password-email-sent/index"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

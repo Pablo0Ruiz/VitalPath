@@ -1,56 +1,133 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { TimelineStep, SecurityBanner } from '../../molecules';
+import type { IMedicalResults } from '@repo/types';
 
 export interface TrackingTimelineProps extends ViewProps {
   onPrivacyPress?: () => void;
+  resultado?: IMedicalResults;
+}
+
+type StepConfig = {
+  s1: 'completed' | 'locked';
+  s2: 'sample' | 'completed' | 'locked';
+  s3: 'processing' | 'completed' | 'locked';
+  s4: 'completed' | 'locked';
+};
+
+function deriveSteps(estado: string): StepConfig {
+  if (estado === 'asistida')
+    return { s1: 'completed', s2: 'sample', s3: 'locked', s4: 'locked' };
+  if (estado === 'en_proceso')
+    return { s1: 'completed', s2: 'completed', s3: 'processing', s4: 'locked' };
+  if (estado === 'resultados_listos' || estado === 'completada')
+    return {
+      s1: 'completed',
+      s2: 'completed',
+      s3: 'completed',
+      s4: 'completed',
+    };
+  return { s1: 'completed', s2: 'sample', s3: 'locked', s4: 'locked' };
 }
 
 const TrackingTimeline = ({
   onPrivacyPress,
-  className,
+  style,
+  resultado,
   ...props
 }: TrackingTimelineProps) => {
+  if (!resultado) {
+    return (
+      <View style={[s.container, style]} {...props}>
+        <TimelineStep
+          status="completed"
+          title="Cita Completada"
+          time="09:00 AM"
+          date="OCT 12"
+          doctorName="Dr. Arisveth Mendoza"
+        />
+        <TimelineStep
+          status="sample"
+          title="Muestra Tomada"
+          time="09:15 AM"
+          date="OCT 12"
+          samples="Hemoglobina Glicosilada, Perfil Lipídico."
+        />
+        <TimelineStep
+          status="processing"
+          title="En Proceso de Laboratorio"
+          time="Iniciado Oct 12, 11:30 AM"
+          progressLabel="ANÁLISIS MOLECULAR"
+          progressValue={65}
+          isActive
+        />
+        <TimelineStep
+          status="locked"
+          title="Resultados Listos"
+          pendingNote="En espera de encriptación y validación final."
+          estimatedTime="24 horas"
+          isLocked
+          isLast
+        />
+        <SecurityBanner style={s.banner} onMorePress={onPrivacyPress} />
+      </View>
+    );
+  }
+
+  const steps = deriveSteps(resultado.cita_ID.estado);
+  const doctorName = `Dr. ${resultado.medico_ID.name} ${resultado.medico_ID.lastName}`;
+  const fecha = resultado.cita_ID.fecha;
+
   return (
-    <View className={`${className ?? ''}`} {...props}>
+    <View style={[s.container, style]} {...props}>
       <TimelineStep
-        status="completed"
+        status={steps.s1}
         title="Cita Completada"
-        time="09:00 AM"
-        date="OCT 12"
-        doctorName="Dr. Arisveth Mendoza"
-        // doctorImage={require('@/assets/images/doctor.png')}
+        time={resultado.cita_ID.hora}
+        date={fecha}
+        doctorName={doctorName}
       />
 
       <TimelineStep
-        status="sample"
+        status={steps.s2}
         title="Muestra Tomada"
-        time="09:15 AM"
-        date="OCT 12"
-        samples="Hemoglobina Glicosilada, Perfil Lipídico."
+        date={fecha}
+        samples="El personal del centro de salud procesó y cargó el estudio al sistema."
+        isLocked={steps.s2 === 'locked'}
       />
 
       <TimelineStep
-        status="processing"
+        status={steps.s3}
         title="En Proceso de Laboratorio"
-        time="Iniciado Oct 12, 11:30 AM"
-        progressLabel="ANÁLISIS MOLECULAR"
-        progressValue={65}
-        isActive
+        progressLabel="ANÁLISIS"
+        progressValue={
+          steps.s3 === 'processing' ? 65 : steps.s3 === 'completed' ? 100 : 0
+        }
+        isActive={steps.s3 === 'processing'}
+        isLocked={steps.s3 === 'locked'}
       />
 
       <TimelineStep
-        status="locked"
+        status={steps.s4}
         title="Resultados Listos"
-        pendingNote="En espera de encriptación y validación final."
-        estimatedTime="24 horas"
-        isLocked
+        doctorName={steps.s4 !== 'locked' ? doctorName : undefined}
+        pendingNote={
+          steps.s4 === 'locked'
+            ? 'En espera de validación final.'
+            : 'Tus resultados están disponibles.'
+        }
+        estimatedTime={steps.s4 === 'locked' ? '24 horas' : undefined}
+        isLocked={steps.s4 === 'locked'}
         isLast
       />
 
-      <SecurityBanner className="mt-2" onMorePress={onPrivacyPress} />
+      <SecurityBanner style={s.banner} onMorePress={onPrivacyPress} />
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { width: '100%' },
+  banner: { marginTop: 8 },
+});
 
 export default TrackingTimeline;

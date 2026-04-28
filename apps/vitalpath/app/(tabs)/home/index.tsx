@@ -1,43 +1,58 @@
-import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  View,
-} from 'react-native';
+import { useMemo } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
-import {
-  Avatar,
-  Button,
-  HeaderHome,
-  TextField,
-} from '@/src/components/ui/atoms';
+import { Button, HeaderHome, LoadingScreen } from '@/src/components/ui/atoms';
 import {
   CustomList,
   CustomModal,
   SectionHeader,
+  DailyCheckIn,
 } from '@/src/components/ui/molecules';
+import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
 import { useAuthStore } from '@repo/store';
-import { useCitas, useLogout, useMedicaments } from '@repo/api-client';
+import {
+  useCitas,
+  useDeleteMedication,
+  useLogout,
+  useMedicaments,
+} from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
+import { extractDateKey } from '@/src/utils/date';
+import { useTheme } from '@/src/hooks/useTheme';
+import { useCompletedSet, useDisclosure } from '@/src/hooks';
 
 export default function DashboardScreen() {
+  const t = useTheme();
   const { user, clearSession } = useAuthStore();
+  const createModal = useDisclosure();
+  const editModal = useDisclosure<string>();
+  const { completedIds, markCompleted } = useCompletedSet();
+  const { data: medicaments, isLoading } = useMedicaments();
+  const { data: citas = [], isLoading: isLoadCitas } = useCitas(
+    user?._id ?? '',
+  );
+  const { mutateAsync: deleteMedication } = useDeleteMedication();
   const { logout } = useLogout(
     mobileTokenAdapter,
     { clearSession },
     { loginRoute: ROUTES.LOGIN },
   );
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const { data: medicaments, isLoading } = useMedicaments();
-  const { data: citas = [], isLoading: isLoadCitas } = useCitas(user?.id ?? '');
 
-  const openModal = () => setIsModalVisible(true);
-  const closeModal = () => setIsModalVisible(false);
+  const upcomingCitas = useMemo(() => {
+    const today = extractDateKey(new Date());
+    return [...citas]
+      .filter(c => c.fecha >= today)
+      .sort((a, b) => {
+        const dateCompare = a.fecha.localeCompare(b.fecha);
+        if (dateCompare !== 0) return dateCompare;
+        return a.hora.localeCompare(b.hora);
+      })
+      .slice(0, 3);
+  }, [citas]);
 
   const handleAvatarLongPress = () => {
     Alert.alert('Sesión', '¿Cerrar sesión?', [
@@ -46,67 +61,151 @@ export default function DashboardScreen() {
     ]);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMedication(id);
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <View className="flex-row items-center justify-between px-5 pt-4 pb-3">
+    <SafeAreaView
+      style={[s.container, { backgroundColor: t.background }]}
+      edges={['top']}
+    >
+      <View style={s.topBar}>
         <HeaderHome
           textLabel="Buenos dias"
           nameUser={user?.name}
           onLogaut={handleAvatarLongPress}
         />
-        <Pressable className="w-9 h-9 items-center justify-center rounded-full bg-zinc-100">
-          <Ionicons name="notifications-outline" size={20} color="#71717A" />
+        <Pressable style={[s.notifButton, { backgroundColor: t.neutral100 }]}>
+          <Ionicons
+            name="notifications-outline"
+            size={20}
+            color={t.textSecondary}
+          />
         </Pressable>
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 32 }}
+        style={s.scroll}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-5 pt-5">
+        <View style={s.section}>
+          <DailyCheckIn />
+
           <SectionHeader
             title="Próximas citas"
             linkLabel="Ver todas"
-            onLinkPress={() => {}}
+            onLinkPress={() => router.push(ROUTES.APPOINTMENTS)}
+            style={s.sectionHeader}
           />
-          <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
+          <View
+            style={[
+              s.card,
+              { backgroundColor: t.surfaceElevated, borderColor: t.border },
+            ]}
+          >
             {isLoadCitas ? (
-              <View className="py-8 items-center">
-                <ActivityIndicator size="small" color="#7c3aed" />
-              </View>
+              <LoadingScreen size="small" />
             ) : (
-              <CustomList type="cita" data={citas} />
+              <CustomList type="cita" data={upcomingCitas} />
             )}
           </View>
         </View>
 
-        <View className="px-5 pt-6">
-          <View className="flex-row items-center justify-between mb-2.5">
+        <View style={s.section}>
+          <View style={s.medicationHeader}>
             <SectionHeader
               title="Medicamentos de hoy"
-              className="flex-1 mb-0"
+              linkLabel="Ver todos"
+              onLinkPress={() => router.push(ROUTES.MEDICATIONS)}
+              style={s.flex1}
             />
             <Button
               title="Agregar"
-              onPress={openModal}
+              onPress={() => createModal.open()}
               size="sm"
-              variant="outline"
+              variant="primary"
             />
-            <CustomModal visible={isModalVisible} onClose={closeModal} />
+            <CustomModal
+              visible={createModal.isOpen}
+              onClose={createModal.close}
+            />
           </View>
 
           {isLoading ? (
-            <View className="py-8 items-center">
-              <ActivityIndicator size="small" color="#7c3aed" />
-            </View>
+            <LoadingScreen size="small" />
           ) : (
-            <View className="bg-white rounded-2xl border border-brand-slate-100 overflow-hidden">
-              <CustomList type="medication" data={medicaments} />
+            <View
+              style={[
+                s.card,
+                { backgroundColor: t.surfaceElevated, borderColor: t.border },
+              ]}
+            >
+              <CustomList
+                type="medication"
+                data={medicaments}
+                onDelete={handleDelete}
+                onEdit={id => editModal.open(id)}
+                onTake={markCompleted}
+                completedIds={completedIds}
+              />
             </View>
           )}
         </View>
       </ScrollView>
+
+      {editModal.isOpen && editModal.data && (
+        <CustomUpdateModal
+          visible={editModal.isOpen}
+          onClose={editModal.close}
+          id={editModal.data}
+        />
+      )}
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+  notifButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+  },
+  scroll: { flex: 1 },
+  scrollContent: { paddingBottom: 100 },
+  section: { paddingHorizontal: 20, paddingTop: 20 },
+  sectionHeader: { marginTop: 12, marginBottom: 8 },
+  card: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  medicationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  flex1: { flex: 1 },
+});

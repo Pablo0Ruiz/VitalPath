@@ -11,10 +11,12 @@ export const ROUTES = {
   REGISTER_STEP_3: '/(auth)/register/step-3',
   RECOVER_PASSWORD: '/(auth)/recover-password',
   HOME: '/(tabs)/home',
-  PROFILE: '/(tabs)/profile',
-  SETTINGS: '/(tabs)/settings',
   RECOVER_PASSWORD_EMAIL_SENT: '/(auth)/recover-password-email-sent',
   RECORDS: '/(tabs)/records',
+  MEDICAL_RESULTS: '/(tabs)/records/[id]',
+  APPOINTMENTS: '/(tabs)/appointments',
+  CHAT: '/(tabs)/chat',
+  MEDICATIONS: '/(tabs)/medications',
 } as const;
 
 export const AUTH_SCREEN_NAMES = {
@@ -22,6 +24,8 @@ export const AUTH_SCREEN_NAMES = {
   REGISTER: 'register',
   RECOVER_PASSWORD: 'recover-password/index',
   RECOVER_PASSWORD_EMAIL_SENT: 'recover-password-email-sent/index',
+  REGISTER_STEP_2: 'register/step-2',
+  REGISTER_STEP_3: 'register/step-3',
 } as const;
 
 export const REGISTER_SCREEN_NAMES = {
@@ -32,10 +36,8 @@ export const REGISTER_SCREEN_NAMES = {
 
 export const TAB_SCREEN_NAMES = {
   HOME: 'home/index',
-  PROFILE: 'profile/index',
-  SETTINGS: 'settings/index',
   CHAT: 'chat/index',
-  RECORDS: 'records/index',
+  RECORDS: 'records',
   APPOINTMENTS: 'appointments/index',
 } as const;
 

@@ -1,7 +1,8 @@
-import { View, Pressable, FlatList } from 'react-native';
+import { View, Pressable, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TextField, TimeSlotChip } from '../../atoms';
 import { DoctorSession } from '@repo/api-client';
+import { useTheme } from '@/src/hooks/useTheme';
 
 interface DoctorCardProps {
   doctor: DoctorSession;
@@ -18,40 +19,36 @@ export const DoctorCard = ({
   onDoctorPress,
   onSlotPress,
 }: DoctorCardProps) => {
+  const t = useTheme();
+
   return (
     <Pressable
       onPress={() => onDoctorPress(doctor._id)}
-      className={`mb-3 p-4 rounded-2xl border ${
-        isSelected
-          ? 'border-[#5B4CF5] bg-[#F5F4FF]'
-          : 'border-zinc-100 bg-white'
-      }`}
-      style={{
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOpacity: 0.04,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-      }}
+      style={({ pressed }) => [
+        s.container,
+        {
+          borderColor: isSelected ? t.primary600 : t.border,
+          backgroundColor: isSelected ? t.primary50 : t.surfaceElevated,
+          opacity: pressed ? 0.9 : 1,
+          shadowColor: '#000',
+        },
+      ]}
     >
-      <View className="flex-row items-center mb-3">
-        <View className="w-11 h-11 rounded-full items-center justify-center mr-3 bg-brand-violet-600">
-          <TextField variant="caption" className="font-bold text-sm text-white">
+      <View style={s.header}>
+        <View style={[s.avatar, { backgroundColor: t.primary600 }]}>
+          <TextField variant="caption" style={s.avatarText}>
             {doctor.user.name.slice(0, 2).toUpperCase()}
           </TextField>
         </View>
-        <View className="flex-1">
-          <TextField
-            variant="body"
-            className="text-[#0D0F1C] font-semibold text-[15px] text-left"
-          >
+        <View style={s.info}>
+          <TextField variant="body" style={[s.name, { color: t.textPrimary }]}>
             {doctor.user.name} {doctor.user.lastName}
           </TextField>
-          <View className="flex-row items-center gap-1 mt-0.5">
-            <Ionicons name="medkit-outline" size={13} color="#71717A" />
+          <View style={s.specialtyWrapper}>
+            <Ionicons name="medkit-outline" size={13} color={t.textSecondary} />
             <TextField
               variant="caption"
-              className="text-zinc-500 text-xs text-left"
+              style={[s.specialtyText, { color: t.textSecondary }]}
             >
               {doctor.especialidad} - {doctor.user.centroSalud_ID?.nombre}
             </TextField>
@@ -76,5 +73,54 @@ export const DoctorCard = ({
     </Pressable>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    marginBottom: 12,
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  avatarText: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  info: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'left',
+  },
+  specialtyWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    gap: 4,
+  },
+  specialtyText: {
+    fontSize: 12,
+    textAlign: 'left',
+  },
+});
 
 export default DoctorCard;

@@ -1,27 +1,22 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
-import { iconBoxVariants } from './IconBox.variants';
-import { VariantProps } from 'class-variance-authority';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { iconBoxSizeStyles, type IconBoxSize } from './IconBox.variants';
 
-export interface IconBoxProps
-  extends ViewProps, VariantProps<typeof iconBoxVariants> {
+export interface IconBoxProps extends ViewProps {
   children: React.ReactNode;
+  size?: IconBoxSize;
 }
 
-const IconBox = ({
-  children,
-  size = 'md',
-  className,
-  ...props
-}: IconBoxProps) => {
+const IconBox = ({ children, size = 'md', style, ...props }: IconBoxProps) => {
   return (
-    <View
-      className={`${iconBoxVariants({ size })} ${className ?? ''}`}
-      {...props}
-    >
+    <View style={[s.base, iconBoxSizeStyles[size], style]} {...props}>
       {children}
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  base: { alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
+});
 
 export default IconBox;

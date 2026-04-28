@@ -1,37 +1,64 @@
-import { View, TextInputProps, TextInput } from 'react-native';
-import { VariantProps } from 'class-variance-authority';
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+  ViewProps,
+  useColorScheme,
+} from 'react-native';
+import {
+  inputContainerStyle,
+  inputTextStyle,
+  type InputVariant,
+} from './Input.variants';
+import { useTheme } from '@/src/hooks/useTheme';
 
-import { inputVariantsContainer, inputVariantsText } from './Input.variants';
-
-export interface InputProps
-  extends TextInputProps, VariantProps<typeof inputVariantsContainer> {
+export interface InputProps extends TextInputProps {
+  containerStyle?: ViewProps['style'];
+  variant?: InputVariant;
   placeholder?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
 const Input = ({
-  className,
+  containerStyle,
   placeholder,
-  variant = 'primary',
+  variant = 'default',
   leftIcon,
   rightIcon,
+  style,
   ...props
 }: InputProps) => {
+  const t = useTheme();
+  const colorScheme = useColorScheme();
+  const placeholderColor = colorScheme === 'dark' ? t.neutral600 : t.neutral400;
+
   return (
     <View
-      className={`${inputVariantsContainer({ variant })} ${className ?? ''}`}
+      style={[s.container, inputContainerStyle(variant, t), containerStyle]}
     >
-      {leftIcon && <View className="mr-3 opacity-50">{leftIcon}</View>}
+      {leftIcon && <View style={s.iconLeft}>{leftIcon}</View>}
       <TextInput
-        className={`${inputVariantsText({ variant })}`}
+        style={[inputTextStyle(variant, t), style]}
         placeholder={placeholder}
-        placeholderTextColor="#gray"
+        placeholderTextColor={placeholderColor}
         {...props}
       />
-      {rightIcon && <View className="ml-3 opacity-50">{rightIcon}</View>}
+      {rightIcon && <View style={s.iconRight}>{rightIcon}</View>}
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  iconLeft: { marginRight: 12, opacity: 0.5 },
+  iconRight: { marginLeft: 12, opacity: 0.5 },
+});
 
 export default Input;

@@ -6,11 +6,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   View,
 } from 'react-native';
 
 import { Button, Input } from '@/src/components/ui/atoms';
 import { getGalleryImages } from '@/src/core/actions/image-picker/get-gallery-images';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CustomInputBoxProps {
   onSendMessage: (message: string, attachments: ImagePickerAsset[]) => void;
@@ -18,11 +20,13 @@ export interface CustomInputBoxProps {
 
 const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
   const isAndroid = Platform.OS === 'android';
+  const t = useTheme();
 
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImagePickerAsset[]>([]);
 
   const handleSendMessage = () => {
+    if (!text.trim() && images.length === 0) return;
     onSendMessage(text.trim(), images);
     setText('');
     setImages([]);
@@ -40,49 +44,57 @@ const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
       behavior={isAndroid ? 'height' : 'padding'}
       keyboardVerticalOffset={isAndroid ? 0 : 85}
     >
-      {/* Image previews */}
       {images.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="px-4 py-2 border-t border-brand-slate-100"
-          contentContainerStyle={{ gap: 8 }}
+          style={[s.attachments, { borderTopColor: t.border }]}
+          contentContainerStyle={s.attachmentsContent}
         >
           {images.map(image => (
             <Image
               key={image.uri}
               source={{ uri: image.uri }}
-              className="w-12 h-12 rounded-lg"
+              style={s.attachmentImage}
             />
           ))}
         </ScrollView>
       )}
-
-      {/* Input bar */}
-      <View className="border-t border-brand-slate-100 px-4 py-3 bg-white">
+      <View
+        style={[
+          s.inputContainer,
+          { borderTopColor: t.border, backgroundColor: t.background },
+        ]}
+      >
         <Input
           placeholder="Escribe un mensaje..."
           multiline
-          numberOfLines={4}
+          numberOfLines={1}
           value={text}
           onChangeText={setText}
           leftIcon={
             <Button
+              variant="ghost"
               onPress={handlePickImages}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+              style={s.iconButton}
             >
-              <Ionicons name="attach-outline" size={22} color="#94a3b8" />
+              <Ionicons
+                name="attach-outline"
+                size={22}
+                color={t.textSecondary}
+              />
             </Button>
           }
           rightIcon={
             <Button
+              variant="ghost"
               onPress={handleSendMessage}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+              style={s.iconButton}
             >
               <Ionicons
                 name="paper-plane-outline"
                 size={22}
-                color={text.trim() ? '#7c3aed' : '#94a3b8'}
+                color={text.trim() ? t.primary600 : t.textSecondary}
               />
             </Button>
           }
@@ -91,5 +103,17 @@ const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
     </KeyboardAvoidingView>
   );
 };
+
+const s = StyleSheet.create({
+  attachments: { paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1 },
+  attachmentsContent: { gap: 8 },
+  attachmentImage: { width: 48, height: 48, borderRadius: 8 },
+  inputContainer: {
+    borderTopWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  iconButton: { padding: 0 },
+});
 
 export default CustomInputBox;

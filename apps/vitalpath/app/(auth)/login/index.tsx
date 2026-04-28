@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Alert, Image, ScrollView, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,8 +12,10 @@ import { useAuthStore } from '@repo/store';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { LoginFormValues, loginSchema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
+import { useTheme } from '@/src/hooks/useTheme';
 
 const Login = () => {
+  const t = useTheme();
   const { setSession } = useAuthStore();
   const { mutate: login, isPending } = useLogin(
     mobileTokenAdapter,
@@ -41,45 +43,45 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={[s.container, { backgroundColor: t.background }]}>
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 48 }}
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View className="items-center pt-12 pb-10 px-6">
-          <View className="w-16 h-16 rounded-2xl bg-brand-violet-600 items-center justify-center mb-5">
+        <View style={s.heroSection}>
+          <View style={[s.logoWrapper, { backgroundColor: t.primary600 }]}>
             <Image
               source={require('@/assets/images/vitalpath-logo.png')}
-              className="w-10 h-10"
+              style={s.logo}
               resizeMode="contain"
             />
           </View>
           <TextField
             variant="title"
-            className="text-brand-slate-900 font-bold text-[28px] text-center mb-1"
+            style={[s.heroTitle, { color: t.textPrimary }]}
           >
             VitalPath
           </TextField>
           <TextField
             variant="caption"
-            className="text-brand-slate-400 text-sm text-center"
+            style={[s.heroSubtitle, { color: t.textSecondary }]}
           >
             Tu salud, guiada con inteligencia
           </TextField>
         </View>
 
-        <View className="px-6">
+        <View style={s.formSection}>
           <TextField
             variant="body"
-            className="text-brand-slate-900 font-semibold text-[17px] text-left mb-1"
+            style={[s.formTitle, { color: t.textPrimary }]}
           >
             Iniciar sesión
           </TextField>
           <TextField
             variant="caption"
-            className="text-brand-slate-400 text-sm text-left mb-6"
+            style={[s.formSubtitle, { color: t.textSecondary }]}
           >
             Accedé a tus métricas de salud personalizadas
           </TextField>
@@ -114,7 +116,7 @@ const Login = () => {
                 onBlur={onBlur}
                 value={value}
                 rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
-                className="mb-6"
+                style={s.passwordField}
                 helperText={errors.password?.message}
               />
             )}
@@ -123,24 +125,24 @@ const Login = () => {
           <Button
             title="Iniciar sesión"
             variant="primary"
-            className="mb-4"
+            style={s.loginButton}
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting || isPending}
             disabled={isSubmitting || isPending}
           />
 
-          <Divider text="o continuá con" className="mb-4" />
+          <Divider text="o continuá con" style={s.divider} />
 
-          <View className="items-center mt-2">
+          <View style={s.footer}>
             <TextField
               variant="caption"
-              className="text-brand-slate-500 text-sm text-center"
+              style={[s.footerText, { color: t.textSecondary }]}
               onPress={() => router.push(ROUTES.REGISTER)}
             >
               ¿No tenés cuenta?{'  '}
               <TextField
                 variant="caption"
-                className="text-brand-violet-600 font-semibold"
+                style={[s.linkText, { color: t.primary600 }]}
               >
                 Registrate
               </TextField>
@@ -151,5 +153,47 @@ const Login = () => {
     </SafeAreaView>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  flex1: { flex: 1 },
+  scrollContent: { paddingBottom: 48 },
+  heroSection: {
+    alignItems: 'center',
+    paddingTop: 48,
+    paddingBottom: 40,
+    paddingHorizontal: 24,
+  },
+  logoWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  logo: { width: 40, height: 40 },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  heroSubtitle: { fontSize: 14, textAlign: 'center' },
+  formSection: { paddingHorizontal: 24 },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'left',
+    marginBottom: 4,
+  },
+  formSubtitle: { fontSize: 14, textAlign: 'left', marginBottom: 24 },
+  passwordField: { marginBottom: 24 },
+  loginButton: { marginBottom: 16 },
+  divider: { marginBottom: 16 },
+  footer: { alignItems: 'center', marginTop: 8 },
+  footerText: { fontSize: 14, textAlign: 'center' },
+  linkText: { fontWeight: '700' },
+});
 
 export default Login;

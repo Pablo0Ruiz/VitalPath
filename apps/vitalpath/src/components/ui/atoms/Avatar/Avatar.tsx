@@ -1,13 +1,21 @@
-import React from 'react';
-import { Image, ImageSourcePropType, View, ViewProps } from 'react-native';
-import { TextField } from '../TextFiled';
-import { avatarSizes, avatarText } from './Avatar.variants';
-import { VariantProps } from 'class-variance-authority';
+import {
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  View,
+  ViewProps,
+} from 'react-native';
+import { TextField } from '../TextField';
+import {
+  avatarSizeStyles,
+  avatarTextStyles,
+  type AvatarSize,
+} from './Avatar.variants';
 
-export interface AvatarProps
-  extends ViewProps, VariantProps<typeof avatarSizes> {
+export interface AvatarProps extends ViewProps {
+  size?: AvatarSize;
   initials?: string;
-  image?: ImageSourcePropType | undefined;
+  image?: ImageSourcePropType;
   textColor?: string;
 }
 
@@ -16,18 +24,21 @@ const Avatar = ({
   size = 'md',
   textColor,
   image,
-  className,
+  style,
   ...props
 }: AvatarProps) => {
   return (
-    <View className={`${avatarSizes({ size })} ${className ?? ''}`} {...props}>
+    <View style={[s.base, avatarSizeStyles[size], style]} {...props}>
       {image ? (
-        <Image source={image} className="w-12 h-12" />
+        <Image source={image} style={s.image} />
       ) : (
         <TextField
           variant="caption"
-          className={`${avatarText({ size })} text-center`}
-          style={textColor ? { color: textColor } : undefined}
+          style={[
+            avatarTextStyles[size],
+            s.text,
+            textColor ? { color: textColor } : undefined,
+          ]}
         >
           {initials}
         </TextField>
@@ -35,5 +46,11 @@ const Avatar = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  base: { alignItems: 'center', justifyContent: 'center', borderRadius: 9999 },
+  image: { width: 48, height: 48 },
+  text: { textAlign: 'center' },
+});
 
 export default Avatar;

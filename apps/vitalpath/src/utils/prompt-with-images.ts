@@ -8,7 +8,7 @@ export interface FileType {
 }
 
 interface JsonBody {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export const promptWithFiles = async (
@@ -19,7 +19,7 @@ export const promptWithFiles = async (
   try {
     const formData = new FormData();
     Object.entries(body).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, String(value ?? ''));
     });
 
     files.forEach((file, index) => {
@@ -28,7 +28,7 @@ export const promptWithFiles = async (
         name: file.fileName || `file_${index}`,
         type: file.type || 'image/jpeg',
       };
-      formData.append('files', fileData as any);
+      formData.append('files', fileData as unknown as Blob);
     });
 
     const response = await geminiApi.post(endpoint, formData);

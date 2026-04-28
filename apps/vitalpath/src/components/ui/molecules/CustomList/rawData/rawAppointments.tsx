@@ -1,7 +1,7 @@
 import { CitaPopulated } from '@repo/types';
 import { AppointmentRow } from '../../AppointmentRow';
 import { Divider } from '../../Divider';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { formatDateShort } from '@/src/utils/date';
 
 interface RawAppointmentsProps {
@@ -19,8 +19,12 @@ export const RawAppointments = ({ data }: RawAppointmentsProps) => (
           date={formatDateShort(item.fecha)}
           avatarInitials={`${item.medico_ID.name[0]}${item.medico_ID.lastName[0]}`.toUpperCase()}
         />
-        {index < data.length - 1 && <Divider className="my-2" />}
+        {index < data.length - 1 && <Divider style={s.divider} />}
       </View>
     ))}
   </>
 );
+
+const s = StyleSheet.create({
+  divider: { marginVertical: 8 },
+});

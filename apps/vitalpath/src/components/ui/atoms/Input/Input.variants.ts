@@ -1,27 +1,25 @@
-import { cva, type VariantProps } from 'class-variance-authority';
+import { ViewStyle, TextStyle } from 'react-native';
+import { ThemeTokens } from '@/src/constants/tokens';
 
-export const inputVariantsContainer = cva('flex-row items-center px-4 py-1', {
-  variants: {
-    variant: {
-      primary: 'bg-white border border-brand-slate-200 rounded-xl',
-      secondary: 'bg-brand-teal-50 border border-brand-teal-200 rounded-xl',
-    },
-    defaultVariants: {
-      variant: 'primary',
-    },
-  },
-});
+export type InputVariant = 'default' | 'error' | 'bare';
 
-export const inputVariantsText = cva('flex-1 py-3 text-base tracking-[0.3px]', {
-  variants: {
-    variant: {
-      primary: 'text-brand-slate-900',
-      secondary: 'text-brand-slate-900',
-    },
-    defaultVariants: {
-      variant: 'primary',
-    },
-  },
-});
+export const inputContainerStyle = (
+  variant: InputVariant,
+  t: ThemeTokens,
+): ViewStyle => {
+  const map: Record<InputVariant, ViewStyle> = {
+    default: { borderWidth: 1, borderColor: t.border },
+    error: { borderWidth: 1, borderColor: t.error },
+    bare: { flex: 1 },
+  };
+  return map[variant];
+};
 
-export type InputVariantsProps = VariantProps<typeof inputVariantsContainer>;
+export const inputTextStyle = (
+  variant: InputVariant,
+  t: ThemeTokens,
+): TextStyle => {
+  const base: TextStyle = { flex: 1, color: t.textPrimary, letterSpacing: 0.3 };
+  if (variant === 'bare') return { ...base, fontSize: 14 };
+  return { ...base, paddingVertical: 12, fontSize: 16 };
+};

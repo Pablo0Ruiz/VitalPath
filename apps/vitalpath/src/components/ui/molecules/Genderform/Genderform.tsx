@@ -1,5 +1,6 @@
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button, TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface GenderFormProps {
   value: string;
@@ -16,46 +17,65 @@ const GenderForm = ({
   list,
   title = 'Género',
 }: GenderFormProps) => {
+  const t = useTheme();
+
   return (
-    <View className="mb-8 mt-2">
-      <TextField
-        variant="body"
-        className="text-left text-sm text-brand-slate-700 mb-2"
-      >
+    <View style={s.container}>
+      <TextField variant="body" style={[s.label, { color: t.textPrimary }]}>
         {title}
       </TextField>
-      <View className="flex-row gap-2">
-        {list.map(g => (
-          <Button
-            key={g}
-            onPress={() => onChange(g)}
-            className={`flex-1 py-3 items-center rounded-xl border ${
-              value === g
-                ? 'bg-brand-violet-50 border-brand-violet-600'
-                : 'bg-transparent border-slate-200'
-            }`}
-          >
-            <TextField
-              variant="body"
-              className={
-                value === g
-                  ? 'text-brand-violet-700 font-semibold'
-                  : 'text-slate-600'
-              }
+      <View style={s.row}>
+        {list.map(g => {
+          const isActive = value === g;
+          return (
+            <Button
+              key={g}
+              onPress={() => onChange(g)}
+              variant={isActive ? 'primary' : 'outline'}
+              style={[
+                s.button,
+                isActive
+                  ? { backgroundColor: t.primary50, borderColor: t.primary600 }
+                  : { backgroundColor: 'transparent', borderColor: t.border },
+              ]}
             >
-              {g}
-            </TextField>
-          </Button>
-        ))}
+              <TextField
+                variant="body"
+                style={[
+                  s.buttonText,
+                  isActive
+                    ? { color: t.primary700, fontWeight: '600' }
+                    : { color: t.textSecondary },
+                ]}
+              >
+                {g}
+              </TextField>
+            </Button>
+          );
+        })}
       </View>
       {errorMessage && (
-        <TextField variant="caption" className="text-red-500 text-sm mt-1">
+        <TextField variant="caption" style={[s.error, { color: t.error }]}>
           {errorMessage}
         </TextField>
       )}
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { marginBottom: 32, marginTop: 8 },
+  label: {
+    textAlign: 'left',
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  row: { flexDirection: 'row', gap: 10 },
+  button: { flex: 1, paddingVertical: 12, borderRadius: 12, borderWidth: 1 },
+  buttonText: { fontSize: 14 },
+  error: { fontSize: 12, marginTop: 4 },
+});
 
 GenderForm.displayName = 'GenderForm';
 export default GenderForm;

@@ -1,6 +1,13 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 import { Avatar, Badge, TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface AppointmentRowProps extends ViewProps {
   doctor: string;
@@ -8,7 +15,7 @@ export interface AppointmentRowProps extends ViewProps {
   time: string;
   date: string;
   avatarInitials: string;
-  avatarClassName?: string;
+  avatarStyle?: StyleProp<ViewStyle>;
 }
 
 const AppointmentRow = ({
@@ -17,39 +24,31 @@ const AppointmentRow = ({
   time,
   date,
   avatarInitials,
-  avatarClassName,
-  className,
+  avatarStyle,
+  style,
   ...props
 }: AppointmentRowProps) => {
+  const t = useTheme();
+
   return (
-    <View
-      className={`flex-row items-center py-2 ${className ?? ''}`}
-      {...props}
-    >
-      <Avatar initials={avatarInitials} className={avatarClassName} />
-      <View className="flex-1 ml-3">
+    <View style={[s.base, style]} {...props}>
+      <Avatar initials={avatarInitials} style={avatarStyle} />
+      <View style={s.doctorInfo}>
         <TextField
           variant="body"
-          className="text-left font-semibold text-brand-slate-800 text-sm"
+          style={[s.doctorName, { color: t.textPrimary }]}
         >
           {doctor}
         </TextField>
-        <Badge
-          label={specialty}
-          variant="primary"
-          className="self-start mt-1"
-        />
+        <Badge label={specialty} variant="primary" style={s.badge} />
       </View>
-      <View className="items-end ml-2">
-        <TextField
-          variant="body"
-          className="text-brand-violet-600 font-bold text-sm"
-        >
+      <View style={s.timeInfo}>
+        <TextField variant="body" style={[s.timeText, { color: t.primary600 }]}>
           {time}
         </TextField>
         <TextField
           variant="caption"
-          className="text-brand-slate-400 text-[11px] mt-0.5"
+          style={[s.dateText, { color: t.textSecondary }]}
         >
           {date}
         </TextField>
@@ -57,5 +56,15 @@ const AppointmentRow = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  base: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  doctorInfo: { flex: 1, marginLeft: 12 },
+  doctorName: { fontSize: 14, fontWeight: '600' },
+  badge: { alignSelf: 'flex-start', marginTop: 4 },
+  timeInfo: { alignItems: 'flex-end', marginLeft: 8 },
+  timeText: { fontSize: 14, fontWeight: '700' },
+  dateText: { fontSize: 11, marginTop: 2 },
+});
 
 export default AppointmentRow;

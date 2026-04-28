@@ -7,9 +7,11 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { useTheme } from '@/src/hooks/useTheme';
 
 const RecoverPassword = () => {
+  const t = useTheme();
   const {
     control,
     handleSubmit,
@@ -44,18 +46,19 @@ const RecoverPassword = () => {
   };
 
   return (
-    <View className="flex-1 bg-brand-background">
+    <View style={[s.container, { backgroundColor: t.background }]}>
       <ScrollView
-        className="flex-1 px-6 pt-8"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mb-4">
+        <View style={s.backWrapper}>
           <Button
             title="← Volver"
             onPress={handleGoBack}
             variant="outline"
-            className="self-start px-3 py-2"
+            size="sm"
+            style={s.backButton}
           />
         </View>
 
@@ -77,8 +80,10 @@ const RecoverPassword = () => {
               value={value}
               onBlur={onBlur}
               onChangeText={onChange}
-              leftIcon={<Octicons name="mail" size={24} color="black" />}
-              className="mb-6"
+              leftIcon={
+                <Octicons name="mail" size={20} color={t.textSecondary} />
+              }
+              style={s.emailField}
               helperText={errors.email?.message}
             />
           )}
@@ -89,18 +94,18 @@ const RecoverPassword = () => {
           onPress={handleSubmit(handleResetPassword)}
           variant="primary"
           disabled={isPending}
-          className="mb-6"
+          style={s.submitButton}
         />
 
         <TextField
           variant="caption"
-          className="text-center text-sm text-brand-slate-400"
+          style={[s.footerText, { color: t.textSecondary }]}
           onPress={handleGoBack}
         >
           ¿Recordaste tu contraseña?{' '}
           <TextField
             variant="caption"
-            className="text-brand-violet-600 font-semibold"
+            style={[s.linkText, { color: t.primary600 }]}
           >
             Iniciar sesión
           </TextField>
@@ -109,5 +114,17 @@ const RecoverPassword = () => {
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  flex1: { flex: 1 },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
+  backWrapper: { marginBottom: 16 },
+  backButton: { alignSelf: 'flex-start' },
+  emailField: { marginBottom: 24 },
+  submitButton: { marginBottom: 24 },
+  footerText: { fontSize: 14, textAlign: 'center' },
+  linkText: { fontWeight: '700' },
+});
 
 export default RecoverPassword;

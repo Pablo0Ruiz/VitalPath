@@ -1,7 +1,8 @@
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { Button, TextField } from '../../atoms';
-import { ESTADO_CONFIG } from '@/src/constants/appointments';
+import { getEstadoConfig } from '@/src/constants/appointments';
 import { CitaEstado } from '@repo/types';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface AppointmentStatusProps extends ViewProps {
   status: CitaEstado;
@@ -13,19 +14,17 @@ const AppointmentStatus = ({
   status,
   onCancel,
   isCancelling,
-  className,
+  style,
   ...props
 }: AppointmentStatusProps) => {
-  const config = ESTADO_CONFIG[status] ?? ESTADO_CONFIG.agendada;
+  const t = useTheme();
+  const config = getEstadoConfig(t)[status] ?? getEstadoConfig(t).agendada;
   const isCancelada = status === 'cancelada';
 
   return (
-    <View className={`items-end gap-2 ${className ?? ''}`} {...props}>
-      <View className={`px-2 py-1 rounded-full ${config.bg}`}>
-        <TextField
-          variant="body"
-          className={`text-xs font-semibold ${config.text}`}
-        >
+    <View style={[s.container, style]} {...props}>
+      <View style={[s.badge, { backgroundColor: config.bg }]}>
+        <TextField variant="body" style={[s.badgeText, { color: config.text }]}>
           {config.label}
         </TextField>
       </View>
@@ -33,12 +32,9 @@ const AppointmentStatus = ({
         <Button
           onPress={onCancel}
           disabled={isCancelling}
-          className="px-2 py-1 rounded-full bg-red-50"
+          style={[s.cancelButton, { backgroundColor: t.errorLight }]}
         >
-          <TextField
-            variant="body"
-            className="text-xs text-red-500 font-medium"
-          >
+          <TextField variant="body" style={[s.cancelText, { color: t.error }]}>
             Cancelar
           </TextField>
         </Button>
@@ -46,5 +42,18 @@ const AppointmentStatus = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { alignItems: 'flex-end' },
+  badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 9999 },
+  badgeText: { fontSize: 12, fontWeight: '600' },
+  cancelButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 9999,
+    marginTop: 8,
+  },
+  cancelText: { fontSize: 12, fontWeight: '500' },
+});
 
 export default AppointmentStatus;

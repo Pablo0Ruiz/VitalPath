@@ -1,36 +1,39 @@
-import { View, ViewProps } from 'react-native';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import {
+  cardVariantStyle,
+  cardPaddingStyle,
+  type CardVariant,
+  type CardPadding,
+} from './Card.variants';
+import { useTheme } from '@/src/hooks/useTheme';
 
-const cardVariants = cva('rounded-2xl', {
-  variants: {
-    variant: {
-      default: 'bg-brand-surface border border-brand-border',
-      elevated: 'bg-white border border-brand-violet-100',
-      flat: 'bg-brand-surface',
-    },
-    padding: {
-      none: '',
-      sm: 'p-3',
-      md: 'p-4',
-      lg: 'p-6',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    padding: 'md',
-  },
-});
+export interface CardProps extends ViewProps {
+  variant?: CardVariant;
+  padding?: CardPadding;
+}
 
-export interface CardProps
-  extends ViewProps, VariantProps<typeof cardVariants> {}
-
-const Card = ({ variant, padding, className, ...props }: CardProps) => {
+const Card = ({
+  variant = 'default',
+  padding = 'md',
+  style,
+  ...props
+}: CardProps) => {
+  const t = useTheme();
   return (
     <View
-      className={`${cardVariants({ variant, padding })} ${className ?? ''}`}
+      style={[
+        s.base,
+        cardVariantStyle(variant, t),
+        cardPaddingStyle[padding],
+        style,
+      ]}
       {...props}
     />
   );
 };
+
+const s = StyleSheet.create({
+  base: { borderRadius: 16 },
+});
 
 export default Card;
