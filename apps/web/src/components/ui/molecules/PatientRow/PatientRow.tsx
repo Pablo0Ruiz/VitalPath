@@ -8,9 +8,18 @@ type PatientRowProps = {
   estado: string;
 };
 
-const estadoVariant: Record<string, 'success' | 'neutral' | 'error'> = {
+const estadoVariant: Record<
+  string,
+  'success' | 'neutral' | 'error' | 'warning'
+> = {
   activo: 'success',
   inactivo: 'neutral',
+  asistida: 'success',
+  agendada: 'warning',
+  en_proceso: 'warning',
+  completada: 'success',
+  resultados_listos: 'success',
+  cancelada: 'error',
 };
 
 const PatientRow = ({ name, lastName, email, estado }: PatientRowProps) => {
