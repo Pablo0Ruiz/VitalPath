@@ -5,12 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 
-import {
-  CreateDoctorDto,
-  CreateUserDto,
-  InviteDoctorDto,
-  LoginUserDto,
-} from './dto';
+import { InviteDoctorDto, LoginUserDto, RegisterDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
@@ -22,13 +17,7 @@ import { Doctor } from 'src/user/entities/doctor.entity';
 import { Patient } from 'src/user/entities/patient.entity';
 import { UserRoles } from './enum/user-role.enum';
 import { Especialidad } from './enum/especialidad.enum';
-import { CreatePatientDto } from './dto/create-patient.dto';
 import { CentroSalud } from 'src/user/entities/centro-salud.entity';
-
-export type CreateDtoRegister =
-  | CreateUserDto
-  | CreateDoctorDto
-  | CreatePatientDto;
 
 @Injectable()
 export class AuthService {
@@ -45,7 +34,7 @@ export class AuthService {
     private readonly centroSaludModel: Model<CentroSalud>,
   ) {}
 
-  async create(createUserDto: CreateDtoRegister) {
+  async create(createUserDto: RegisterDto) {
     try {
       const { password, ...userData } = createUserDto;
 
@@ -59,19 +48,15 @@ export class AuthService {
       });
 
       if (user.role === UserRoles.PACIENTE) {
-        const patientData = userData as CreatePatientDto;
         await this.patientModel.create({
           user: user._id,
-          medications: patientData.medications || [],
+          medications: userData.medications ?? [],
         });
       } else if (user.role === UserRoles.MEDICO) {
-        const doctorData = userData as CreateDoctorDto;
-
         await this.doctorModel.create({
           user: user._id,
-          especialidad:
-            doctorData.especialidad || Especialidad.MEDICINA_GENERAL,
-          slots: doctorData.slots || [],
+          especialidad: userData.especialidad ?? Especialidad.MEDICINA_GENERAL,
+          slots: userData.slots ?? [],
         });
       }
 

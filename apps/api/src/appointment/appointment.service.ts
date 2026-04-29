@@ -213,6 +213,26 @@ export class AppointmentService {
     return appointment.save();
   }
 
+  async getAppointmentByIdForStaff(citaId: string) {
+    if (!Types.ObjectId.isValid(citaId)) {
+      throw new NotFoundException('La cita no existe');
+    }
+
+    const cita = await this.citaModel
+      .findById(citaId)
+      .populate('paciente_ID', 'name lastName')
+      .populate('medico_ID', 'name lastName')
+      .populate('centroSalud_ID', 'nombre direccion')
+      .lean();
+
+    if (!cita) throw new NotFoundException('La cita no existe');
+
+    const [enriched] = await this.enrichWithEspecialidad([
+      cita,
+    ] as unknown as LeanCita[]);
+    return enriched;
+  }
+
   async updateEstadoWorker(citaId: string, estado: CitaState) {
     const appointment = await this.citaModel.findById(citaId);
     if (!appointment) throw new NotFoundException('La cita no existe');

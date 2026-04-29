@@ -14,6 +14,7 @@ import { GroqService } from './groq.service';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import type { ModelMessage } from 'ai';
 
 @Controller('gemini')
@@ -28,9 +29,10 @@ export class GroqController {
     @Res() res: Response,
     @UploadedFiles() files: Array<Express.Multer.File>,
     @GetUser('_id') userId: string,
+    @GetUser('role') role: UserRoles,
   ): Promise<void> {
     chatPromptDto.files = files;
-    await this.groqService.chatStream(chatPromptDto, userId, res);
+    await this.groqService.chatStream(chatPromptDto, userId, role, res);
   }
 
   @Auth()

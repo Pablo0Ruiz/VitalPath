@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { ModelMessage } from 'ai';
 import type { Response } from 'express';
 import { GroqToolsService } from 'src/groq-tools/groq-tools.service';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
 import { chatPromptStreamUseCase } from './use-cases/chat-prompt-use-case';
 import { resumenPdf } from './use-cases/resumen-pdf-use-case';
@@ -15,6 +16,7 @@ export class GroqService {
   async chatStream(
     chatPromptDto: ChatPromptDto,
     userId: string,
+    role: UserRoles,
     res: Response,
   ): Promise<void> {
     const history = this.getChatHistory(chatPromptDto.chatId);
@@ -23,6 +25,7 @@ export class GroqService {
       chatPromptDto,
       groqToolsService: this.groqToolsService,
       userId,
+      role,
       history,
       res,
     });
