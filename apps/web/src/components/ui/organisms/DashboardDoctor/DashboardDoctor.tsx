@@ -66,7 +66,7 @@ const DashboardDoctor = () => {
                   />
                 </div>
                 <span className="text-xs text-brand-text-secondary shrink-0">
-                  Check-in {p.hora}
+                  {p.estado === 'agendada' ? p.hora : `Check-in ${p.hora}`}
                 </span>
               </div>
             ))}

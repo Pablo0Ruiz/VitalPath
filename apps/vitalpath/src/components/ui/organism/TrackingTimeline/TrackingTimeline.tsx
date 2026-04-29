@@ -15,6 +15,8 @@ type StepConfig = {
 };
 
 function deriveSteps(estado: string): StepConfig {
+  if (estado === 'agendada')
+    return { s1: 'locked', s2: 'locked', s3: 'locked', s4: 'locked' };
   if (estado === 'asistida')
     return { s1: 'completed', s2: 'sample', s3: 'locked', s4: 'locked' };
   if (estado === 'en_proceso')
@@ -26,7 +28,7 @@ function deriveSteps(estado: string): StepConfig {
       s3: 'completed',
       s4: 'completed',
     };
-  return { s1: 'completed', s2: 'sample', s3: 'locked', s4: 'locked' };
+  return { s1: 'locked', s2: 'locked', s3: 'locked', s4: 'locked' };
 }
 
 const TrackingTimeline = ({

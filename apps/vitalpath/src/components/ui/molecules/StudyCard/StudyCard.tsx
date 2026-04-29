@@ -17,6 +17,8 @@ function getEstadoBadge(estado: string): {
   variant: BadgeVariant;
 } {
   switch (estado) {
+    case 'asistida':
+      return { label: 'Iniciado', variant: 'primary' };
     case 'en_proceso':
       return { label: 'En proceso', variant: 'primary' };
     case 'resultados_listos':
