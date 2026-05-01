@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
@@ -10,7 +10,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useMedicalResultsPaciente } from '@repo/api-client';
+import { useCitas, useMedicalResultsPaciente } from '@repo/api-client';
+import { useAuthStore } from '@repo/store';
+import type { IMedicalResults } from '@repo/types';
 
 import { TextField } from '@/src/components/ui/atoms';
 import { TrackingTimeline } from '@/src/components/ui/organism/TrackingTimeline';
@@ -22,9 +24,36 @@ const RESULT_STATES = ['resultados_listos', 'completada'];
 
 export default function StudyDetailScreen() {
   const t = useTheme();
+  const { user } = useAuthStore();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: resultados } = useMedicalResultsPaciente();
-  const study = resultados?.find(s => s._id === id);
+  const { data: citas = [] } = useCitas(user?._id ?? '');
+
+  const study = useMemo(() => {
+    const realStudy = resultados?.find(s => s._id === id);
+    if (realStudy) return realStudy;
+
+    const cita = citas.find(c => c._id === id);
+    if (cita) {
+      return {
+        _id: cita._id,
+        cita_ID: {
+          _id: cita._id,
+          fecha: cita.fecha,
+          hora: cita.hora,
+          estado: cita.estado,
+        },
+        medico_ID: cita.medico_ID,
+        paciente_ID: cita.paciente_ID,
+        fileUrl: '',
+        createdAt: cita.createdAt,
+        updatedAt: cita.updatedAt,
+      } as IMedicalResults;
+    }
+
+    return undefined;
+  }, [resultados, citas, id]);
+
   const { fetchPdfData, pdfCache } = usePdfData();
   const [summaryVisible, setSummaryVisible] = useState(false);
 

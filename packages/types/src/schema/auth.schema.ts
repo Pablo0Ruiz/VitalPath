@@ -67,3 +67,11 @@ export type InviteDoctorDto = {
   role: string;
   codigoVerificacion: string;
 };
+
+export const codigoSchema = z.object({
+  codigo: z
+    .string()
+    .length(6, 'El código debe tener 6 dígitos')
+    .regex(/^\d{6}$/, 'Solo dígitos numéricos'),
+});
+export type CodigoFormValues = z.infer<typeof codigoSchema>;

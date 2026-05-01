@@ -1,7 +1,11 @@
 import { useColorScheme } from 'react-native';
-import { tokens, type ThemeTokens } from '../constants/tokens';
+import { tokens, seniorTokens, type ThemeTokens } from '../constants/tokens';
+import { useSeniorUIStore } from '../stores/seniorUI.store';
 
 export const useTheme = (): ThemeTokens => {
   const colorScheme = useColorScheme();
-  return tokens[colorScheme === 'dark' ? 'dark' : 'light'];
+  const { isSeniorUI, _hasHydrated } = useSeniorUIStore();
+  const base = tokens[colorScheme === 'dark' ? 'dark' : 'light'];
+  if (!_hasHydrated || !isSeniorUI) return base;
+  return { ...base, ...seniorTokens } as ThemeTokens;
 };

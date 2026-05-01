@@ -17,6 +17,15 @@ export const ROUTES = {
   APPOINTMENTS: '/(tabs)/appointments',
   CHAT: '/(tabs)/chat',
   MEDICATIONS: '/(tabs)/medications',
+  SENIOR_UI_SUGGESTION: '/(auth)/senior-ui-suggestion',
+  PROFILE: '/profile',
+  SETTINGS: '/settings',
+} as const;
+
+export const DRAWER_SCREEN_NAMES = {
+  TABS: '(tabs)',
+  PROFILE: 'profile',
+  SETTINGS: 'settings',
 } as const;
 
 export const AUTH_SCREEN_NAMES = {

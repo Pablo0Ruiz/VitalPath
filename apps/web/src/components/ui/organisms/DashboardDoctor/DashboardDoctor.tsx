@@ -11,10 +11,8 @@ import { ReportHistory } from '@/components/ui/organisms/ReportHistory';
 import { useCitasMedico } from '@repo/api-client';
 
 const DashboardDoctor = () => {
-  const { data: citas, isLoading, isError, error } = useCitasMedico();
-  if (isLoading) {
-    return <div>Cargando citas...</div>;
-  }
+  const { data: citas, isError, error } = useCitasMedico();
+
   if (isError) {
     return <div>Error al cargar citas: {error.message}</div>;
   }

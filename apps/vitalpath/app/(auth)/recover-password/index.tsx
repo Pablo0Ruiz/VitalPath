@@ -52,16 +52,6 @@ const RecoverPassword = () => {
         contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={s.backWrapper}>
-          <Button
-            title="← Volver"
-            onPress={handleGoBack}
-            variant="outline"
-            size="sm"
-            style={s.backButton}
-          />
-        </View>
-
         <AuthHeader
           title="Recuperar contraseña"
           subtitle="Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña"

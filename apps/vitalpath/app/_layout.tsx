@@ -17,6 +17,7 @@ import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { setupApiInterceptors } from '@/src/lib/api-setup';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 
 setupApiInterceptors();
 
@@ -25,8 +26,19 @@ const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
 
 function AuthInitializer() {
-  const { setSession, clearSession, setIsLoading } = useAuthStore();
+  const { user, setSession, clearSession, setIsLoading } = useAuthStore();
+  const { syncWithUser, reset: resetSeniorUI } = useSeniorUIStore();
+
   useSession(mobileTokenAdapter, { setSession, clearSession, setIsLoading });
+
+  useEffect(() => {
+    if (user) {
+      syncWithUser(user);
+    } else {
+      resetSeniorUI();
+    }
+  }, [user, syncWithUser, resetSeniorUI]);
+
   return null;
 }
 
@@ -72,7 +84,11 @@ function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="(auth)/senior-ui-suggestion"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(drawer)" />
           </Stack>
         </View>
       </QueryClientProvider>

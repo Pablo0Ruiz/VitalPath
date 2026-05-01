@@ -20,6 +20,6 @@ export const inputTextStyle = (
   t: ThemeTokens,
 ): TextStyle => {
   const base: TextStyle = { flex: 1, color: t.textPrimary, letterSpacing: 0.3 };
-  if (variant === 'bare') return { ...base, fontSize: 14 };
-  return { ...base, paddingVertical: 12, fontSize: 16 };
+  if (variant === 'bare') return { ...base, fontSize: t.fontSizeBody };
+  return { ...base, paddingVertical: 12, fontSize: t.fontSizeBody };
 };

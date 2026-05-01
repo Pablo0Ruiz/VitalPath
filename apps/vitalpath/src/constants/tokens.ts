@@ -62,6 +62,11 @@ const light = {
   infoDark: '#1E40AF',
   white: '#FFFFFF',
   black: '#000000',
+  fontSizeTitle: 28,
+  fontSizeBody: 14,
+  fontSizeCaption: 12,
+  fontSizeLabel: 11,
+  minTouchTarget: 44,
 } as const;
 
 const dark = {
@@ -128,8 +133,27 @@ const dark = {
   infoDark: '#3b82f6',
   white: '#FFFFFF',
   black: '#000000',
+  fontSizeTitle: 28,
+  fontSizeBody: 14,
+  fontSizeCaption: 12,
+  fontSizeLabel: 11,
+  minTouchTarget: 44,
 } as const;
+
+export const seniorTokens = {
+  fontSizeTitle: 40,
+  fontSizeBody: 20,
+  fontSizeCaption: 17,
+  fontSizeLabel: 16,
+  minTouchTarget: 56,
+  textSecondary: '#3D3858',
+  border: '#B8AFCC',
+} as const;
+
+export type SeniorTokenOverrides = typeof seniorTokens;
 
 export const tokens = { light, dark } as const;
 
-export type ThemeTokens = Record<keyof typeof light, string>;
+export type ThemeTokens = {
+  [K in keyof typeof light]: (typeof light)[K] extends number ? number : string;
+};

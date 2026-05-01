@@ -37,43 +37,7 @@ const TrackingTimeline = ({
   resultado,
   ...props
 }: TrackingTimelineProps) => {
-  if (!resultado) {
-    return (
-      <View style={[s.container, style]} {...props}>
-        <TimelineStep
-          status="completed"
-          title="Cita Completada"
-          time="09:00 AM"
-          date="OCT 12"
-          doctorName="Dr. Arisveth Mendoza"
-        />
-        <TimelineStep
-          status="sample"
-          title="Muestra Tomada"
-          time="09:15 AM"
-          date="OCT 12"
-          samples="Hemoglobina Glicosilada, Perfil Lipídico."
-        />
-        <TimelineStep
-          status="processing"
-          title="En Proceso de Laboratorio"
-          time="Iniciado Oct 12, 11:30 AM"
-          progressLabel="ANÁLISIS MOLECULAR"
-          progressValue={65}
-          isActive
-        />
-        <TimelineStep
-          status="locked"
-          title="Resultados Listos"
-          pendingNote="En espera de encriptación y validación final."
-          estimatedTime="24 horas"
-          isLocked
-          isLast
-        />
-        <SecurityBanner style={s.banner} onMorePress={onPrivacyPress} />
-      </View>
-    );
-  }
+  if (!resultado) return null;
 
   const steps = deriveSteps(resultado.cita_ID.estado);
   const doctorName = `Dr. ${resultado.medico_ID.name} ${resultado.medico_ID.lastName}`;

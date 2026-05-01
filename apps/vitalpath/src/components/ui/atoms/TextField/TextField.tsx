@@ -1,5 +1,6 @@
 import { Text, TextProps } from 'react-native';
-import { textFieldStyles, type TextFieldVariant } from './TextField.variants';
+import { getTextFieldStyle, type TextFieldVariant } from './TextField.variants';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface TextFieldProps extends TextProps {
   children?: React.ReactNode;
@@ -12,8 +13,9 @@ const TextField = ({
   style,
   ...props
 }: TextFieldProps) => {
+  const t = useTheme();
   return (
-    <Text style={[textFieldStyles[variant], style]} {...props}>
+    <Text style={[getTextFieldStyle(variant, t), style]} {...props}>
       {children}
     </Text>
   );

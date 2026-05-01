@@ -16,7 +16,7 @@ const AuthHeader = ({ title, subtitle, style }: AuthHeaderProps) => {
       <GradientHero size="short" style={s.hero}>
         <View style={s.heroContent}>
           <Image
-            source={require('@/assets/images/vitalpath-logo.png')}
+            source={require('@/assets/images/new-logo.png')}
             style={s.logo}
             resizeMode="contain"
           />

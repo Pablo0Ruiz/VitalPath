@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import {
   buttonContainerStyle,
-  buttonSizeStyle,
+  getButtonSizeStyle,
   buttonTitleStyle,
-  buttonTitleSizeStyle,
+  getButtonTitleSizeStyle,
   buttonLoadingColor,
   type ButtonVariant,
   type ButtonSize,
@@ -52,7 +52,7 @@ const Button = ({
       disabled={disabled || loading}
       style={({ pressed }) => [
         s.base,
-        buttonSizeStyle[size],
+        getButtonSizeStyle(size, t),
         buttonContainerStyle(variant, t),
         { opacity: pressed || loading ? 0.75 : 1 },
         style,
@@ -64,7 +64,7 @@ const Button = ({
         <Text
           style={[
             s.title,
-            buttonTitleSizeStyle[size],
+            getButtonTitleSizeStyle(size, t),
             buttonTitleStyle(variant, t),
           ]}
         >

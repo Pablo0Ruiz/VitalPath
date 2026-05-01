@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,21 +7,46 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { Divider, FormField } from '@/src/components/ui/molecules';
-import { useLogin } from '@repo/api-client';
+import { useLogin, useLoginWithCode } from '@repo/api-client';
 import { useAuthStore } from '@repo/store';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
-import { LoginFormValues, loginSchema } from '@repo/types';
+import {
+  LoginFormValues,
+  loginSchema,
+  CodigoFormValues,
+  codigoSchema,
+} from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { isElderlyUser } from '@/src/utils/date';
 
 const Login = () => {
   const t = useTheme();
   const { setSession } = useAuthStore();
+  const { hasSeenSuggestion } = useSeniorUIStore();
+
   const { mutate: login, isPending } = useLogin(
     mobileTokenAdapter,
     { setSession },
     { successRoute: ROUTES.HOME },
   );
+
+  const { mutate: loginWithCode, isPending: isPendingCode } = useLoginWithCode(
+    mobileTokenAdapter,
+    {
+      setSession,
+      afterSuccess: user => {
+        const isElderly = isElderlyUser(user.fechaNacimiento);
+        if (isElderly && !hasSeenSuggestion) {
+          router.replace(ROUTES.SENIOR_UI_SUGGESTION as Href);
+        } else {
+          router.replace(ROUTES.HOME as Href);
+        }
+      },
+    },
+  );
+
   const {
     control,
     handleSubmit,
@@ -34,10 +59,27 @@ const Login = () => {
     },
   });
 
+  const {
+    control: codeControl,
+    handleSubmit: handleCodeSubmit,
+    formState: { errors: codeErrors },
+  } = useForm<CodigoFormValues>({
+    resolver: zodResolver(codigoSchema),
+    defaultValues: { codigo: '' },
+  });
+
   const onSubmit = (data: LoginFormValues) => {
     login(data, {
       onError: () => {
         Alert.alert('Error', 'Credenciales incorrectas');
+      },
+    });
+  };
+
+  const onCodeSubmit = (data: CodigoFormValues) => {
+    loginWithCode(data.codigo, {
+      onError: () => {
+        Alert.alert('Error', 'Código incorrecto');
       },
     });
   };
@@ -53,7 +95,7 @@ const Login = () => {
         <View style={s.heroSection}>
           <View style={[s.logoWrapper, { backgroundColor: t.primary600 }]}>
             <Image
-              source={require('@/assets/images/vitalpath-logo.png')}
+              source={require('@/assets/images/new-logo.png')}
               style={s.logo}
               resizeMode="contain"
             />
@@ -131,7 +173,37 @@ const Login = () => {
             disabled={isSubmitting || isPending}
           />
 
-          <Divider text="o continuá con" style={s.divider} />
+          <Divider text="o ingresá tu código de acceso" style={s.divider} />
+
+          <Controller
+            control={codeControl}
+            name="codigo"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <FormField
+                label="Código de acceso senior"
+                placeholder="000000"
+                value={value}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                maxLength={6}
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={s.codeField}
+                inputStyle={s.codeInput}
+                helperText={codeErrors.codigo?.message}
+              />
+            )}
+          />
+
+          <Button
+            title={isPendingCode ? 'Ingresando...' : 'Ingresar con código'}
+            variant="outline"
+            style={s.codeButton}
+            onPress={handleCodeSubmit(onCodeSubmit)}
+            loading={isPendingCode}
+            disabled={isPendingCode}
+          />
 
           <View style={s.footer}>
             <TextField
@@ -191,6 +263,14 @@ const s = StyleSheet.create({
   passwordField: { marginBottom: 24 },
   loginButton: { marginBottom: 16 },
   divider: { marginBottom: 16 },
+  codeField: { marginBottom: 12 },
+  codeInput: {
+    fontSize: 28,
+    letterSpacing: 8,
+    textAlign: 'center',
+    minHeight: 56,
+  },
+  codeButton: { marginBottom: 16 },
   footer: { alignItems: 'center', marginTop: 8 },
   footerText: { fontSize: 14, textAlign: 'center' },
   linkText: { fontWeight: '700' },

@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '@repo/store';
-import { useEffect } from 'react';
+import { ROUTES } from '@/src/routes/routes';
 
 export default function Index() {
   const user = useAuthStore(state => state.user);
@@ -12,7 +13,7 @@ export default function Index() {
     if (!navigationState?.key || isLoading) return;
 
     if (user) {
-      router.replace('/(tabs)/home');
+      router.replace(ROUTES.HOME);
     } else {
       router.replace('/(auth)/login');
     }

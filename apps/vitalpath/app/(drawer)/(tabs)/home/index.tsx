@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerActions } from '@react-navigation/native';
 
 import { Button, HeaderHome, LoadingScreen } from '@/src/components/ui/atoms';
 import {
@@ -16,10 +18,8 @@ import { useAuthStore } from '@repo/store';
 import {
   useCitas,
   useDeleteMedication,
-  useLogout,
   useMedicaments,
 } from '@repo/api-client';
-import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
 import { extractDateKey } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
@@ -27,7 +27,8 @@ import { useCompletedSet, useDisclosure } from '@/src/hooks';
 
 export default function DashboardScreen() {
   const t = useTheme();
-  const { user, clearSession } = useAuthStore();
+  const navigation = useNavigation();
+  const { user } = useAuthStore();
   const createModal = useDisclosure();
   const editModal = useDisclosure<string>();
   const { completedIds, markCompleted } = useCompletedSet();
@@ -36,11 +37,6 @@ export default function DashboardScreen() {
     user?._id ?? '',
   );
   const { mutateAsync: deleteMedication } = useDeleteMedication();
-  const { logout } = useLogout(
-    mobileTokenAdapter,
-    { clearSession },
-    { loginRoute: ROUTES.LOGIN },
-  );
 
   const upcomingCitas = useMemo(() => {
     const today = extractDateKey(new Date());
@@ -53,13 +49,6 @@ export default function DashboardScreen() {
       })
       .slice(0, 3);
   }, [citas]);
-
-  const handleAvatarLongPress = () => {
-    Alert.alert('Sesión', '¿Cerrar sesión?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: logout },
-    ]);
-  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -78,15 +67,30 @@ export default function DashboardScreen() {
         <HeaderHome
           textLabel="Buenos dias"
           nameUser={user?.name}
-          onLogaut={handleAvatarLongPress}
+          style={s.flex1}
         />
-        <Pressable style={[s.notifButton, { backgroundColor: t.neutral100 }]}>
-          <Ionicons
-            name="notifications-outline"
-            size={20}
-            color={t.textSecondary}
-          />
-        </Pressable>
+        <View style={s.actions}>
+          <Button
+            variant="ghost"
+            size="sm"
+            style={[s.iconButton, { backgroundColor: t.neutral100 }]}
+            onPress={() => console.log('Notification')}
+          >
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={t.textSecondary}
+            />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            style={[s.iconButton, { backgroundColor: t.neutral100 }]}
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu-outline" size={24} color={t.textSecondary} />
+          </Button>
+        </View>
       </View>
 
       <ScrollView
@@ -180,12 +184,18 @@ const s = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
   },
-  notifButton: {
-    width: 36,
-    height: 36,
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    paddingHorizontal: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
   },
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 100 },

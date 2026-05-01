@@ -4,7 +4,7 @@
     "slug": "vitalpath",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/vitalpath-logo.png",
+    "icon": "./assets/images/new-logo.png",
     "scheme": "vitalpath",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -26,14 +26,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/vitalpath-logo.png"
+      "favicon": "./assets/images/new-logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/vitalpath-logo.png",
+          "image": "./assets/images/new-logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

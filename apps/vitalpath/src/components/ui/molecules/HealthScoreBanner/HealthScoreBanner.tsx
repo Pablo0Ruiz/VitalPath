@@ -29,10 +29,7 @@ const Banner = ({ style, ...props }: BannerProps) => {
         </TextField>
 
         <View style={s.doctorWrapper}>
-          <Avatar
-            image={require('@/assets/images/vitalpath-logo.png')}
-            size="md"
-          />
+          <Avatar image={require('@/assets/images/new-logo.png')} size="md" />
           <TextField
             variant="caption"
             style={[s.doctorName, { color: t.textSecondary }]}

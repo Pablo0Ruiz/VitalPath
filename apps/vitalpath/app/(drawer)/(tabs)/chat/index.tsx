@@ -1,18 +1,18 @@
-import { Octicons } from '@expo/vector-icons';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { Octicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
-import { ScrollView, Pressable } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { ChatComposer } from '@/src/components/ui/molecules';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
 import { appointmentKeys } from '@repo/api-client';
 import { useTheme } from '@/src/hooks/useTheme';
-import { router } from 'expo-router';
 import { ROUTES } from '@/src/routes/routes';
 
 type Attachment = {

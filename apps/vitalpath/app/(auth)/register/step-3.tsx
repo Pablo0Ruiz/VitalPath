@@ -15,16 +15,25 @@ import { useAuthStore } from '@repo/store';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { isElderlyUser } from '@/src/utils/date';
 
 const RegisterStep3 = () => {
   const t = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const { draft, setStep3, getAll, reset } = useRegisterStore();
   const { setSession } = useAuthStore();
+  const { hasSeenSuggestion } = useSeniorUIStore();
+
+  const successRoute =
+    isElderlyUser(draft.fechaNacimiento) && !hasSeenSuggestion
+      ? ROUTES.SENIOR_UI_SUGGESTION
+      : ROUTES.HOME;
+
   const { mutate: registerMutation, isPending } = useRegister(
     mobileTokenAdapter,
     { setSession },
-    { successRoute: ROUTES.HOME },
+    { successRoute },
   );
 
   const {

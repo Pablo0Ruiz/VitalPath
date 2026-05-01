@@ -19,6 +19,7 @@ interface FormFieldProps extends Omit<TextInputProps, 'style'> {
   rightIcon?: React.ReactNode;
   helperText?: string;
   style?: StyleProp<ViewStyle>;
+  inputStyle?: TextInputProps['style'];
 }
 
 const FormField = ({
@@ -30,6 +31,7 @@ const FormField = ({
   leftIcon,
   rightIcon,
   style,
+  inputStyle,
   ...inputProps
 }: FormFieldProps) => {
   const t = useTheme();
@@ -58,6 +60,7 @@ const FormField = ({
         leftIcon={leftIcon}
         rightIcon={rightIcon}
         variant={inputVariant}
+        style={inputStyle}
         {...inputProps}
       />
       {helperText && (
