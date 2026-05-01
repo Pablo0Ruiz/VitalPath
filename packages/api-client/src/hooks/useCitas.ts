@@ -75,7 +75,7 @@ export const useCitasMedico = () => {
   return useQuery({
     queryKey: appointmentKeys.list('all'),
     queryFn: getCitasMedico,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
   });
 };
 

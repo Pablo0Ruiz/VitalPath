@@ -5,6 +5,9 @@ export interface UserSession {
   email: string;
   role?: string;
   medicaments?: string[];
+  fechaNacimiento?: string;
+  genero?: string;
+  seniorMode?: boolean;
 }
 
 export interface TokenAdapter {

@@ -54,6 +54,15 @@ export const postRegister = async (
   return data;
 };
 
+export const postLoginWithCode = async (
+  codigo: string,
+): Promise<UserCredentials> => {
+  const { data } = await apiClient.post<UserCredentials>(
+    `/api/auth/login/code/${codigo}`,
+  );
+  return data;
+};
+
 export const postInviteVerification = async (
   payload: InviteDoctorDto,
 ): Promise<UserCredentials> => {
