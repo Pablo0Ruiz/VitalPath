@@ -1,7 +1,6 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { InviteDoctorDto, LoginUserDto, RegisterDto } from './dto';
-import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 
 @Controller('auth')
@@ -18,14 +17,22 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  @Post('login/:id')
-  loginWithId(@Param('id', ParseMongoIdPipe) id: string) {
-    return this.authService.loginWithId(id);
+  @Post('login/code/:codigo')
+  loginWithCode(@Param('codigo') codigo: string) {
+    return this.authService.loginWithCode(codigo);
   }
 
   @Post('recover-password')
   recoverPassword(@Body() recoverPasswordDto: RecoverPasswordDto) {
     return this.authService.recoverPassword(recoverPasswordDto);
+  }
+
+  @Patch('set-access-code/:id')
+  setAccessCode(
+    @Param('id') id: string,
+    @Body('accessCode') accessCode: string,
+  ) {
+    return this.authService.setAccessCode(id, accessCode);
   }
 
   @Post('verify-doctor/:verificationCode')

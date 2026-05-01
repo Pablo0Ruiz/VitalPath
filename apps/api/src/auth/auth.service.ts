@@ -89,10 +89,17 @@ export class AuthService {
     };
   }
 
-  async loginWithId(id: string) {
-    const user = await this.userModel.findById(id);
+  async loginWithCode(codigo: string) {
+    const cutoff = new Date();
+    cutoff.setFullYear(cutoff.getFullYear() - 65);
 
-    if (!user) throw new UnauthorizedException('El usuario no existe');
+    const user = await this.userModel.findOne({
+      accessCode: codigo,
+      fechaNacimiento: { $lte: cutoff },
+    });
+
+    if (!user)
+      throw new UnauthorizedException('Código inválido o acceso no autorizado');
 
     const { password: _, ...userWithoutPassword } = user.toObject();
 
@@ -100,6 +107,29 @@ export class AuthService {
       user: userWithoutPassword,
       token: this.getJwtToken({ id: user.id }),
     };
+  }
+
+  async setAccessCode(id: string, accessCode: string) {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        id,
+        { accessCode },
+        { new: true },
+      );
+
+      if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
+      return {
+        message: 'Código de acceso actualizado correctamente',
+        user: {
+          id: user.id,
+          name: user.name,
+          accessCode: user.accessCode,
+        },
+      };
+    } catch (error) {
+      handleServiceException(error);
+    }
   }
 
   private getJwtToken(payload: JwtPayload) {

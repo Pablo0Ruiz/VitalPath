@@ -53,8 +53,20 @@ export class User extends Document {
   @Prop({ type: String, required: false })
   verificationCode?: string;
 
+  @Prop({
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
+    index: true,
+  })
+  accessCode?: string;
+
   @Prop({ type: Boolean, default: false })
   isActive: boolean;
+
+  @Prop({ type: Boolean, default: false, required: false })
+  seniorMode: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

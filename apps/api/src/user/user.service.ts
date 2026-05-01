@@ -5,6 +5,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { Doctor } from './entities/doctor.entity';
 import { Patient } from './entities/patient.entity';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -36,5 +37,15 @@ export class UserService {
       ...user.toObject(),
       profile,
     };
+  }
+
+  async updateProfile(userId: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findByIdAndUpdate(userId, updateUserDto, {
+      new: true,
+    });
+
+    if (!user) throw new Error('Usuario no encontrado');
+
+    return user.toObject();
   }
 }

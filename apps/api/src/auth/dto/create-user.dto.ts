@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDate,
   IsEmail,
   IsOptional,
@@ -23,8 +24,8 @@ export class CreateUserDto {
 
   @IsString()
   @MinLength(6)
-  @MaxLength(12)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,12}$/, {
+  @MaxLength(50)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,50}$/, {
     message:
       'La contraseña debe tener una mayúscula, una minúscula y un número',
   })
@@ -44,4 +45,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   genero: string;
+
+  @IsOptional()
+  @IsBoolean()
+  seniorMode?: boolean;
 }
