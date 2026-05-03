@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -14,7 +14,7 @@ import {
   DailyCheckIn,
 } from '@/src/components/ui/molecules';
 import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore, useChatContextStore } from '@repo/store';
 import {
   useCitas,
   useDeleteMedication,
@@ -24,11 +24,17 @@ import { ROUTES } from '@/src/routes/routes';
 import { extractDateKey } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useCompletedSet, useDisclosure } from '@/src/hooks';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { VoiceAssistantModal } from '@/src/components/ui/organism';
 
 export default function DashboardScreen() {
   const t = useTheme();
   const navigation = useNavigation();
   const { user } = useAuthStore();
+  const { isSeniorUI } = useSeniorUIStore();
+  const chatId = useChatContextStore(state => state.chatId);
+  const voiceModal = useDisclosure();
+
   const createModal = useDisclosure();
   const editModal = useDisclosure<string>();
   const { completedIds, markCompleted } = useCompletedSet();
@@ -163,6 +169,23 @@ export default function DashboardScreen() {
         </View>
       </ScrollView>
 
+      {isSeniorUI && (
+        <Pressable
+          style={[s.fab, { backgroundColor: t.primary600 }]}
+          onPress={() => voiceModal.open()}
+        >
+          <Ionicons name="mic" size={30} color="white" />
+        </Pressable>
+      )}
+
+      {voiceModal.isOpen && (
+        <VoiceAssistantModal
+          visible={voiceModal.isOpen}
+          onClose={voiceModal.close}
+          chatId={chatId}
+        />
+      )}
+
       {editModal.isOpen && editModal.data && (
         <CustomUpdateModal
           visible={editModal.isOpen}
@@ -218,4 +241,20 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   flex1: { flex: 1 },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    zIndex: 100,
+  },
 });

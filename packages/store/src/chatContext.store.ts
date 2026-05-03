@@ -17,6 +17,13 @@ export interface ChatContextState {
     attachments: any[],
     fetcher: ChatStreamFetcher,
   ) => Promise<void>;
+  addVoiceMessage: (
+    transcript: string,
+    replyText: string,
+    audioUri?: string,
+  ) => void;
+  setMessages: (messages: Message[]) => void;
+  setChatId: (id: string) => void;
   clearChat: () => void;
 }
 
@@ -38,7 +45,19 @@ const createMessage = (
   text: string,
   sender: 'user' | 'gemini',
   attachments: any[] = [],
+  type: 'text' | 'image' | 'audio' = 'text',
 ): Message => {
+  if (type === 'audio') {
+    return {
+      id: generateId(),
+      text,
+      createdAt: new Date(),
+      sender,
+      type: 'audio',
+      audioUri: attachments[0],
+    };
+  }
+
   if (attachments && attachments.length > 0) {
     return {
       id: generateId(),
@@ -96,6 +115,27 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
     } finally {
       set({ geminiWriting: false });
     }
+  },
+
+  addVoiceMessage: (
+    transcript: string,
+    replyText: string,
+    audioUri?: string,
+  ) => {
+    const userMessage = createMessage(transcript, 'user', [audioUri], 'audio');
+    const geminiMessage = createMessage(replyText, 'gemini');
+
+    set((state: ChatContextState) => ({
+      messages: [geminiMessage, userMessage, ...state.messages],
+    }));
+  },
+
+  setMessages: (messages: Message[]) => {
+    set({ messages });
+  },
+
+  setChatId: (chatId: string) => {
+    set({ chatId, messages: [] });
   },
 
   clearChat: () => {

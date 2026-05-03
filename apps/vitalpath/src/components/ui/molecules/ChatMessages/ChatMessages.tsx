@@ -21,8 +21,13 @@ export const ChatMessages = ({ messages, isGeminiWriting }: Props) => {
         keyExtractor={item => item.id}
         style={s.list}
         renderItem={({ item }) => {
-          if (item.type === 'text') {
-            return <MessageItem message={item as TextMessage} />;
+          if (item.type === 'text' || item.type === 'audio') {
+            return (
+              <MessageItem
+                message={item as TextMessage}
+                isVoice={item.type === 'audio'}
+              />
+            );
           }
 
           return (

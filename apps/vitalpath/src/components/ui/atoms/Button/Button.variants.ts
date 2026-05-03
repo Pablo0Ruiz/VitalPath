@@ -15,12 +15,12 @@ export const buttonContainerStyle = (
   t: ThemeTokens,
 ): ViewStyle => {
   const map: Record<ButtonVariant, ViewStyle> = {
-    primary: { backgroundColor: t.neutral950 },
+    primary: { backgroundColor: t.primary600 },
     secondary: { backgroundColor: '#F1F5F9' },
     outline: {
       backgroundColor: 'transparent',
       borderWidth: 1,
-      borderColor: t.neutral950,
+      borderColor: t.primary600,
     },
     ghost: { backgroundColor: 'transparent' },
     'ghost-on-dark': { backgroundColor: 'rgba(255,255,255,0.1)' },
@@ -67,10 +67,10 @@ export const buttonTitleStyle = (
   t: ThemeTokens,
 ): TextStyle => {
   const colorMap: Record<ButtonVariant, string> = {
-    primary: t.white,
-    secondary: t.neutral950,
-    outline: t.neutral950,
-    ghost: t.neutral950,
+    primary: t.textInverse,
+    secondary: t.primary600,
+    outline: t.primary600,
+    ghost: t.primary600,
     'ghost-on-dark': t.white,
     danger: t.error,
   };
@@ -95,8 +95,8 @@ export const buttonLoadingColor = (
   t: ThemeTokens,
 ): string => {
   const map: Record<ButtonVariant, string> = {
-    primary: '#FFFFFF',
-    secondary: '#FFFFFF',
+    primary: t.textInverse,
+    secondary: t.white,
     outline: t.primary600,
     ghost: t.primary600,
     'ghost-on-dark': '#FFFFFF',

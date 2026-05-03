@@ -1,6 +1,7 @@
 export { FormField } from './FormField';
 export { Divider } from './Divider';
 export { AuthHeader } from './AuthHeader';
+export { ConversationCard } from './ConversationCard';
 export { SectionHeader } from './SectionHeader';
 export { AppointmentRow } from './AppointmentRow';
 export { MedicationRow } from './MedicationRow';

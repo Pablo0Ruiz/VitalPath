@@ -24,8 +24,8 @@ export const ROUTES = {
 
 export const DRAWER_SCREEN_NAMES = {
   TABS: '(tabs)',
-  PROFILE: 'profile',
-  SETTINGS: 'settings',
+  PROFILE: 'profile/index',
+  SETTINGS: 'settings/index',
 } as const;
 
 export const AUTH_SCREEN_NAMES = {

@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -14,12 +15,15 @@ import { getGalleryImages } from '@/src/core/actions/image-picker/get-gallery-im
 import { Input } from '@/src/components/ui/atoms';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVoiceAssistant } from '@/src/hooks/useVoiceAssistant';
+import { useChatContextStore } from '@repo/store';
 
 export interface ChatComposerProps {
+  chatId: string;
   onSendMessage: (message: string, attachments: ImagePickerAsset[]) => void;
 }
 
-const ChatComposer = ({ onSendMessage }: ChatComposerProps) => {
+const ChatComposer = ({ chatId, onSendMessage }: ChatComposerProps) => {
   const isAndroid = Platform.OS === 'android';
   const t = useTheme();
   const insets = useSafeAreaInsets();
@@ -27,11 +31,29 @@ const ChatComposer = ({ onSendMessage }: ChatComposerProps) => {
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImagePickerAsset[]>([]);
 
+  const addVoiceMessage = useChatContextStore(state => state.addVoiceMessage);
+
+  const { isRecording, isProcessing, startRecording, processVoiceCommand } =
+    useVoiceAssistant({
+      chatId,
+      onSuccess: (transcript, replyText) => {
+        addVoiceMessage(transcript, replyText);
+      },
+    });
+
   const handleSend = () => {
     if (!text.trim() && images.length === 0) return;
     onSendMessage(text.trim(), images);
     setText('');
     setImages([]);
+  };
+
+  const handleVoiceAction = async () => {
+    if (isRecording) {
+      await processVoiceCommand();
+    } else {
+      await startRecording();
+    }
   };
 
   const handlePickImages = async () => {
@@ -43,6 +65,7 @@ const ChatComposer = ({ onSendMessage }: ChatComposerProps) => {
 
   const SEND_ACTIVE = t.primary600;
   const SEND_IDLE = t.neutral400;
+  const showSendButton = text.trim().length > 0 || images.length > 0;
 
   return (
     <KeyboardAvoidingView
@@ -76,43 +99,64 @@ const ChatComposer = ({ onSendMessage }: ChatComposerProps) => {
           style={[
             s.composer,
             { backgroundColor: t.surfaceElevated, shadowColor: '#000' },
+            isRecording && { borderColor: t.primary600, borderWidth: 1 },
           ]}
         >
-          <Pressable
-            onPress={handlePickImages}
-            accessibilityLabel="Adjuntar imagen"
-            style={({ pressed }) => [
-              s.iconButton,
-              { opacity: pressed ? 0.5 : 1 },
-            ]}
-          >
-            <Ionicons name="attach-outline" size={22} color={SEND_IDLE} />
-          </Pressable>
+          {!isRecording && (
+            <Pressable
+              onPress={handlePickImages}
+              accessibilityLabel="Adjuntar imagen"
+              style={({ pressed }) => [
+                s.iconButton,
+                { opacity: pressed ? 0.5 : 1 },
+              ]}
+            >
+              <Ionicons name="attach-outline" size={22} color={SEND_IDLE} />
+            </Pressable>
+          )}
 
           <Input
             variant="bare"
-            placeholder="Escribe un mensaje..."
+            placeholder={isRecording ? 'Grabando...' : 'Escribe un mensaje...'}
             multiline
             numberOfLines={1}
             value={text}
             onChangeText={setText}
             style={s.input}
+            editable={!isRecording && !isProcessing}
           />
 
-          <Pressable
-            onPress={handleSend}
-            accessibilityLabel="Enviar mensaje"
-            style={({ pressed }) => [
-              s.iconButton,
-              { opacity: pressed ? 0.5 : 1 },
-            ]}
-          >
-            <Ionicons
-              name="paper-plane-outline"
-              size={22}
-              color={text.trim() || images.length > 0 ? SEND_ACTIVE : SEND_IDLE}
+          {isProcessing ? (
+            <ActivityIndicator
+              size="small"
+              color={t.primary600}
+              style={s.iconButton}
             />
-          </Pressable>
+          ) : (
+            <Pressable
+              onPress={showSendButton ? handleSend : handleVoiceAction}
+              accessibilityLabel={
+                showSendButton ? 'Enviar mensaje' : 'Grabar audio'
+              }
+              style={({ pressed }) => [
+                s.iconButton,
+                { opacity: pressed ? 0.5 : 1 },
+                isRecording && s.recordingActive,
+              ]}
+            >
+              <Ionicons
+                name={
+                  showSendButton
+                    ? 'paper-plane-outline'
+                    : isRecording
+                      ? 'stop-circle'
+                      : 'mic-outline'
+                }
+                size={22}
+                color={showSendButton || isRecording ? SEND_ACTIVE : SEND_IDLE}
+              />
+            </Pressable>
+          )}
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -142,6 +186,9 @@ const s = StyleSheet.create({
     minHeight: 40,
     paddingVertical: 8,
     textAlignVertical: 'center',
+  },
+  recordingActive: {
+    transform: [{ scale: 1.2 }],
   },
 });
 

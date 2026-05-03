@@ -22,6 +22,10 @@ export default function AuthLayout() {
         name="recover-password-email-sent/index"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="senior-ui-suggestion/index"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

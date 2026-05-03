@@ -14,8 +14,8 @@ import { useAuthStore } from '@repo/store';
 import { useSession } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 
-import { setupApiInterceptors } from '@/src/lib/api-setup';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { setupApiInterceptors } from '@/src/lib/api-setup';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 
@@ -84,10 +84,6 @@ function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="(auth)" />
-            <Stack.Screen
-              name="(auth)/senior-ui-suggestion"
-              options={{ headerShown: false }}
-            />
             <Stack.Screen name="(drawer)" />
           </Stack>
         </View>

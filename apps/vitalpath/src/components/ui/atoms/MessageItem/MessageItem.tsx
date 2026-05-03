@@ -2,13 +2,15 @@ import { StyleSheet, View, useColorScheme } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { TextMessage } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons';
 
 export interface MessageItemProps {
   message: TextMessage;
   userColor?: string;
+  isVoice?: boolean;
 }
 
-const MessageItem = ({ message }: MessageItemProps) => {
+const MessageItem = ({ message, isVoice }: MessageItemProps) => {
   const isCurrentUser = message.sender === 'user';
   const t = useTheme();
   const colorScheme = useColorScheme();
@@ -39,9 +41,19 @@ const MessageItem = ({ message }: MessageItemProps) => {
             },
       ]}
     >
-      <Markdown style={isCurrentUser ? userMarkdown : aiMarkdown}>
-        {message.text}
-      </Markdown>
+      <View style={s.content}>
+        {isVoice && (
+          <Ionicons
+            name="mic"
+            size={14}
+            color={isCurrentUser ? 'rgba(255,255,255,0.7)' : t.textSecondary}
+            style={s.voiceIcon}
+          />
+        )}
+        <Markdown style={isCurrentUser ? userMarkdown : aiMarkdown}>
+          {message.text}
+        </Markdown>
+      </View>
     </View>
   );
 };
@@ -59,6 +71,14 @@ const s = StyleSheet.create({
     borderRadius: 16,
     borderBottomLeftRadius: 4,
     borderWidth: 1,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  voiceIcon: {
+    marginRight: 2,
   },
 });
 

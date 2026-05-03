@@ -10,7 +10,7 @@ export default function MedicationsLayout() {
     if (router.canGoBack()) {
       router.back();
     } else {
-      router.replace(ROUTES.HOME);
+      router.replace('/(drawer)/(tabs)/home');
     }
   };
 
