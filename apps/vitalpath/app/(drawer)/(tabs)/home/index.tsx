@@ -25,7 +25,7 @@ import { extractDateKey } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useCompletedSet, useDisclosure } from '@/src/hooks';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
-import { VoiceAssistantModal } from '@/src/components/ui/organism';
+import { VoiceAssistantModal } from '@/src/components/ui/organisms';
 
 export default function DashboardScreen() {
   const t = useTheme();

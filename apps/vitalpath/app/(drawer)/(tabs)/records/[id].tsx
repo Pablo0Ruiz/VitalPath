@@ -15,7 +15,7 @@ import { useAuthStore } from '@repo/store';
 import type { IMedicalResults } from '@repo/types';
 
 import { TextField } from '@/src/components/ui/atoms';
-import { TrackingTimeline } from '@/src/components/ui/organism/TrackingTimeline';
+import { TrackingTimeline } from '@/src/components/ui/organisms/TrackingTimeline';
 import { SummaryBottomSheet } from '@/src/components/ui/molecules/SummaryBottomSheet';
 import { usePdfData } from '@/src/hooks/usePdfData';
 import { useTheme } from '@/src/hooks/useTheme';

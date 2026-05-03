@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { ChatComposer } from '@/src/components/ui/molecules';
-import { ChatHistory } from '@/src/components/ui/organism';
+import { ChatHistory } from '@/src/components/ui/organisms';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
 import { appointmentKeys, useChatHistory } from '@repo/api-client';

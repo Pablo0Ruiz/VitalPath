@@ -12,7 +12,7 @@ import {
   AppointmentCard,
   DoctorPickerSheet,
 } from '@/src/components/ui/molecules';
-import { CalendarWidget } from '@/src/components/ui/organism';
+import { CalendarWidget } from '@/src/components/ui/organisms';
 import { useCitas, useCancelCita } from '@repo/api-client';
 import { useAuthStore } from '@repo/store';
 import { extractDateKey } from '@/src/utils/date';
