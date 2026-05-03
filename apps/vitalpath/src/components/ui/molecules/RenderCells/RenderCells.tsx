@@ -1,5 +1,6 @@
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button, TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface RenderCellsProps {
   currentMonth: Date;
@@ -18,13 +19,15 @@ const RenderCells = ({
   firstDayOfWeek,
   daysInMonth,
 }: RenderCellsProps) => {
+  const t = useTheme();
   const cells = [];
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
   for (let i = 0; i < firstDayOfWeek; i++) {
-    cells.push(<View key={`empty-${i}`} className="w-[14%] aspect-square" />);
+    cells.push(<View key={`empty-${i}`} style={s.cell} />);
   }
+
   for (let i = 1; i <= daysInMonth; i++) {
     const date = new Date(year, month, i);
     const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -42,22 +45,34 @@ const RenderCells = ({
       <Button
         key={`day-${i}`}
         onPress={() => onDayPress(date)}
-        className={`w-[14%] aspect-square items-center justify-center rounded-full ${
-          isSelected ? 'bg-brand-violet-600' : 'bg-transparent'
-        }`}
+        variant={isSelected ? 'outline' : 'ghost'}
+        style={[
+          s.cell,
+          isSelected
+            ? [
+                s.selected,
+                {
+                  borderColor: t.primary600,
+                  backgroundColor: t.surfaceElevated,
+                },
+              ]
+            : null,
+        ]}
       >
         <TextField
-          variants="body"
-          className={`text-center ${isSelected ? 'text-white' : 'text-slate-800'}`}
+          variant="body"
+          style={[
+            s.dayText,
+            { color: isSelected ? t.primary600 : t.textPrimary },
+            isSelected && s.bold,
+          ]}
         >
           {i}
         </TextField>
 
-        <View className="h-1 flex-row mt-0.5 justify-center">
+        <View style={s.dotContainer}>
           {hasAppointment && (
-            <View
-              className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-brand-violet-600'}`}
-            />
+            <View style={[s.dot, { backgroundColor: t.primary600 }]} />
           )}
         </View>
       </Button>,
@@ -65,5 +80,32 @@ const RenderCells = ({
   }
   return cells;
 };
+
+const s = StyleSheet.create({
+  cell: {
+    width: '14.28%',
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+  },
+  selected: {
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  dayText: { textAlign: 'center', fontSize: 14 },
+  bold: { fontWeight: '700' },
+  dotContainer: {
+    height: 4,
+    flexDirection: 'row',
+    marginTop: 2,
+    justifyContent: 'center',
+  },
+  dot: { width: 4, height: 4, borderRadius: 2 },
+});
 
 export default RenderCells;

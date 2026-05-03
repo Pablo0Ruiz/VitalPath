@@ -1,19 +1,28 @@
 import { TimelineStatus } from '../components/ui/atoms/TimeLineIcon/TimeLineIcon';
+import { ThemeTokens } from './tokens';
 
-export const iconConfig: Record<
-  TimelineStatus,
-  { icon: string; bg: string; iconColor: string }
-> = {
-  completed: { icon: 'check', bg: 'bg-blue-600', iconColor: '#fff' },
-  sample: { icon: 'activity', bg: 'bg-blue-600', iconColor: '#fff' },
+export interface IconConfigItem {
+  icon: string;
+  bg: string;
+  iconColor: string;
+  borderColor?: string;
+}
+
+export const getIconConfig = (
+  t: ThemeTokens,
+): Record<TimelineStatus, IconConfigItem> => ({
+  completed: { icon: 'check', bg: t.info, iconColor: '#FFFFFF' },
+  sample: { icon: 'activity', bg: t.info, iconColor: '#FFFFFF' },
   processing: {
     icon: 'refresh-cw',
-    bg: 'bg-white border border-blue-600',
-    iconColor: '#2563eb',
+    bg: t.surfaceElevated,
+    borderColor: t.info,
+    iconColor: t.info,
   },
   locked: {
     icon: 'lock',
-    bg: 'bg-white border border-slate-300',
-    iconColor: '#94a3b8',
+    bg: t.surfaceElevated,
+    borderColor: t.border,
+    iconColor: t.textSecondary,
   },
-};
+});

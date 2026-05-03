@@ -1,11 +1,12 @@
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { Card } from '@/src/components/ui/atoms/Card';
 import { AppointmentRow } from '../AppointmentRow';
 import { AppointmentStatus } from '../AppointmentStatus';
-import { formatTime, formatDate } from '@/src/utils/date';
-import { Cita } from '@/src/interfaces/appointments/appointments.interface';
+import { formatDateShort } from '@/src/utils/date';
+import { CitaPopulated } from '@repo/types';
 
 export interface AppointmentCardProps extends ViewProps {
-  appointment: Cita;
+  appointment: CitaPopulated;
   onCancel?: (id: string) => void;
   isCancelling?: boolean;
 }
@@ -14,34 +15,46 @@ const AppointmentCard = ({
   appointment,
   onCancel,
   isCancelling,
-  className,
+  style,
   ...props
 }: AppointmentCardProps) => {
-  const timeString = formatTime(appointment.fechaHora);
-  const dateString = formatDate(appointment.fechaHora);
+  const { name, lastName } = appointment.medico_ID;
+  const avatarInitials = `${name[0]}${lastName[0]}`.toUpperCase();
 
   return (
-    <View
-      className={`flex-row items-start justify-between ${className ?? ''}`}
+    <Card
+      variant="elevated"
+      padding="md"
+      style={[s.container, style]}
       {...props}
     >
-      <View className="flex-1">
+      <View style={s.row}>
         <AppointmentRow
-          doctor="Dr(a). Asignado"
-          specialty="Pendiente"
-          time={timeString}
-          date={dateString}
-          avatarInitials="PR"
+          doctor={`${name} ${lastName}`}
+          specialty={appointment.medico_ID.especialidad}
+          time={appointment.hora}
+          date={formatDateShort(appointment.fecha)}
+          avatarInitials={avatarInitials}
         />
       </View>
       <AppointmentStatus
         status={appointment.estado}
         onCancel={onCancel ? () => onCancel(appointment._id) : undefined}
         isCancelling={isCancelling}
-        className="ml-2 mt-1"
+        style={s.status}
       />
-    </View>
+    </Card>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  row: { flex: 1 },
+  status: { marginLeft: 8, marginTop: 4 },
+});
 
 export default AppointmentCard;

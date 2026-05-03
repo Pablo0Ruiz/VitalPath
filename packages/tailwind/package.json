@@ -4,11 +4,14 @@
   "private": true,
   "license": "MIT",
   "exports": {
+    "./colors.css": "./colors.css",
+    "./dark.css": "./dark.css",
+    "./light.css": "./light.css",
     "./native": "./tailwind.native.js",
     "./web": "./tailwind.web.ts"
   },
   "devDependencies": {
     "nativewind": "^4.2.1",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^4.0.0"
   }
 }

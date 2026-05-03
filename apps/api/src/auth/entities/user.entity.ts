@@ -43,6 +43,30 @@ export class User extends Document {
     required: true,
   })
   genero: UserGenero;
+
+  @Prop({ type: String, required: false })
+  fotoPerfil: string;
+
+  @Prop({ type: String, required: false })
+  telefono: string;
+
+  @Prop({ type: String, required: false })
+  verificationCode?: string;
+
+  @Prop({
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
+    index: true,
+  })
+  accessCode?: string;
+
+  @Prop({ type: Boolean, default: false })
+  isActive: boolean;
+
+  @Prop({ type: Boolean, default: false, required: false })
+  seniorMode: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

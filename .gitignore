@@ -89,3 +89,24 @@ app-example
 *.mobileprovision
 /ios
 /android
+apps/vitalpath/android/*
+apps/vitalpath/ios/*
+.windsurf/*
+.atl/*
+
+# next.js
+/.next/
+/out/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.next
+
+apps/api/skills-lock.json
+apps/api/.agents/*
+apps/api/.claude/*
+apps/api/.windsurf/*

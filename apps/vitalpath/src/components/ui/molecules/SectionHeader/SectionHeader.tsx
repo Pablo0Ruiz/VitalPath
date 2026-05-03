@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, TouchableOpacity, ViewProps } from 'react-native';
-import { TextField } from '../../atoms';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { Button, TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface SectionHeaderProps extends ViewProps {
   title: string;
@@ -12,32 +12,46 @@ const SectionHeader = ({
   title,
   linkLabel,
   onLinkPress,
-  className,
+  style,
   ...props
 }: SectionHeaderProps) => {
+  const t = useTheme();
+
   return (
-    <View
-      className={`flex-row items-center justify-between mb-2.5 mt-1 ${className ?? ''}`}
-      {...props}
-    >
-      <TextField
-        variants="body"
-        className="text-brand-slate-800 text-[17px] font-bold text-left"
-      >
+    <View style={[s.container, style]} {...props}>
+      <TextField variant="body" style={[s.title, { color: t.textPrimary }]}>
         {title}
       </TextField>
       {linkLabel && onLinkPress && (
-        <TouchableOpacity onPress={onLinkPress}>
+        <Button
+          onPress={onLinkPress}
+          variant="ghost"
+          size="sm"
+          style={s.button}
+        >
           <TextField
-            variants="caption"
-            className="text-brand-violet-600 font-semibold text-[13px]"
+            variant="caption"
+            style={[s.link, { color: t.primary700 }]}
           >
             {linkLabel}
           </TextField>
-        </TouchableOpacity>
+        </Button>
       )}
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  title: { fontSize: 17, fontWeight: '700', textAlign: 'left' },
+  button: { padding: 0 },
+  link: { fontWeight: '600', fontSize: 13 },
+});
 
 export default SectionHeader;

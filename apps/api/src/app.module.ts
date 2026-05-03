@@ -6,9 +6,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
-import { GeminiModule } from './gemini/gemini.module';
+import { GroqModule } from './groq/groq.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AppointmentModule } from './appointment/appointment.module';
+import { MedicationsModule } from './medications/medications.module';
+import { HospitalsModule } from './hospitals/hospitals.module';
+import { GroqToolsModule } from './groq-tools/groq-tools.module';
 
 @Module({
   imports: [
@@ -29,11 +32,17 @@ import { AppointmentModule } from './appointment/appointment.module';
 
     UserModule,
 
-    GeminiModule,
+    GroqModule,
 
     SupabaseModule,
 
     AppointmentModule,
+
+    MedicationsModule,
+
+    HospitalsModule,
+
+    GroqToolsModule,
   ],
 })
 export class AppModule {}

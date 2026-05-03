@@ -1,7 +1,11 @@
-export const baseIconBox = 'items-center justify-center rounded-xl';
+import { StyleSheet, ViewStyle } from 'react-native';
 
-export const iconBoxSizes = {
-  sm: 'w-7 h-7',
-  md: 'w-8 h-8',
-  lg: 'w-10 h-10',
-} as const;
+export type IconBoxSize = 'sm' | 'md' | 'lg';
+
+export const iconBoxSizeStyles = StyleSheet.create<
+  Record<IconBoxSize, ViewStyle>
+>({
+  sm: { width: 28, height: 28 },
+  md: { width: 32, height: 32 },
+  lg: { width: 40, height: 40 },
+});

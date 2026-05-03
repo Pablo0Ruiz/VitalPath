@@ -1,26 +1,33 @@
-import { View, ViewProps } from 'react-native';
-import { TextField } from '../TextFiled';
-import { tabsVariants, textStyles } from './Tabs.variants';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { TextField } from '../TextField';
+import {
+  tabsContainerStyle,
+  tabsTextStyle,
+  type TabsVariant,
+} from './Tabs.variants';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface TabsProps extends ViewProps {
   label: string;
-  variant?: 'date' | 'active' | 'pending';
+  variant?: TabsVariant;
 }
 
-const Tabs = ({ label, variant = 'date', className, ...props }: TabsProps) => {
+const Tabs = ({ label, variant = 'date', style, ...props }: TabsProps) => {
+  const t = useTheme();
+
   return (
-    <View
-      className={`px-3 py-1 rounded-xl ${tabsVariants({ variant })} ${className ?? ''}`}
-      {...props}
-    >
-      <TextField
-        variant="caption"
-        className={`font-bold ${textStyles({ variant })}`}
-      >
+    <View style={[s.base, tabsContainerStyle(variant, t), style]} {...props}>
+      <TextField variant="caption" style={[s.text, tabsTextStyle(variant, t)]}>
         {label}
       </TextField>
     </View>
   );
 };
 
+const s = StyleSheet.create({
+  base: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
+  text: { fontWeight: '700' },
+});
+
+Tabs.displayName = 'Tabs';
 export default Tabs;

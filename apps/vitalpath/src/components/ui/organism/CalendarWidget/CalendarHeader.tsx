@@ -1,7 +1,8 @@
-import { View } from 'react-native';
-import { Octicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, TextField } from '../../atoms';
 import { MONTH_NAMES } from '@/src/constants/monthAndDay';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CalendarHeaderProps {
   currentMonth: Date;
@@ -9,27 +10,30 @@ export interface CalendarHeaderProps {
   onNext: () => void;
 }
 
-export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
+export const CalendarHeader = ({
   currentMonth,
   onPrev,
   onNext,
-}) => {
+}: CalendarHeaderProps) => {
+  const t = useTheme();
   const monthName = MONTH_NAMES[currentMonth.getMonth()];
   const year = currentMonth.getFullYear();
 
   return (
-    <View className="flex-row items-center justify-between mb-4">
+    <View style={s.container}>
       <Button
         onPress={onPrev}
-        className="w-10 h-10 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+        variant="ghost"
+        size="sm"
+        style={[s.iconButton, { backgroundColor: t.neutral100 }]}
       >
-        <Octicons name="chevron-left" size={20} color="#0f172a" />
+        <Ionicons name="chevron-back" size={20} color={t.textPrimary} />
       </Button>
 
       <View>
         <TextField
-          variants="subtitle"
-          className="text-center font-bold text-lg text-slate-800"
+          variant="title"
+          style={[s.monthText, { color: t.textPrimary }]}
         >
           {monthName} {year}
         </TextField>
@@ -37,10 +41,30 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
       <Button
         onPress={onNext}
-        className="w-10 h-10 items-center justify-center rounded-full bg-slate-100 active:bg-slate-200"
+        variant="ghost"
+        size="sm"
+        style={[s.iconButton, { backgroundColor: t.neutral100 }]}
       >
-        <Octicons name="chevron-right" size={20} color="#0f172a" />
+        <Ionicons name="chevron-forward" size={20} color={t.textPrimary} />
       </Button>
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    padding: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+  },
+  monthText: { textAlign: 'center', fontWeight: '700', fontSize: 18 },
+});

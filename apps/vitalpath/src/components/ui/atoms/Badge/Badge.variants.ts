@@ -1,28 +1,55 @@
-export const baseBadge = 'flex-row items-center px-2 py-0.5 rounded-full';
+import { ViewStyle, TextStyle } from 'react-native';
+import { ThemeTokens } from '@/src/constants/tokens';
 
-export const badgeVariants = {
-  success: {
-    container: 'bg-green-100',
-    text: 'text-green-600 text-xs font-semibold',
-  },
-  error: {
-    container: 'bg-red-100',
-    text: 'text-red-500 text-xs font-semibold',
-  },
-  warning: {
-    container: 'bg-amber-100',
-    text: 'text-amber-500 text-xs font-semibold',
-  },
-  primary: {
-    container: 'bg-brand-violet-100',
-    text: 'text-brand-violet-600 text-xs font-semibold',
-  },
-  secondary: {
-    container: 'bg-brand-teal-100',
-    text: 'text-brand-teal-600 text-xs font-semibold',
-  },
-  neutral: {
-    container: 'bg-brand-slate-100',
-    text: 'text-brand-slate-500 text-xs font-semibold',
-  },
-} as const;
+export type BadgeVariant =
+  | 'success'
+  | 'error'
+  | 'warning'
+  | 'primary'
+  | 'secondary'
+  | 'neutral'
+  | 'new'
+  | 'outline';
+
+export const badgeContainerStyle = (
+  variant: BadgeVariant,
+  t: ThemeTokens,
+): ViewStyle => {
+  const map: Record<BadgeVariant, ViewStyle> = {
+    success: { backgroundColor: t.successLight },
+    error: { backgroundColor: t.errorLight },
+    warning: { backgroundColor: t.warningLight },
+    primary: { backgroundColor: t.primary100 },
+    secondary: { backgroundColor: t.secondary100 },
+    neutral: { backgroundColor: t.neutral100 },
+    new: { backgroundColor: t.primary600 },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: t.border,
+    },
+  };
+  return map[variant];
+};
+
+export const badgeTextStyle = (
+  variant: BadgeVariant,
+  t: ThemeTokens,
+): TextStyle => {
+  const map: Record<BadgeVariant, TextStyle> = {
+    success: { color: t.success },
+    error: { color: t.error },
+    warning: { color: t.warning },
+    primary: { color: t.primary600 },
+    secondary: { color: t.secondary600 },
+    neutral: { color: t.neutral500 },
+    new: {
+      color: '#FFFFFF',
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+      fontSize: 10,
+    },
+    outline: { color: t.textPrimary },
+  };
+  return map[variant];
+};

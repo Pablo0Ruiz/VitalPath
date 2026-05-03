@@ -1,48 +1,38 @@
-import {
-  ImagesMessage,
-  TextMessage,
-} from '@/src/interfaces/chat/chat.interface';
+import { ImagesMessage, TextMessage } from '@repo/types';
 import { Fragment } from 'react';
-import { Image, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { MessageItem } from '../MessageItem';
 
-const MessageItemImage = ({
-  message,
-  userColor,
-}: {
+export interface MessageItemImageProps {
   message: ImagesMessage;
   userColor: string;
-}) => {
+}
+
+const MessageItemImage = ({ message, userColor }: MessageItemImageProps) => {
   const isCurrentUser = message.sender === 'user';
   const isMultipleImages = message.images && message.images.length > 1;
 
   return (
     <Fragment>
       <View
-        style={{
-          marginVertical: 4,
-          alignItems: isCurrentUser ? 'flex-end' : 'flex-start',
-          backgroundColor: 'transparent',
-        }}
+        style={[
+          s.container,
+          { alignItems: isCurrentUser ? 'flex-end' : 'flex-start' },
+        ]}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        >
+        <View style={s.imageGrid}>
           {message.images &&
             message.images.map((imageUrl, index) => (
               <Image
                 key={index}
                 source={{ uri: imageUrl }}
-                style={{
-                  width: isMultipleImages ? 150 : 250,
-                  height: isMultipleImages ? 150 : 200,
-                  borderRadius: 12,
-                }}
+                style={[
+                  s.image,
+                  {
+                    width: isMultipleImages ? 140 : 240,
+                    height: isMultipleImages ? 140 : 180,
+                  },
+                ]}
                 resizeMode="cover"
               />
             ))}
@@ -54,5 +44,16 @@ const MessageItemImage = ({
     </Fragment>
   );
 };
+
+const s = StyleSheet.create({
+  container: { marginVertical: 4, backgroundColor: 'transparent' },
+  imageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  image: { borderRadius: 12 },
+});
 
 export default MessageItemImage;

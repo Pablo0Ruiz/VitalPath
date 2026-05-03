@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TextField } from '../../atoms';
 import { WEEK_DAYS } from '@/src/constants/monthAndDay';
 import { RenderCells } from '../../molecules';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CalendarGridProps {
   currentMonth: Date;
@@ -17,6 +18,8 @@ export const CalendarGrid = ({
   appointmentsMap,
   onDayPress,
 }: CalendarGridProps) => {
+  const t = useTheme();
+
   const { daysInMonth, firstDayOfWeek } = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -31,12 +34,12 @@ export const CalendarGrid = ({
 
   return (
     <View>
-      <View className="flex-row justify-between mb-2">
+      <View style={s.weekDaysRow}>
         {WEEK_DAYS.map((day, idx) => (
-          <View key={idx} className="w-[14%] items-center">
+          <View key={idx} style={s.weekDayCell}>
             <TextField
-              variants="caption"
-              className="text-slate-400 font-semibold"
+              variant="caption"
+              style={[s.weekDayText, { color: t.textSecondary }]}
             >
               {day}
             </TextField>
@@ -44,16 +47,27 @@ export const CalendarGrid = ({
         ))}
       </View>
 
-      <View className="flex-row flex-wrap">
-        {RenderCells({
-          currentMonth,
-          selectedDate,
-          appointmentsMap,
-          onDayPress,
-          firstDayOfWeek,
-          daysInMonth,
-        })}
+      <View style={s.grid}>
+        <RenderCells
+          currentMonth={currentMonth}
+          selectedDate={selectedDate}
+          appointmentsMap={appointmentsMap}
+          onDayPress={onDayPress}
+          firstDayOfWeek={firstDayOfWeek}
+          daysInMonth={daysInMonth}
+        />
       </View>
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  weekDaysRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  weekDayCell: { width: '14.28%', alignItems: 'center' },
+  weekDayText: { fontWeight: '600', fontSize: 12 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+});

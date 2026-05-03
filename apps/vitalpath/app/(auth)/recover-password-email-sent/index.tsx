@@ -1,12 +1,16 @@
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+import { Octicons } from '@expo/vector-icons';
+
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader } from '@/src/components/ui/molecules';
-import { useRecoverPassword } from '@/src/hooks/auth/useRecoverPassword';
+import { useRecoverPassword } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
-import { Octicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Alert, ScrollView, View } from 'react-native';
+import { useTheme } from '@/src/hooks/useTheme';
 
 const RecoverPasswordEmailSent = () => {
+  const t = useTheme();
   const { email } = useLocalSearchParams<Record<string, string>>();
 
   const { mutateAsync, isPending } = useRecoverPassword();
@@ -29,10 +33,10 @@ const RecoverPasswordEmailSent = () => {
   };
 
   return (
-    <View className="flex-1 bg-brand-background">
+    <View style={[s.container, { backgroundColor: t.background }]}>
       <ScrollView
-        className="flex-1 px-6 pt-8"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <AuthHeader
@@ -40,13 +44,13 @@ const RecoverPasswordEmailSent = () => {
           subtitle={`Hemos enviado las instrucciones para restablecer tu contraseña a ${email}`}
         />
 
-        <View className="items-center mb-8">
-          <Octicons name="check-circle-fill" size={60} color="#0D9488" />
+        <View style={s.iconWrapper}>
+          <Octicons name="check-circle-fill" size={60} color={t.success} />
         </View>
 
         <TextField
-          variants="caption"
-          className="text-center text-sm text-brand-slate-400 mb-10 px-4 leading-5"
+          variant="caption"
+          style={[s.description, { color: t.textSecondary }]}
         >
           Revisa tu bandeja de entrada y sigue las instrucciones para crear una
           nueva contraseña.
@@ -56,7 +60,7 @@ const RecoverPasswordEmailSent = () => {
           title="Volver al inicio de sesión"
           onPress={handleGoBack}
           variant="primary"
-          className="mb-6"
+          style={s.primaryButton}
         />
 
         <Button
@@ -71,5 +75,20 @@ const RecoverPasswordEmailSent = () => {
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  flex1: { flex: 1 },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
+  iconWrapper: { alignItems: 'center', marginBottom: 32 },
+  description: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 40,
+    paddingHorizontal: 16,
+    lineHeight: 20,
+  },
+  primaryButton: { marginBottom: 16 },
+});
 
 export default RecoverPasswordEmailSent;

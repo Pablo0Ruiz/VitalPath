@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, StyleSheet } from 'react-native';
 
 import { router } from 'expo-router';
 import Octicons from '@expo/vector-icons/Octicons';
@@ -8,17 +8,33 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
 import { FormField } from '@/src/components/ui/molecules';
-import {
-  Step3FormValues,
-  step3Schema,
-} from '@/src/interfaces/auth/register/register.interface';
-import { useRegisterStore } from '@/src/store/registerStore';
-import { useRegister } from '@/src/hooks/auth';
+import { Step3FormValues, step3Schema } from '@repo/types';
+import { useRegisterStore } from '@repo/store';
+import { useRegister } from '@repo/api-client';
+import { useAuthStore } from '@repo/store';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
+import { ROUTES } from '@/src/routes/routes';
+import { useTheme } from '@/src/hooks/useTheme';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { isElderlyUser } from '@/src/utils/date';
 
 const RegisterStep3 = () => {
+  const t = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const { draft, setStep3, getAll, reset } = useRegisterStore();
-  const { mutate: registerMutation, isPending } = useRegister();
+  const { setSession } = useAuthStore();
+  const { hasSeenSuggestion } = useSeniorUIStore();
+
+  const successRoute =
+    isElderlyUser(draft.fechaNacimiento) && !hasSeenSuggestion
+      ? ROUTES.SENIOR_UI_SUGGESTION
+      : ROUTES.HOME;
+
+  const { mutate: registerMutation, isPending } = useRegister(
+    mobileTokenAdapter,
+    { setSession },
+    { successRoute },
+  );
 
   const {
     control,
@@ -49,27 +65,30 @@ const RegisterStep3 = () => {
       onSuccess: () => {
         reset();
       },
-      onError: error => {
+      onError: () => {
         Alert.alert('Error', 'No se pudo crear la cuenta. Intente nuevamente.');
       },
     });
   };
 
   return (
-    <View className="flex-1 bg-brand-background px-6 pt-16">
+    <View style={[s.container, { backgroundColor: t.background }]}>
       <Button
         onPress={() => router.back()}
-        className="absolute top-16 left-6 z-10 w-10 h-10 items-center justify-center rounded-full bg-slate-50"
+        style={[s.backButton, { backgroundColor: t.neutral100 }]}
       >
-        <Octicons name="arrow-left" size={24} color="#0f172a" />
+        <Octicons name="arrow-left" size={24} color={t.textPrimary} />
       </Button>
 
-      <ProgressBar progress={100} className="mb-10 max-w-[200px] self-center" />
+      <ProgressBar progress={100} style={s.progressBar} />
 
-      <TextField variants="title" className="mb-2 text-center">
+      <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>
         Credenciales
       </TextField>
-      <TextField variants="caption" className="text-center text-slate-500 mb-8">
+      <TextField
+        variant="caption"
+        style={[s.subtitle, { color: t.textSecondary }]}
+      >
         (Paso 3 de 3)
       </TextField>
 
@@ -86,7 +105,9 @@ const RegisterStep3 = () => {
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
-            leftIcon={<Octicons name="mail" size={24} color="black" />}
+            leftIcon={
+              <Octicons name="mail" size={20} color={t.textSecondary} />
+            }
             helperText={errors.email?.message}
           />
         )}
@@ -105,18 +126,24 @@ const RegisterStep3 = () => {
             secureTextEntry={!showPassword}
             autoCapitalize="none"
             autoCorrect={false}
-            leftIcon={<Octicons name="lock" size={24} color="black" />}
+            leftIcon={
+              <Octicons name="lock" size={20} color={t.textSecondary} />
+            }
             rightIcon={
-              <Button onPress={() => setShowPassword(!showPassword)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onPress={() => setShowPassword(!showPassword)}
+              >
                 <Octicons
                   name={showPassword ? 'eye' : 'eye-closed'}
-                  size={22}
-                  color="black"
+                  size={20}
+                  color={t.textSecondary}
                 />
               </Button>
             }
             helperText={errors.password?.message}
-            className="mb-8"
+            style={s.passwordField}
           />
         )}
       />
@@ -130,5 +157,29 @@ const RegisterStep3 = () => {
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1, paddingHorizontal: 24, paddingTop: 64 },
+  backButton: {
+    position: 'absolute',
+    top: 64,
+    left: 24,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+  },
+  progressBar: { marginBottom: 40, maxWidth: 200, alignSelf: 'center' },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32 },
+  passwordField: { marginBottom: 32 },
+});
 
 export default RegisterStep3;

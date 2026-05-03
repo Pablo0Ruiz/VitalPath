@@ -5,12 +5,14 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
+  ScrollView,
+  StyleSheet,
   View,
 } from 'react-native';
 
-import { Input } from '@/src/components/ui/atoms';
+import { Button, Input } from '@/src/components/ui/atoms';
 import { getGalleryImages } from '@/src/core/actions/image-picker/get-gallery-images';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CustomInputBoxProps {
   onSendMessage: (message: string, attachments: ImagePickerAsset[]) => void;
@@ -18,29 +20,23 @@ export interface CustomInputBoxProps {
 
 const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
   const isAndroid = Platform.OS === 'android';
+  const t = useTheme();
 
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImagePickerAsset[]>([]);
 
   const handleSendMessage = () => {
-    console.log('datos a enviar', text.trim(), images);
+    if (!text.trim() && images.length === 0) return;
     onSendMessage(text.trim(), images);
     setText('');
     setImages([]);
   };
 
   const handlePickImages = async () => {
-    console.log('datos a enviar con imagen', text.trim(), images);
     const selectedImages = await getGalleryImages();
-
     if (selectedImages.length === 0 || images.length >= 4) return;
-
     const availableSlots = 4 - images.length;
-    const imagesToAdd = selectedImages.slice(0, availableSlots);
-
-    if (imagesToAdd.length > 0) {
-      setImages([...images, ...imagesToAdd]);
-    }
+    setImages([...images, ...selectedImages.slice(0, availableSlots)]);
   };
 
   return (
@@ -49,56 +45,75 @@ const CustomInputBox = ({ onSendMessage }: CustomInputBoxProps) => {
       keyboardVerticalOffset={isAndroid ? 0 : 85}
     >
       {images.length > 0 && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-          }}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={[s.attachments, { borderTopColor: t.border }]}
+          contentContainerStyle={s.attachmentsContent}
         >
           {images.map(image => (
             <Image
               key={image.uri}
               source={{ uri: image.uri }}
-              style={{ width: 50, height: 50, marginTop: 5, borderRadius: 5 }}
+              style={s.attachmentImage}
             />
           ))}
-        </View>
+        </ScrollView>
       )}
-
       <View
-        style={{
-          paddingHorizontal: 12,
-          paddingBottom: isAndroid ? 10 : 20,
-        }}
+        style={[
+          s.inputContainer,
+          { borderTopColor: t.border, backgroundColor: t.background },
+        ]}
       >
         <Input
-          placeholder="Escribe tu mensaje"
+          placeholder="Escribe un mensaje..."
           multiline
-          numberOfLines={4}
+          numberOfLines={1}
           value={text}
           onChangeText={setText}
           leftIcon={
-            <Pressable
+            <Button
+              variant="ghost"
               onPress={handlePickImages}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+              style={s.iconButton}
             >
-              <Ionicons name="attach-outline" size={22} color={'black'} />
-            </Pressable>
+              <Ionicons
+                name="attach-outline"
+                size={22}
+                color={t.textSecondary}
+              />
+            </Button>
           }
           rightIcon={
-            <Pressable
+            <Button
+              variant="ghost"
               onPress={handleSendMessage}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+              style={s.iconButton}
             >
-              <Ionicons name="paper-plane-outline" size={22} color={'black'} />
-            </Pressable>
+              <Ionicons
+                name="paper-plane-outline"
+                size={22}
+                color={text.trim() ? t.primary600 : t.textSecondary}
+              />
+            </Button>
           }
         />
       </View>
     </KeyboardAvoidingView>
   );
 };
+
+const s = StyleSheet.create({
+  attachments: { paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1 },
+  attachmentsContent: { gap: 8 },
+  attachmentImage: { width: 48, height: 48, borderRadius: 8 },
+  inputContainer: {
+    borderTopWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  iconButton: { padding: 0 },
+});
 
 export default CustomInputBox;

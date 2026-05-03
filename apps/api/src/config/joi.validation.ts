@@ -11,4 +11,5 @@ export const JoiValidationSchema = Joi.object({
   FRONTEND_URL: Joi.string().required(),
   SUPABASE_URL: Joi.string().required(),
   SUPABASE_SERVICE_ROLE_KEY: Joi.string().required(),
+  GROQ_API_KEY: Joi.string().required(),
 });

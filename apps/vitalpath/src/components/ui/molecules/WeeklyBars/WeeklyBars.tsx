@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { TextField } from '../../atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface WeeklyBarsProps extends ViewProps {
   data: number[];
@@ -18,57 +18,67 @@ const WeeklyBars = ({
   todayLabel,
   goalLabel,
   goalPercentage,
-  className,
+  style,
   ...props
 }: WeeklyBarsProps) => {
+  const t = useTheme();
   const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   const max = Math.max(...data);
-  const barW = 22;
   const chartH = 60;
 
   return (
     <View
-      className={`bg-white rounded-[16px] p-4 border border-brand-slate-200 mb-3 ${className ?? ''}`}
+      style={[
+        s.container,
+        { backgroundColor: t.surfaceElevated, borderColor: t.border },
+        style,
+      ]}
       {...props}
     >
-      <View className="flex-row justify-between items-start mb-3.5">
+      <View style={s.header}>
         <View>
-          <TextField
-            variants="body"
-            className="text-left font-bold text-brand-slate-800 text-[15px]"
-          >
+          <TextField variant="body" style={[s.title, { color: t.textPrimary }]}>
             {title}
           </TextField>
           <TextField
-            variants="caption"
-            className="text-left text-brand-slate-400 text-xs mt-0.5"
+            variant="caption"
+            style={[s.subtitle, { color: t.textSecondary }]}
           >
             {subtitle}
           </TextField>
         </View>
-        <View className="bg-brand-violet-100 px-2.5 py-1 rounded-full">
+        <View style={[s.badge, { backgroundColor: t.primary100 }]}>
           <TextField
-            variants="caption"
-            className="text-brand-violet-600 font-bold text-xs"
+            variant="caption"
+            style={[s.badgeText, { color: t.primary700 }]}
           >
             {todayLabel}
           </TextField>
         </View>
       </View>
 
-      <View className="flex-row items-end gap-1.5 justify-between">
+      <View style={s.chart}>
         {data.map((val, i) => {
           const barH = Math.max(4, (val / max) * chartH);
-          const isToday = i === 4; // Assuming Friday is today in the original mockup logic
+          const isToday = i === 4;
           return (
-            <View key={i} className="items-center gap-1">
+            <View key={i} style={s.barWrapper}>
               <View
-                style={{ height: barH, width: barW }}
-                className={`rounded-[6px] ${isToday ? 'bg-brand-violet-600' : 'bg-brand-violet-100'}`}
+                style={[
+                  s.bar,
+                  {
+                    height: barH,
+                    backgroundColor: isToday ? t.primary600 : t.primary100,
+                  },
+                ]}
               />
               <TextField
-                variants="caption"
-                className={`text-[10px] ${isToday ? 'text-brand-violet-600 font-extrabold' : 'text-brand-slate-400'}`}
+                variant="caption"
+                style={[
+                  s.dayText,
+                  { color: isToday ? t.primary600 : t.textSecondary },
+                  isToday && s.bold,
+                ]}
               >
                 {days[i]}
               </TextField>
@@ -77,13 +87,16 @@ const WeeklyBars = ({
         })}
       </View>
 
-      <View className="flex-row justify-between mt-2.5">
-        <TextField variants="caption" className="text-brand-slate-400 text-xs">
+      <View style={s.footer}>
+        <TextField
+          variant="caption"
+          style={[s.goalLabel, { color: t.textSecondary }]}
+        >
           {goalLabel}
         </TextField>
         <TextField
-          variants="caption"
-          className="text-brand-violet-600 font-bold text-xs"
+          variant="caption"
+          style={[s.goalValue, { color: t.primary700 }]}
         >
           {goalPercentage}
         </TextField>
@@ -91,5 +104,40 @@ const WeeklyBars = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  title: { fontSize: 15, fontWeight: '700', textAlign: 'left' },
+  subtitle: { fontSize: 12, textAlign: 'left', marginTop: 2 },
+  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 },
+  badgeText: { fontWeight: '700', fontSize: 11 },
+  chart: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  barWrapper: { alignItems: 'center', gap: 6 },
+  bar: { width: 22, borderRadius: 6 },
+  dayText: { fontSize: 10 },
+  bold: { fontWeight: '800' },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  goalLabel: { fontSize: 12 },
+  goalValue: { fontWeight: '700', fontSize: 12 },
+});
 
 export default WeeklyBars;

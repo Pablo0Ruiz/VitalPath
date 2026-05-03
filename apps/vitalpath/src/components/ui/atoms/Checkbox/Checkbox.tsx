@@ -1,39 +1,56 @@
-import { Pressable, PressableProps, View } from 'react-native';
+import {
+  Pressable,
+  PressableProps,
+  StyleSheet,
+  View,
+  ViewStyle,
+  StyleProp,
+} from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
-import React, { ReactNode } from 'react';
+import { useTheme } from '@/src/hooks/useTheme';
+import {
+  checkboxBaseStyles,
+  checkboxContainerStyle,
+} from './Checkbox.variants';
 
-export interface CheckboxProps extends PressableProps {
+export interface CheckboxProps extends Omit<PressableProps, 'style'> {
   checked: boolean;
   onToggle: () => void;
-  children: ReactNode;
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }
 
 const Checkbox = ({
   checked,
   onToggle,
   children,
-  className,
+  style,
   ...props
 }: CheckboxProps) => {
+  const t = useTheme();
+
   return (
     <Pressable
       onPress={onToggle}
-      className={`flex-row items-start ${className ?? ''}`}
-      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+      style={({ pressed }) => [s.base, { opacity: pressed ? 0.7 : 1 }, style]}
       {...props}
     >
       <View
-        className={`w-6 h-6 rounded-md border-2 mr-3 items-center justify-center ${
-          checked
-            ? 'bg-brand-violet-600 border-brand-violet-600'
-            : 'border-brand-slate-200 bg-white'
-        }`}
+        style={[
+          checkboxBaseStyles.container,
+          checkboxContainerStyle(checked, t),
+        ]}
       >
         {checked && <Octicons name="check" size={14} color="white" />}
       </View>
-      <View className="flex-1">{children}</View>
+      <View style={s.content}>{children}</View>
     </Pressable>
   );
 };
+
+const s = StyleSheet.create({
+  base: { flexDirection: 'row', alignItems: 'flex-start' },
+  content: { flex: 1 },
+});
 
 export default Checkbox;

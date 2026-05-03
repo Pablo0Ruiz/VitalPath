@@ -1,8 +1,8 @@
+import { ScrollView, StyleSheet, View } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
 
 import {
   Button,
@@ -11,14 +11,13 @@ import {
   TextField,
 } from '@/src/components/ui/atoms';
 import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
-import {
-  Step1FormValues,
-  step1Schema,
-} from '@/src/interfaces/auth/register/register.interface';
+import { Step1FormValues, step1Schema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
-import { useRegisterStore } from '@/src/store/registerStore';
+import { useRegisterStore } from '@repo/store';
+import { useTheme } from '@/src/hooks/useTheme';
 
 const RegisterStep1 = () => {
+  const t = useTheme();
   const { draft, setStep1 } = useRegisterStore();
 
   const {
@@ -39,14 +38,14 @@ const RegisterStep1 = () => {
   };
 
   return (
-    <View className="flex-1 bg-brand-background">
+    <View style={[s.container, { backgroundColor: t.background }]}>
       <ScrollView
-        className="flex-1 bg-brand-background px-6 pt-8"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <ProgressBar progress={33} className="mb-6 max-w-[200px] self-center" />
+        <ProgressBar progress={33} style={s.progressBar} />
 
         <AuthHeader
           title="Crear cuenta"
@@ -65,7 +64,9 @@ const RegisterStep1 = () => {
               onChangeText={onChange}
               autoCapitalize="words"
               autoCorrect={false}
-              leftIcon={<Octicons name="person" size={24} color="black" />}
+              leftIcon={
+                <Octicons name="person" size={20} color={t.textSecondary} />
+              }
               helperText={errors.name?.message}
             />
           )}
@@ -83,9 +84,11 @@ const RegisterStep1 = () => {
               onBlur={onBlur}
               autoCapitalize="words"
               autoCorrect={false}
-              leftIcon={<Octicons name="person" size={24} color="black" />}
+              leftIcon={
+                <Octicons name="person" size={20} color={t.textSecondary} />
+              }
               helperText={errors.lastName?.message}
-              className="mb-8"
+              style={s.lastNameField}
             />
           )}
         />
@@ -94,26 +97,26 @@ const RegisterStep1 = () => {
           title="Siguiente"
           onPress={handleSubmit(onSubmit)}
           variant="primary"
-          className="mb-6"
+          style={s.button}
         />
 
-        <Divider text="O regístrate con" className="mb-6" />
+        <Divider text="O regístrate con" style={s.divider} />
 
-        <View className="flex-row justify-center gap-3 mb-7">
+        <View style={s.socialRow}>
           <SocialButton label="G" />
           <SocialButton label="A" />
           <SocialButton label="F" />
         </View>
 
         <TextField
-          variants="caption"
-          className="text-sm self-center"
+          variant="caption"
+          style={[s.footerText, { color: t.textSecondary }]}
           onPress={() => router.replace(ROUTES.LOGIN)}
         >
           ¿Ya tienes una cuenta?{' '}
           <TextField
-            variants="caption"
-            className="text-brand-violet-600 font-semibold"
+            variant="caption"
+            style={[s.linkText, { color: t.primary600 }]}
           >
             Iniciar sesión
           </TextField>
@@ -122,5 +125,23 @@ const RegisterStep1 = () => {
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1 },
+  flex1: { flex: 1 },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
+  progressBar: { marginBottom: 24, maxWidth: 200, alignSelf: 'center' },
+  lastNameField: { marginBottom: 32 },
+  button: { marginBottom: 24 },
+  divider: { marginBottom: 24 },
+  socialRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 28,
+  },
+  footerText: { fontSize: 14, alignSelf: 'center' },
+  linkText: { fontWeight: '700' },
+});
 
 export default RegisterStep1;

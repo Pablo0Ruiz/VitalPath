@@ -1,10 +1,11 @@
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import TimelineIcon, {
   type TimelineStatus,
 } from '../../atoms/TimeLineIcon/TimeLineIcon';
 import TimelineCard, {
   type TimelineCardProps,
 } from '../TimeLineCard/TimeLineCard';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface TimelineStepProps extends TimelineCardProps {
   isLast?: boolean;
@@ -15,23 +16,29 @@ const TimelineStep = ({
   status,
   ...props
 }: TimelineStepProps) => {
+  const t = useTheme();
+
   return (
-    <View className="flex-row">
-      <View className="items-center mr-3" style={{ width: 40 }}>
+    <View style={s.container}>
+      <View style={s.indicatorWrapper}>
         <TimelineIcon status={status as TimelineStatus} />
         {!isLast && (
-          <View
-            className="flex-1 w-0.5 bg-blue-200 mt-1"
-            style={{ minHeight: 24 }}
-          />
+          <View style={[s.line, { backgroundColor: t.primary200 }]} />
         )}
       </View>
 
-      <View className="flex-1 mb-4">
+      <View style={s.content}>
         <TimelineCard status={status} {...props} />
       </View>
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flexDirection: 'row' },
+  indicatorWrapper: { alignItems: 'center', marginRight: 12, width: 40 },
+  line: { flex: 1, width: 2, marginTop: 4, minHeight: 24 },
+  content: { flex: 1, marginBottom: 16 },
+});
 
 export default TimelineStep;

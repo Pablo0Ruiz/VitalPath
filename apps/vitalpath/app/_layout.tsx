@@ -1,25 +1,50 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, AppState, AppStateStatus, useColorScheme } from 'react-native';
 import 'react-native-reanimated';
-import { useColorScheme } from 'nativewind';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import {
+  QueryClientProvider,
+  QueryClient,
+  focusManager,
+} from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import { useAuthStore } from '@repo/store';
+import { useSession } from '@repo/api-client';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 
-import { themes } from '@/src/constants/theme';
-import '../global.css';
-import { AuthProvider } from '@/src/context/AuthContext';
-import { useSession } from '@/src/hooks/auth';
-import { SessionGate } from '@/src/components/utils/authGate';
+import { setupApiInterceptors } from '@/src/lib/api-setup';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useTheme } from '@/src/hooks/useTheme';
+import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+
+setupApiInterceptors();
 
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
+function AuthInitializer() {
+  const { user, setSession, clearSession, setIsLoading } = useAuthStore();
+  const { syncWithUser, reset: resetSeniorUI } = useSeniorUIStore();
+
+  useSession(mobileTokenAdapter, { setSession, clearSession, setIsLoading });
+
+  useEffect(() => {
+    if (user) {
+      syncWithUser(user);
+    } else {
+      resetSeniorUI();
+    }
+  }, [user, syncWithUser, resetSeniorUI]);
+
+  return null;
+}
+
 function RootLayout() {
-  const { colorScheme } = useColorScheme();
+  const colorScheme = useColorScheme();
+  const t = useTheme();
 
   const [loaded, error] = useFonts({
     'Inter_18pt-Light': require('../assets/fonts/Inter_18pt-Light.ttf'),
@@ -36,25 +61,34 @@ function RootLayout() {
     }
   }, [loaded, error]);
 
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      (state: AppStateStatus) => {
+        focusManager.setFocused(state === 'active');
+      },
+    );
+    return () => subscription.remove();
+  }, []);
+
   if (!loaded && !error) {
     return null;
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SessionGate>
-          <SafeAreaView style={[{ flex: 1 }, themes[colorScheme ?? 'light']]}>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-          </SafeAreaView>
-        </SessionGate>
-      </AuthProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthInitializer />
+        <View style={{ flex: 1, backgroundColor: t.background }}>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(drawer)" />
+          </Stack>
+        </View>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 

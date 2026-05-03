@@ -2,21 +2,19 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
 import { FormField, GenderForm } from '@/src/components/ui/molecules';
-import { formatDateInput } from '@/src/core/actions/helpers/formatDateInput';
-import {
-  Step2FormValues,
-  step2Schema,
-} from '@/src/interfaces/auth/register/register.interface';
-import { useRegisterStore } from '@/src/store/registerStore';
-
+import { formatDateInput } from '@/src/utils/formatDateInput';
+import { Step2FormValues, step2Schema } from '@repo/types';
+import { useRegisterStore } from '@repo/store';
 import { ROUTES } from '@/src/routes/routes';
 import { GENDER } from '@/src/constants/gender';
+import { useTheme } from '@/src/hooks/useTheme';
 
 const RegisterStep2 = () => {
+  const t = useTheme();
   const { draft, setStep2 } = useRegisterStore();
 
   const {
@@ -37,20 +35,23 @@ const RegisterStep2 = () => {
   };
 
   return (
-    <View className="flex-1 bg-brand-background px-6 pt-16">
+    <View style={[s.container, { backgroundColor: t.background }]}>
       <Button
         onPress={() => router.back()}
-        className="absolute top-16 left-6 z-10 w-10 h-10 items-center justify-center rounded-full bg-slate-50"
+        style={[s.backButton, { backgroundColor: t.neutral100 }]}
       >
-        <Octicons name="arrow-left" size={24} color="#0f172a" />
+        <Octicons name="arrow-left" size={24} color={t.textPrimary} />
       </Button>
 
-      <ProgressBar progress={66} className="mb-10 max-w-[200px] self-center" />
+      <ProgressBar progress={66} style={s.progressBar} />
 
-      <TextField variants="title" className="mb-2 text-center">
+      <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>
         Detalles Personales
       </TextField>
-      <TextField variants="caption" className="text-center text-slate-500 mb-8">
+      <TextField
+        variant="caption"
+        style={[s.subtitle, { color: t.textSecondary }]}
+      >
         (Paso 2 de 3)
       </TextField>
 
@@ -69,7 +70,9 @@ const RegisterStep2 = () => {
             }}
             keyboardType="numeric"
             maxLength={10}
-            leftIcon={<Octicons name="calendar" size={24} color="black" />}
+            leftIcon={
+              <Octicons name="calendar" size={20} color={t.textSecondary} />
+            }
             helperText={errors.fechaNacimiento?.message}
           />
         )}
@@ -92,10 +95,34 @@ const RegisterStep2 = () => {
         title="Siguiente"
         onPress={handleSubmit(onSubmit)}
         variant="primary"
-        className="mt-4"
+        style={s.button}
       />
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: { flex: 1, paddingHorizontal: 24, paddingTop: 64 },
+  backButton: {
+    position: 'absolute',
+    top: 64,
+    left: 24,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+  },
+  progressBar: { marginBottom: 40, maxWidth: 200, alignSelf: 'center' },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32 },
+  button: { marginTop: 16 },
+});
 
 export default RegisterStep2;

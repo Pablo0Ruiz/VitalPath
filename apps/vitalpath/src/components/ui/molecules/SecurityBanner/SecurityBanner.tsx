@@ -1,6 +1,7 @@
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button, TextField } from '@/src/components/ui/atoms';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export interface SecurityBannerProps extends ViewProps {
   onMorePress?: () => void;
@@ -8,31 +9,33 @@ export interface SecurityBannerProps extends ViewProps {
 
 const SecurityBanner = ({
   onMorePress,
-  className,
+  style,
   ...props
 }: SecurityBannerProps) => {
+  const t = useTheme();
+
   return (
     <View
-      className={`bg-slate-900 rounded-2xl p-5 flex-row items-start gap-4 ${className ?? ''}`}
+      style={[s.container, { backgroundColor: t.neutral950 }, style]}
       {...props}
     >
-      <View className="bg-slate-700 rounded-xl p-2 mt-1">
-        <Feather name="lock" size={20} color="#fff" />
+      <View style={[s.iconWrapper, { backgroundColor: t.neutral800 }]}>
+        <Feather name="lock" size={20} color={t.white} />
       </View>
-      <View className="flex-1">
-        <TextField
-          variants="body"
-          className="text-white font-bold text-base mb-1"
-        >
+      <View style={s.content}>
+        <TextField variant="body" style={[s.title, { color: t.white }]}>
           Seguridad de Nivel Médico
         </TextField>
-        <TextField variants="caption" className="text-slate-600 leading-5 mb-3">
+        <TextField
+          variant="caption"
+          style={[s.description, { color: t.neutral400 }]}
+        >
           Tus resultados están protegidos mediante cifrado AES-256 de extremo a
           extremo. Solo tú y tu médico tratante pueden acceder a esta
           información.
         </TextField>
-        <Button onPress={onMorePress}>
-          <TextField variants="caption" className="text-blue-400 font-semibold">
+        <Button onPress={onMorePress} variant="ghost" style={s.button}>
+          <TextField variant="caption" style={[s.link, { color: t.info }]}>
             Más sobre privacidad →
           </TextField>
         </Button>
@@ -40,5 +43,31 @@ const SecurityBanner = ({
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+  },
+  iconWrapper: { borderRadius: 12, padding: 10, marginTop: 4 },
+  content: { flex: 1 },
+  title: {
+    fontWeight: '700',
+    fontSize: 16,
+    marginBottom: 4,
+    textAlign: 'left',
+  },
+  description: {
+    lineHeight: 20,
+    marginBottom: 12,
+    textAlign: 'left',
+    fontSize: 13,
+  },
+  button: { padding: 0, alignSelf: 'flex-start' },
+  link: { fontWeight: '600', fontSize: 13 },
+});
 
 export default SecurityBanner;

@@ -1,6 +1,9 @@
-import { useSession } from '@/src/hooks/auth';
+import { useAuthStore } from '@repo/store';
+import { useSession } from '@repo/api-client';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 
 export const SessionGate = ({ children }: { children: React.ReactNode }) => {
-  useSession();
+  const { setSession, clearSession, setIsLoading } = useAuthStore();
+  useSession(mobileTokenAdapter, { setSession, clearSession, setIsLoading });
   return <>{children}</>;
 };
