@@ -21,6 +21,7 @@ import {
   providers: [AuthService, JwtStrategy],
   imports: [
     CommonModule,
+    CommonModule,
     ConfigModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },

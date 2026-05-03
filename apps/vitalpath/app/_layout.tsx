@@ -14,8 +14,8 @@ import { useAuthStore } from '@repo/store';
 import { useSession } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { setupApiInterceptors } from '@/src/lib/api-setup';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 

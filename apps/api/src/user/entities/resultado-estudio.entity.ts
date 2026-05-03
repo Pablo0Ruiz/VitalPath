@@ -16,6 +16,7 @@ export class ResultadoEstudio extends Document {
   fileUrl: string;
 
   @Prop({ required: false })
+  @Prop({ required: false })
   resumenIA: string;
 
   @Prop({ required: false })

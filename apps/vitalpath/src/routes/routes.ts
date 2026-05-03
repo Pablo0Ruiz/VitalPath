@@ -9,6 +9,8 @@ export const ROUTES = {
   REGISTER: '/(auth)/register',
   REGISTER_STEP_2: '/(auth)/register/step-2',
   REGISTER_STEP_3: '/(auth)/register/step-3',
+  REGISTER_STEP_2: '/(auth)/register/step-2',
+  REGISTER_STEP_3: '/(auth)/register/step-3',
   RECOVER_PASSWORD: '/(auth)/recover-password',
   HOME: '/(tabs)/home',
   RECOVER_PASSWORD_EMAIL_SENT: '/(auth)/recover-password-email-sent',

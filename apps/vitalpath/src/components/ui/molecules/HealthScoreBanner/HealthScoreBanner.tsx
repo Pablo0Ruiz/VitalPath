@@ -21,7 +21,7 @@ const Banner = ({ style, ...props }: BannerProps) => {
           variant="caption"
           style={[s.status, { color: t.textSecondary }]}
         >
-          Cita completada
+          Cita completada Cita completada
         </TextField>
 
         <TextField variant="body" style={[s.time, { color: t.textPrimary }]}>
