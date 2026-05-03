@@ -1,5 +1,5 @@
 import { Drawer } from 'expo-router/drawer';
-import { AppDrawerContent } from '@/src/components/ui/organism';
+import { AppDrawerContent } from '@/src/components/ui/organisms';
 import { useTheme } from '@/src/hooks/useTheme';
 import { DRAWER_SCREEN_NAMES } from '@/src/routes/routes';
 
