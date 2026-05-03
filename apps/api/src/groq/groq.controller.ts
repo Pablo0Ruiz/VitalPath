@@ -5,10 +5,11 @@ import {
   Param,
   Post,
   Res,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { type Response } from 'express';
 import { GroqService } from './groq.service';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
@@ -28,7 +29,7 @@ export class GroqController {
     @Body() chatPromptDto: ChatPromptDto,
     @Res() res: Response,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @GetUser('_id') userId: string,
+    @GetUser('id') userId: string,
     @GetUser('role') role: UserRoles,
   ): Promise<void> {
     chatPromptDto.files = files;
@@ -36,9 +37,36 @@ export class GroqController {
   }
 
   @Auth()
+  @Post('voice-chat')
+  @UseInterceptors(FileInterceptor('file'))
+  async voiceChat(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('chatId') chatId: string,
+    @GetUser('id') userId: string,
+    @GetUser('role') role: UserRoles,
+  ) {
+    if (!file) {
+      throw new Error('No se recibió ningún archivo de audio');
+    }
+
+    const transcript = await this.groqService.transcribe(file);
+    return this.groqService.voiceChat(
+      { prompt: transcript, chatId, files: [] },
+      userId,
+      role,
+    );
+  }
+
+  @Auth()
+  @Get('conversations')
+  async getConversations(@GetUser('id') userId: string) {
+    return this.groqService.getUserConversations(userId);
+  }
+
+  @Auth()
   @Get('chat-history/:chatId')
-  getChatHistory(@Param('chatId') chatId: string) {
-    const history = this.groqService.getChatHistory(chatId);
+  async getChatHistory(@Param('chatId') chatId: string) {
+    const history = await this.groqService.getChatHistory(chatId);
 
     return history
       .filter(

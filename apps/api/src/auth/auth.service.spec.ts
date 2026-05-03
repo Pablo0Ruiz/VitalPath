@@ -32,6 +32,7 @@ interface UserDoc {
   password: string;
   role: UserRoles;
   isActive: boolean;
+  fechaNacimiento?: Date;
   verificationCode?: string;
   centroSalud_ID?: Types.ObjectId | null;
   save: jest.Mock;
@@ -68,6 +69,7 @@ const makeUserDoc = (overrides: Partial<UserDoc> = {}): UserDoc => {
         password: this.password,
         role: this.role,
         isActive: this.isActive,
+        fechaNacimiento: this.fechaNacimiento,
         verificationCode: this.verificationCode,
         centroSalud_ID: this.centroSalud_ID,
       };
@@ -222,24 +224,26 @@ describe('AuthService', () => {
     });
   });
 
-  // ─── loginWithId ─────────────────────────────────────────────────────────
+  // ─── loginWithCode ─────────────────────────────────────────────────────────
+  describe('loginWithCode', () => {
+    it('throws UnauthorizedException when code is invalid or user is too young', async () => {
+      userModel.findOne.mockResolvedValue(null);
 
-  describe('loginWithId', () => {
-    it('throws UnauthorizedException when user does not exist', async () => {
-      userModel.findById.mockResolvedValue(null);
-
-      await expect(service.loginWithId(makeId().toString())).rejects.toThrow(
+      await expect(service.loginWithCode('WRONG')).rejects.toThrow(
         UnauthorizedException,
       );
     });
 
-    it('returns user and token on success', async () => {
-      const user = makeUserDoc();
-      userModel.findById.mockResolvedValue(user);
+    it('returns user and token on success for seniors (>65 years)', async () => {
+      const seniorUser = makeUserDoc({
+        fechaNacimiento: new Date('1950-01-01'),
+      });
+      userModel.findOne.mockResolvedValue(seniorUser);
 
-      const result = await service.loginWithId(user.id);
+      const result = await service.loginWithCode('VALID123');
 
       expect(result.token).toBe('test_token');
+      expect((result.user as unknown as { id: string }).id).toBe(seniorUser.id);
     });
   });
 

@@ -114,7 +114,7 @@ export class AuthService {
       const user = await this.userModel.findByIdAndUpdate(
         id,
         { accessCode },
-        { new: true },
+        { returnDocument: 'after' },
       );
 
       if (!user) throw new UnauthorizedException('Usuario no encontrado');

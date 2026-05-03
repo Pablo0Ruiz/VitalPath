@@ -105,8 +105,9 @@ export class AppointmentService {
   }
 
   async getAppointments(userId: string) {
+    const pacienteId = new Types.ObjectId(userId);
     const citas = await this.citaModel
-      .find({ paciente_ID: userId })
+      .find({ paciente_ID: pacienteId })
       .populate('medico_ID', 'name lastName')
       .populate('centroSalud_ID', 'nombre direccion')
       .sort({ fecha: 1, hora: 1 })

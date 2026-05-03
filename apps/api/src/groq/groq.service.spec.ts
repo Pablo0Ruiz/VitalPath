@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
 import { GroqService } from './groq.service';
 import { GroqToolsService } from 'src/groq-tools/groq-tools.service';
 import { chatPromptStreamUseCase } from './use-cases/chat-prompt-use-case';
@@ -6,16 +7,30 @@ import { resumenPdf } from './use-cases/resumen-pdf-use-case';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { Response } from 'express';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
-import { ModelMessage } from 'ai';
+import { Conversation } from './entities/conversation.entity';
 
 jest.mock('./use-cases/chat-prompt-use-case');
 jest.mock('./use-cases/resumen-pdf-use-case');
 
 describe('GroqService', () => {
   let service: GroqService;
-  let groqToolsService: GroqToolsService;
+  let conversationModel: {
+    findOne: jest.Mock;
+    findOneAndUpdate: jest.Mock;
+    find: jest.Mock;
+  };
 
   beforeEach(async () => {
+    conversationModel = {
+      findOne: jest.fn().mockResolvedValue(null),
+      findOneAndUpdate: jest.fn().mockResolvedValue({ messages: [] }),
+      find: jest.fn().mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          exec: jest.fn().mockResolvedValue([]),
+        }),
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GroqService,
@@ -25,11 +40,14 @@ describe('GroqService', () => {
             getToolsFor: jest.fn(),
           },
         },
+        {
+          provide: getModelToken(Conversation.name),
+          useValue: conversationModel,
+        },
       ],
     }).compile();
 
     service = module.get<GroqService>(GroqService);
-    groqToolsService = module.get<GroqToolsService>(GroqToolsService);
   });
 
   it('should be defined', () => {
@@ -37,13 +55,13 @@ describe('GroqService', () => {
   });
 
   describe('chatStream', () => {
-    it('should call chatPromptStreamUseCase and update history', async () => {
+    it('should call chatPromptStreamUseCase and update history in DB', async () => {
       const chatPromptDto: ChatPromptDto = {
-        chatId: '499e909a-4c2f-488b-877f-1d686f06535c',
+        chatId: 'chat-123',
         prompt: 'hello',
         files: [],
       };
-      const userId = 'user-123';
+      const userId = '64b5fde500d5f66cdc49415a';
       const role = UserRoles.PACIENTE;
       const res = {} as Response;
       const newMessages = [
@@ -52,80 +70,39 @@ describe('GroqService', () => {
       ];
 
       (chatPromptStreamUseCase as jest.Mock).mockResolvedValue(newMessages);
+      conversationModel.findOne.mockResolvedValue(null);
 
       await service.chatStream(chatPromptDto, userId, role, res);
 
-      expect(chatPromptStreamUseCase).toHaveBeenCalledWith({
-        chatPromptDto,
-        groqToolsService,
-        userId,
-        role,
-        history: [],
-        res,
-      });
-
-      const history = service.getChatHistory(
-        '499e909a-4c2f-488b-877f-1d686f06535c',
+      expect(chatPromptStreamUseCase).toHaveBeenCalled();
+      expect(conversationModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { chatId: 'chat-123' },
+        expect.any(Object),
+        expect.any(Object),
       );
-      expect(history).toEqual(newMessages);
-    });
-
-    it('should maintain separate history per chatId', async () => {
-      const chat1Dto: ChatPromptDto = {
-        chatId: '499e909a-4c2f-488b-877f-1d686f065351',
-        prompt: 'p1',
-        files: [],
-      };
-      const chat2Dto: ChatPromptDto = {
-        chatId: '499e909a-4c2f-488b-877f-1d686f065352',
-        prompt: 'p2',
-        files: [],
-      };
-      const res = {} as Response;
-
-      (chatPromptStreamUseCase as jest.Mock).mockResolvedValueOnce([
-        { role: 'user', content: 'm1' },
-      ]);
-      await service.chatStream(chat1Dto, 'u', UserRoles.PACIENTE, res);
-
-      (chatPromptStreamUseCase as jest.Mock).mockResolvedValueOnce([
-        { role: 'user', content: 'm2' },
-      ]);
-      await service.chatStream(chat2Dto, 'u', UserRoles.PACIENTE, res);
-
-      expect(
-        service.getChatHistory('499e909a-4c2f-488b-877f-1d686f065351'),
-      ).toHaveLength(1);
-      expect(
-        service.getChatHistory('499e909a-4c2f-488b-877f-1d686f065352'),
-      ).toHaveLength(1);
-      expect(
-        service.getChatHistory('499e909a-4c2f-488b-877f-1d686f065351')[0]
-          .content,
-      ).toBe('m1');
-      expect(
-        service.getChatHistory('499e909a-4c2f-488b-877f-1d686f065352')[0]
-          .content,
-      ).toBe('m2');
     });
   });
 
   describe('getChatHistory', () => {
-    it('should return an empty array if chatId not found', () => {
-      const history = service.getChatHistory('non-existent');
+    it('should return an empty array if conversation not found', async () => {
+      conversationModel.findOne.mockResolvedValue(null);
+      const history = await service.getChatHistory('non-existent');
       expect(history).toEqual([]);
     });
 
-    it('should return a clone of the history', () => {
-      const chatId = '499e909a-4c2f-488b-877f-1d686f06535c';
-      const msg: ModelMessage = { role: 'user', content: 'hi' };
-      (
-        service as unknown as { chatHistory: Map<string, ModelMessage[]> }
-      ).chatHistory.set(chatId, [msg]);
+    it('should return sanitized messages if conversation exists', async () => {
+      const mockConversation = {
+        chatId: 'chat-123',
+        messages: [
+          { role: 'user', content: 'hi' },
+          { role: 'assistant', content: [{ type: 'text', text: 'hello' }] },
+        ],
+      };
+      conversationModel.findOne.mockResolvedValue(mockConversation);
 
-      const history = service.getChatHistory(chatId);
-      expect(history).toEqual([msg]);
-      expect(history[0]).not.toBe(msg);
+      const history = await service.getChatHistory('chat-123');
+      expect(history).toHaveLength(2);
+      expect(history[0].role).toBe('user');
     });
   });
 

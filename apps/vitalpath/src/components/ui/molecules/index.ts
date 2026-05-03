@@ -22,3 +22,4 @@ export { DoctorCard } from './DoctorCard/DoctorCard';
 export { ChatComposer } from './ChatComposer';
 export type { ChatComposerProps } from './ChatComposer';
 export { DailyCheckIn } from './DailyCheckIn/DailyCheckIn';
+export { ChatHeader } from './ChatHeader';

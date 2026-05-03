@@ -7,8 +7,9 @@ export const buildMedicosTools = (
 ): ToolSet => {
   return {
     getDoctors: tool({
-      description: 'Lista todos los médicos disponibles.',
-      inputSchema: z.object({}),
+      description:
+        'Obtiene la lista de todos los médicos disponibles en el sistema. NO requiere parámetros de entrada.',
+      inputSchema: z.preprocess(val => val ?? {}, z.object({})),
       execute: async () => {
         const result = await hospitalsService.getDoctors();
         return JSON.parse(JSON.stringify(result));
@@ -17,8 +18,8 @@ export const buildMedicosTools = (
 
     getCentrosSalud: tool({
       description:
-        'Lista todos los centros de salud disponibles para agendar una cita.',
-      inputSchema: z.object({}),
+        'Obtiene la lista de todos los centros de salud disponibles. NO requiere parámetros de entrada.',
+      inputSchema: z.preprocess(val => val ?? {}, z.object({})),
       execute: async () => {
         const result = await hospitalsService.getCentrosSalud();
         return JSON.parse(JSON.stringify(result));

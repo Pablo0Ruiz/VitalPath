@@ -41,7 +41,7 @@ export class UserService {
 
   async updateProfile(userId: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findByIdAndUpdate(userId, updateUserDto, {
-      new: true,
+      returnDocument: 'after',
     });
 
     if (!user) throw new Error('Usuario no encontrado');

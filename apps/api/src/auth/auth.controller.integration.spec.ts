@@ -6,7 +6,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserRoles } from './enum/user-role.enum';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
-import { Types } from 'mongoose';
 
 // ─── Service mock ─────────────────────────────────────────────────────────────
 
@@ -18,7 +17,7 @@ const tokenResponse = {
 const mockService = {
   create: jest.fn().mockResolvedValue(tokenResponse),
   login: jest.fn().mockResolvedValue(tokenResponse),
-  loginWithId: jest.fn().mockResolvedValue(tokenResponse),
+  loginWithCode: jest.fn().mockResolvedValue(tokenResponse),
   recoverPassword: jest.fn().mockResolvedValue({ message: 'ok' }),
   verifyDoctor: jest.fn().mockResolvedValue(tokenResponse),
 };
@@ -143,23 +142,16 @@ describe('AuthController (integration)', () => {
     });
   });
 
-  // ─── POST /auth/login/:id ─────────────────────────────────────────────────
-
-  describe('POST /auth/login/:id', () => {
-    it('returns 201 and delegates to AuthService.loginWithId for a valid ObjectId', async () => {
-      const validId = new Types.ObjectId().toString();
+  // ─── POST /auth/login/code/:codigo ───────────────────────────────────────
+  describe('POST /auth/login/code/:codigo', () => {
+    it('returns 201 and delegates to AuthService.loginWithCode', async () => {
+      const code = 'SENIOR123';
 
       await request(app.getHttpServer())
-        .post(`/auth/login/${validId}`)
+        .post(`/auth/login/code/${code}`)
         .expect(201);
 
-      expect(mockService.loginWithId).toHaveBeenCalledWith(validId);
-    });
-
-    it('returns 400 for a malformed ObjectId', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/login/not-a-valid-id')
-        .expect(400);
+      expect(mockService.loginWithCode).toHaveBeenCalledWith(code);
     });
   });
 

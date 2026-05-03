@@ -50,10 +50,17 @@ export const buildAppointmentTools = (
     }),
 
     getAppointments: tool({
-      description: 'Lista todas las citas del paciente actual.',
-      inputSchema: z.object({}),
+      description:
+        'Lista todas las citas del paciente actual. NO requiere parámetros de entrada.',
+      inputSchema: z.preprocess(val => val ?? {}, z.object({})),
       execute: async () => {
+        console.log(
+          `[Tools] Llamando a getAppointments para userId: ${userId}`,
+        );
         const result = await appointmentsService.getAppointments(userId);
+        console.log(
+          `[Tools] Resultado de getAppointments: ${result.length} citas encontradas.`,
+        );
         return JSON.parse(JSON.stringify(result));
       },
     }),
