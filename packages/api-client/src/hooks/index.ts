@@ -9,3 +9,6 @@ export * from './useMedication';
 export * from './useCitas';
 export * from './useDoctor';
 export * from './useMedicalResults';
+export * from './useVoiceChat';
+export * from './useChatHistory';
+export * from './useConversations';

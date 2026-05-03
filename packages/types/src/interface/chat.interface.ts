@@ -2,7 +2,7 @@ export interface IMessage {
   id: string;
   createdAt: Date;
   sender: 'user' | 'gemini';
-  type: 'text' | 'image';
+  type: 'text' | 'image' | 'audio';
 }
 
 export interface ImagesMessage extends IMessage {
@@ -14,4 +14,9 @@ export interface TextMessage extends IMessage {
   text: string;
 }
 
-export type Message = ImagesMessage | TextMessage;
+export interface AudioMessage extends IMessage {
+  text: string;
+  audioUri?: string;
+}
+
+export type Message = ImagesMessage | TextMessage | AudioMessage;
