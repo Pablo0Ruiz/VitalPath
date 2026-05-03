@@ -6,7 +6,6 @@ export { SectionHeader } from './SectionHeader';
 export { AppointmentRow } from './AppointmentRow';
 export { MedicationRow } from './MedicationRow';
 export { Banner } from './HealthScoreBanner';
-export { Banner } from './HealthScoreBanner';
 export { WeeklyBars } from './WeeklyBars';
 export { CustomInputBox } from './CustomInputBox';
 export { TimelineCard } from './TimeLineCard';
