@@ -42,16 +42,16 @@ const VoiceAssistantModal = ({
     },
   });
 
-  const handlePress = async () => {
+  const handlePress = () => {
     if (isSpeaking) {
-      await stopSpeaking();
+      stopSpeaking();
       return;
     }
 
     if (isRecording) {
-      await processVoiceCommand();
+      processVoiceCommand();
     } else {
-      await startRecording();
+      startRecording();
     }
   };
 
