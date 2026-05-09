@@ -48,11 +48,11 @@ const ChatComposer = ({ chatId, onSendMessage }: ChatComposerProps) => {
     setImages([]);
   };
 
-  const handleVoiceAction = async () => {
+  const handleVoiceAction = () => {
     if (isRecording) {
-      await processVoiceCommand();
+      processVoiceCommand();
     } else {
-      await startRecording();
+      startRecording();
     }
   };
 

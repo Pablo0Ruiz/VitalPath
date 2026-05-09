@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 export const ACCESS_TOKEN_KEY = 'access_token';
 
 export const apiClient = axios.create({
-  timeout: 10_000,
+  timeout: 30_000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',

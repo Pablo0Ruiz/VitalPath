@@ -105,17 +105,38 @@ export function useVoiceAssistant({
   const speakReply = async (text: string) => {
     if (!text) return;
 
-    await Speech.stop();
-    setIsSpeaking(true);
+    try {
+      console.log('[useVoiceAssistant] Intentando hablar:', text);
+      await Speech.stop();
 
-    Speech.speak(text, {
-      language,
-      rate: 0.95,
-      pitch: 1.0,
-      onDone: () => setIsSpeaking(false),
-      onStopped: () => setIsSpeaking(false),
-      onError: () => setIsSpeaking(false),
-    });
+      await setAudioModeAsync({
+        allowsRecording: false,
+        playsInSilentMode: true,
+      });
+
+      setIsSpeaking(true);
+
+      Speech.speak(text, {
+        language,
+        rate: 0.95,
+        pitch: 1.0,
+        onDone: () => {
+          console.log('[useVoiceAssistant] Speech finalizado');
+          setIsSpeaking(false);
+        },
+        onStopped: () => {
+          console.log('[useVoiceAssistant] Speech detenido');
+          setIsSpeaking(false);
+        },
+        onError: error => {
+          console.error('[useVoiceAssistant] Speech error:', error);
+          setIsSpeaking(false);
+        },
+      });
+    } catch (err) {
+      console.error('[useVoiceAssistant] Error en speakReply:', err);
+      setIsSpeaking(false);
+    }
   };
 
   const stopSpeaking = async () => {
