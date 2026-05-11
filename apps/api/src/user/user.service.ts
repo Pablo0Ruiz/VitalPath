@@ -39,6 +39,13 @@ export class UserService {
     };
   }
 
+  async saveExpoPushToken(userId: string, token: string | null): Promise<void> {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { expoPushToken: token } },
+    );
+  }
+
   async updateProfile(userId: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findByIdAndUpdate(userId, updateUserDto, {
       returnDocument: 'after',

@@ -10,3 +10,7 @@ export const patchMe = async (
   );
   return responseData;
 };
+
+export const savePushToken = async (token: string | null): Promise<void> => {
+  await apiClient.patch('/api/user/me/push-token', { token });
+};

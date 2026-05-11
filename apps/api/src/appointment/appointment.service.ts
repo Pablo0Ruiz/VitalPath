@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,6 +14,8 @@ import { Doctor } from '../user/entities/doctor.entity';
 import { Patient } from '../user/entities/patient.entity';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
 import { Appointment } from './entities/appointment.entity';
+import { PushNotificationsService } from '../push-notifications/push-notifications.service';
+import { CITA_PUSH_COPY } from '../push-notifications/constants/cita-push-copy';
 
 type LeanMedico = { _id: Types.ObjectId; name: string; lastName: string };
 type LeanCentro = { _id: Types.ObjectId; nombre: string; direccion: string };
@@ -31,6 +34,8 @@ const ALLOWED_TRANSITIONS: Partial<Record<CitaState, CitaState>> = {
 
 @Injectable()
 export class AppointmentService {
+  private readonly logger = new Logger(AppointmentService.name);
+
   constructor(
     @InjectModel(Appointment.name)
     private readonly citaModel: Model<Appointment>,
@@ -40,6 +45,7 @@ export class AppointmentService {
     private readonly doctorModel: Model<Doctor>,
     @InjectModel(Patient.name)
     private readonly patientModel: Model<Patient>,
+    private readonly pushService: PushNotificationsService,
   ) {}
 
   async createAppointment(
@@ -246,7 +252,36 @@ export class AppointmentService {
     }
 
     appointment.estado = estado;
-    return appointment.save();
+    const saved = await appointment.save();
+    void this.notifyStateChange(saved._id, saved.paciente_ID, estado);
+    return saved;
+  }
+
+  private async notifyStateChange(
+    citaId: Types.ObjectId,
+    pacienteId: Types.ObjectId,
+    estado: CitaState,
+  ): Promise<void> {
+    try {
+      const copy = CITA_PUSH_COPY[estado];
+      if (!copy) return;
+
+      const patient = await this.userModel
+        .findById(pacienteId)
+        .select('+expoPushToken')
+        .lean();
+
+      if (!patient?.expoPushToken) return;
+
+      await this.pushService.sendPushNotification({
+        tokens: [patient.expoPushToken],
+        title: copy.title,
+        body: copy.body,
+        data: { type: 'cita_state_change', citaId: String(citaId) },
+      });
+    } catch (error) {
+      this.logger.warn('notifyStateChange failed (non-critical):', error);
+    }
   }
 
   async cancelAppointment(userId: string, citaId: string) {
