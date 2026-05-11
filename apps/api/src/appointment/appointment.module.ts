@@ -4,6 +4,7 @@ import { AppointmentController } from './appointment.controller';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { PushNotificationsModule } from '../push-notifications/push-notifications.module';
 import {
   Appointment,
   AppointmentSchema,
@@ -19,6 +20,7 @@ import { User, UserSchema } from '../auth/entities/user.entity';
   imports: [
     AuthModule,
     UserModule,
+    PushNotificationsModule,
     MongooseModule.forFeature([
       { name: Appointment.name, schema: AppointmentSchema },
       { name: Doctor.name, schema: DoctorSchema },
