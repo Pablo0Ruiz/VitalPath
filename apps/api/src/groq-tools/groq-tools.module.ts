@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { GroqToolsService } from './groq-tools.service';
-import { GroqToolsController } from './groq-tools.controller';
 import { HospitalsModule } from 'src/hospitals/hospitals.module';
 import { AppointmentModule } from 'src/appointment/appointment.module';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [HospitalsModule, AppointmentModule, UserModule],
-  controllers: [GroqToolsController],
+  controllers: [],
   providers: [GroqToolsService],
   exports: [GroqToolsService],
 })

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
@@ -32,7 +32,6 @@ const validPatientDto = {
   genero: 'Femenino',
 };
 
-// MongoDB binary download can take a while on first run — allow 90s for setup.
 jest.setTimeout(90_000);
 
 describe('Auth (E2E)', () => {
@@ -160,29 +159,6 @@ describe('Auth (E2E)', () => {
         .post('/auth/login')
         .send({ password: 'Secret1' })
         .expect(400);
-    });
-  });
-
-  // ─── Token issued at register is valid for loginWithId ──────────────────────
-
-  describe('POST /auth/login/:id (token round-trip)', () => {
-    it('issues a new token for a valid user id', async () => {
-      const registerRes = await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({ ...validPatientDto, email: 'roundtrip@example.com' })
-        .expect(201);
-
-      const userId: string = registerRes.body.user._id;
-      const jwtService = app.get(JwtService);
-      const token = jwtService.sign({ id: userId }, { secret: JWT_SECRET });
-
-      expect(typeof token).toBe('string');
-
-      const loginRes = await request(app.getHttpServer())
-        .post(`/auth/login/${userId}`)
-        .expect(201);
-
-      expect(loginRes.body).toHaveProperty('token');
     });
   });
 });

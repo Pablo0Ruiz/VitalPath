@@ -21,12 +21,6 @@ import { UserRoles } from 'src/auth/enum/user-role.enum';
 export class SupabaseController {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  @Get('buckets')
-  async listBuckets() {
-    const buckets = await this.supabaseService.listBuckets();
-    return { buckets };
-  }
-
   @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.MEDICO)
   @Post('upload-file')
   @UseInterceptors(FilesInterceptor('files'))
