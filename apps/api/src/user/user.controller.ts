@@ -3,6 +3,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SavePushTokenDto } from './dto/save-push-token.dto';
 
 @Controller('user')
 export class UserController {
@@ -21,5 +22,11 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.updateProfile(userId, updateUserDto);
+  }
+
+  @Auth()
+  @Patch('me/push-token')
+  savePushToken(@GetUser('_id') userId: string, @Body() dto: SavePushTokenDto) {
+    return this.userService.saveExpoPushToken(userId, dto.token ?? null);
   }
 }

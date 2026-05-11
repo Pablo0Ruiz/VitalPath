@@ -50,6 +50,9 @@ export class User extends Document {
   @Prop({ type: String, required: false })
   telefono: string;
 
+  @Prop({ type: String, default: null })
+  expoPushToken?: string | null;
+
   @Prop({ type: String, required: false })
   verificationCode?: string;
 
