@@ -110,3 +110,6 @@ apps/api/skills-lock.json
 apps/api/.agents/*
 apps/api/.claude/*
 apps/api/.windsurf/*
+
+# Notifications
+google-services.json

@@ -44,7 +44,7 @@ export class AuthService {
 
       const user = await this.userModel.create({
         ...userData,
-        password: bcrypt.hashSync(password, 10),
+        password: bcrypt.hashSync(password, 12),
       });
 
       if (user.role === UserRoles.PACIENTE) {
