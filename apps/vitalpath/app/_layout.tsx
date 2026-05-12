@@ -26,10 +26,15 @@ const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
 
 function AuthInitializer() {
-  const { user, setSession, clearSession, setIsLoading } = useAuthStore();
+  const { user, setSession, clearSession, setIsLoading, _hasHydrated } =
+    useAuthStore();
   const { syncWithUser, reset: resetSeniorUI } = useSeniorUIStore();
 
-  useSession(mobileTokenAdapter, { setSession, clearSession, setIsLoading });
+  useSession(
+    mobileTokenAdapter,
+    { setSession, clearSession, setIsLoading },
+    { enabled: _hasHydrated },
+  );
 
   useEffect(() => {
     if (user) {

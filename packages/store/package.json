@@ -7,7 +7,8 @@
   "license": "MIT",
   "dependencies": {
     "zustand": "^5.0.0",
-    "@repo/types": "workspace:*"
+    "@repo/types": "workspace:*",
+    "expo-secure-store": "^55.0.8"
   },
   "devDependencies": {
     "typescript": "^5.0.0"
