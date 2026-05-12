@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { TextField } from '@/src/components/ui/atoms/TextField';
 import { useTheme } from '@/src/hooks/useTheme';

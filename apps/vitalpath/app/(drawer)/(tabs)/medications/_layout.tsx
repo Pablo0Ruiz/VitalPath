@@ -1,4 +1,3 @@
-import { ROUTES } from '@/src/routes/routes';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack } from 'expo-router';
 import { useTheme } from '@/src/hooks/useTheme';
