@@ -52,8 +52,8 @@ export function useVoiceAssistant({
 
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
-    } catch (err) {
-      console.error('startRecording error', err);
+    } catch (_err) {
+      // silent: error propagates via hook state
     }
   };
 
@@ -64,15 +64,7 @@ export function useVoiceAssistant({
       await audioRecorder.stop();
       const uri = audioRecorder.uri;
 
-      console.log('[useVoiceAssistant] stopRecordingAndSend:', {
-        uri,
-        chatId,
-      });
-
       if (!uri) {
-        console.warn(
-          '[useVoiceAssistant] No hay URI disponible después de grabar',
-        );
         return null;
       }
 
@@ -96,8 +88,7 @@ export function useVoiceAssistant({
       }
 
       return data;
-    } catch (err) {
-      console.error('stopRecording error', err);
+    } catch (_err) {
       return null;
     }
   };
@@ -106,7 +97,6 @@ export function useVoiceAssistant({
     if (!text) return;
 
     try {
-      console.log('[useVoiceAssistant] Intentando hablar:', text);
       await Speech.stop();
 
       await setAudioModeAsync({
@@ -121,20 +111,16 @@ export function useVoiceAssistant({
         rate: 0.95,
         pitch: 1.0,
         onDone: () => {
-          console.log('[useVoiceAssistant] Speech finalizado');
           setIsSpeaking(false);
         },
         onStopped: () => {
-          console.log('[useVoiceAssistant] Speech detenido');
           setIsSpeaking(false);
         },
-        onError: error => {
-          console.error('[useVoiceAssistant] Speech error:', error);
+        onError: () => {
           setIsSpeaking(false);
         },
       });
-    } catch (err) {
-      console.error('[useVoiceAssistant] Error en speakReply:', err);
+    } catch (_err) {
       setIsSpeaking(false);
     }
   };

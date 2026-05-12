@@ -27,6 +27,8 @@ export const DailyCheckIn = () => {
             <Pressable
               key={mood.id}
               onPress={() => setSelected(mood.id)}
+              accessibilityLabel={mood.label}
+              accessibilityRole="button"
               style={[
                 s.moodItem,
                 isSelected
