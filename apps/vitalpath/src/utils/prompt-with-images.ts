@@ -1,4 +1,4 @@
-import { geminiApi } from '@repo/api-client';
+import { aiApi } from '@repo/api-client';
 
 export interface FileType {
   uri: string;
@@ -31,7 +31,7 @@ export const promptWithFiles = async (
       formData.append('files', fileData as unknown as Blob);
     });
 
-    const response = await geminiApi.post(endpoint, formData);
+    const response = await aiApi.post(endpoint, formData);
     return response.data;
   } catch (error) {
     console.error('Error al obtener la respuesta del modelo:', error);

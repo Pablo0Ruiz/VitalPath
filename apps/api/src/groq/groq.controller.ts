@@ -18,7 +18,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import type { ModelMessage } from 'ai';
 
-@Controller('gemini')
+@Controller('ai')
 export class GroqController {
   constructor(private readonly groqService: GroqService) {}
 

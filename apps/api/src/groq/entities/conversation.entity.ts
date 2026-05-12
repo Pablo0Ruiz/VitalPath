@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { nextMonday } from '../helpers/date.helpers';
 
 @Schema({ timestamps: true })
 export class Conversation extends Document {
@@ -18,7 +19,7 @@ export class Conversation extends Document {
   @Prop({ type: [Object], default: [] })
   messages: Record<string, unknown>[];
 
-  @Prop({ type: Date, default: Date.now, expires: 432000 })
+  @Prop({ type: Date, default: nextMonday, expires: 0 })
   expireAt: Date;
 }
 

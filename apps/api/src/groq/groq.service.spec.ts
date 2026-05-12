@@ -8,6 +8,8 @@ import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { Response } from 'express';
 import { ChatPromptDto } from './dto/chat-prompt.dto';
 import { Conversation } from './entities/conversation.entity';
+import { nextMonday } from './helpers/date.helpers';
+import type { ModelMessage } from 'ai';
 
 jest.mock('./use-cases/chat-prompt-use-case');
 jest.mock('./use-cases/resumen-pdf-use-case');
@@ -103,6 +105,33 @@ describe('GroqService', () => {
       const history = await service.getChatHistory('chat-123');
       expect(history).toHaveLength(2);
       expect(history[0].role).toBe('user');
+    });
+  });
+
+  describe('saveChatHistory', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should write expireAt = nextMonday() in the $set block', async () => {
+      const pinnedNow = new Date('2026-05-11T09:00:00.000Z'); // Monday mid-day
+      jest.useFakeTimers({ now: pinnedNow });
+
+      const expectedExpireAt = nextMonday(pinnedNow);
+
+      conversationModel.findOneAndUpdate.mockResolvedValue({ messages: [] });
+
+      await service.saveChatHistory(
+        'chat-ttl',
+        '64b5fde500d5f66cdc49415a',
+        [{ role: 'user', content: 'hello' }] as unknown as ModelMessage[],
+        'hello',
+      );
+
+      const callArgs = conversationModel.findOneAndUpdate.mock.calls[0];
+      const setBlock = callArgs[1].$set;
+
+      expect(setBlock.expireAt.getTime()).toBe(expectedExpireAt.getTime());
     });
   });
 

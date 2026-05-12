@@ -3,6 +3,7 @@ import { createGroq } from '@ai-sdk/groq';
 import { GroqToolsService } from 'src/groq-tools/groq-tools.service';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { ChatPromptDto } from '../dto/chat-prompt.dto';
+import { sanitizeMedicalText } from 'src/common/helpers/sanitize-text.helper';
 
 const CHAT_MODEL = 'llama-3.3-70b-versatile';
 
@@ -67,7 +68,8 @@ export const chatPromptUseCase = async ({
 }> => {
   const { prompt } = chatPromptDto;
 
-  const userMessage: ModelMessage = { role: 'user', content: prompt };
+  const sanitizedPrompt = sanitizeMedicalText(prompt);
+  const userMessage: ModelMessage = { role: 'user', content: sanitizedPrompt };
   const messages: ModelMessage[] = [...history, userMessage];
 
   const now = new Date();

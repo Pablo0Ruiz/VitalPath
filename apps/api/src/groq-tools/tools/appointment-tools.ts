@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { tool, type ToolSet } from 'ai';
 import { z } from 'zod';
 import { AppointmentService } from 'src/appointment/appointment.service';
@@ -6,6 +7,8 @@ import type {
   UpdateAppointmentDto,
 } from 'src/appointment/dto';
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
+
+const logger = new Logger('AppointmentTools');
 
 export const buildAppointmentTools = (
   appointmentsService: AppointmentService,
@@ -54,11 +57,9 @@ export const buildAppointmentTools = (
         'Lista todas las citas del paciente actual. NO requiere parámetros de entrada.',
       inputSchema: z.preprocess(val => val ?? {}, z.object({})),
       execute: async () => {
-        console.log(
-          `[Tools] Llamando a getAppointments para userId: ${userId}`,
-        );
+        logger.log(`[Tools] Llamando a getAppointments para userId: ${userId}`);
         const result = await appointmentsService.getAppointments(userId);
-        console.log(
+        logger.log(
           `[Tools] Resultado de getAppointments: ${result.length} citas encontradas.`,
         );
         return JSON.parse(JSON.stringify(result));

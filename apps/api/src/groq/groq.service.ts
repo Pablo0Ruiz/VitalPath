@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import type { ModelMessage } from 'ai';
 import axios from 'axios';
 import type { Response } from 'express';
@@ -13,9 +13,12 @@ import { resumenPdf } from './use-cases/resumen-pdf-use-case';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Conversation } from './entities/conversation.entity';
+import { nextMonday } from './helpers/date.helpers';
 
 @Injectable()
 export class GroqService {
+  private readonly logger = new Logger(GroqService.name);
+
   constructor(
     private readonly groqToolsService: GroqToolsService,
     @InjectModel(Conversation.name)
@@ -94,9 +97,8 @@ export class GroqService {
 
       return data.text;
     } catch (error) {
-      console.error(
-        'Transcription error:',
-        error.response?.data || error.message,
+      this.logger.error(
+        'Transcription error:' + (error.response?.data || error.message),
       );
       throw new Error('Falló la transcripción del audio');
     }
@@ -172,7 +174,7 @@ export class GroqService {
     }
 
     const userObjectId = new Types.ObjectId(userId);
-    console.log(
+    this.logger.log(
       `[GroqService] Guardando historia para chatId: ${chatId}, userId: ${userId} (as ObjectId: ${userObjectId})`,
     );
 
@@ -183,7 +185,7 @@ export class GroqService {
           messages,
           lastMessage: lastMessageText,
           userId: userObjectId,
-          expireAt: new Date(),
+          expireAt: nextMonday(),
         },
         $setOnInsert: {
           title:
@@ -198,7 +200,7 @@ export class GroqService {
 
   async getUserConversations(userId: string): Promise<Conversation[]> {
     try {
-      console.log(
+      this.logger.log(
         `[GroqService] Buscando conversaciones para userId: ${userId}`,
       );
       const userObjectId = new Types.ObjectId(userId);
@@ -208,12 +210,12 @@ export class GroqService {
         .sort({ updatedAt: -1 })
         .exec();
 
-      console.log(
+      this.logger.log(
         `[GroqService] Encontradas ${conversations.length} conversaciones para el usuario ${userId}`,
       );
       return conversations;
     } catch (error) {
-      console.error('[GroqService] Error en getUserConversations:', error);
+      this.logger.error('[GroqService] Error en getUserConversations:', error);
 
       return this.conversationModel
         .find({ userId: userId as unknown })

@@ -6,10 +6,14 @@ import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { processChatFiles } from '../helpers/process-chat-files';
 import { GroqToolsService } from 'src/groq-tools/groq-tools.service';
 import { ChatPromptDto } from '../dto/chat-prompt.dto';
+import { sanitizeMedicalText } from 'src/common/helpers/sanitize-text.helper';
 
 jest.mock('ai');
 jest.mock('@ai-sdk/groq');
 jest.mock('../helpers/process-chat-files');
+jest.mock('src/common/helpers/sanitize-text.helper', () => ({
+  sanitizeMedicalText: jest.fn((text: string) => text),
+}));
 
 describe('chatPromptStreamUseCase', () => {
   let res: Partial<Response>;
@@ -113,5 +117,65 @@ describe('chatPromptStreamUseCase', () => {
     expect(streamOptions.messages[0].content).toContain(
       'Extracted PDF content',
     );
+  });
+
+  it('should pass prompt through sanitizeMedicalText before building userMessage (REQ-PII-03)', async () => {
+    const piiPrompt = 'Mi DNI es 12345678 y mi RUC es 10345678901';
+    const sanitizedOutput = 'Mi DNI es [DNI] y mi RUC es [RUC]';
+
+    (processChatFiles as jest.Mock).mockResolvedValue([]);
+    (sanitizeMedicalText as jest.Mock).mockReturnValueOnce(sanitizedOutput);
+
+    const mockStream = {
+      textStream: (async function* () {
+        yield 'ok';
+      })(),
+      finishReason: Promise.resolve('stop'),
+    };
+    (streamText as jest.Mock).mockImplementation(options => {
+      options.onFinish?.({ response: { messages: [] } });
+      return mockStream;
+    });
+
+    await chatPromptStreamUseCase({
+      chatPromptDto: { ...chatPromptDto, prompt: piiPrompt },
+      groqToolsService,
+      userId: 'u',
+      role: UserRoles.PACIENTE,
+      history: [],
+      res: res as Response,
+    });
+
+    expect(sanitizeMedicalText).toHaveBeenCalledWith(piiPrompt);
+
+    const streamOptions = (streamText as jest.Mock).mock.calls[0][0];
+    expect(streamOptions.messages[0].content).toBe(sanitizedOutput);
+    expect(streamOptions.messages[0].content).not.toContain('12345678');
+  });
+
+  it('should forward clean prompt unchanged (REQ-PII-03 — no PII)', async () => {
+    const cleanPrompt = '¿Cuáles son mis próximas citas?';
+    (processChatFiles as jest.Mock).mockResolvedValue([]);
+    (sanitizeMedicalText as jest.Mock).mockReturnValueOnce(cleanPrompt);
+
+    const mockStream = {
+      textStream: (async function* () {
+        yield 'ok';
+      })(),
+      finishReason: Promise.resolve('stop'),
+    };
+    (streamText as jest.Mock).mockReturnValue(mockStream);
+
+    await chatPromptStreamUseCase({
+      chatPromptDto: { ...chatPromptDto, prompt: cleanPrompt },
+      groqToolsService,
+      userId: 'u',
+      role: UserRoles.PACIENTE,
+      history: [],
+      res: res as Response,
+    });
+
+    const streamOptions = (streamText as jest.Mock).mock.calls[0][0];
+    expect(streamOptions.messages[0].content).toBe(cleanPrompt);
   });
 });
