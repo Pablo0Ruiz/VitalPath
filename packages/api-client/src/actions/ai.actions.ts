@@ -9,7 +9,7 @@ export const sendVoiceChat = async (
   formData: FormData,
 ): Promise<SendVoiceChatResponse> => {
   const { data } = await apiClient.post<SendVoiceChatResponse>(
-    '/api/gemini/voice-chat',
+    '/api/ai/voice-chat',
     formData,
     {
       headers: {
@@ -29,7 +29,7 @@ export const getChatHistory = async (
   chatId: string,
 ): Promise<ChatHistoryResponse> => {
   const { data } = await apiClient.get<ChatHistoryResponse>(
-    `/api/gemini/chat-history/${chatId}`,
+    `/api/ai/chat-history/${chatId}`,
   );
   return data;
 };
@@ -42,8 +42,6 @@ export type Conversation = {
 };
 
 export const getConversations = async (): Promise<Conversation[]> => {
-  const { data } = await apiClient.get<Conversation[]>(
-    '/api/gemini/conversations',
-  );
+  const { data } = await apiClient.get<Conversation[]>('/api/ai/conversations');
   return data;
 };

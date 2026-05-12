@@ -10,7 +10,7 @@ export const apiClient = axios.create({
   },
 });
 
-export const geminiApi = axios.create();
+export const aiApi = axios.create();
 
 apiClient.interceptors.response.use(
   response => response,

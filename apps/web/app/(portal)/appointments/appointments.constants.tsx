@@ -2,10 +2,7 @@ import { Badge } from '@/components/ui/atoms/Badge';
 import { type Column } from '@/components/ui/molecules/DataTable/DataTable';
 import { CitaEstadoEnum, type CitaPopulated } from '@repo/types';
 
-export const viewTabs = [
-  { value: 'list', label: 'Lista' },
-  { value: 'calendar', label: 'Calendario' },
-];
+export const viewTabs = [{ value: 'list', label: 'Lista' }];
 
 export const estadoConfig: Record<
   string,

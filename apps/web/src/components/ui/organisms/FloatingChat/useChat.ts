@@ -46,7 +46,7 @@ export const useChat = () => {
       const token = getCookie(ACCESS_TOKEN_KEY);
 
       try {
-        const res = await fetch(`${API_URL}/api/gemini/chat-stream`, {
+        const res = await fetch(`${API_URL}/api/ai/chat-stream`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token ?? ''}` },
           body: formData,
