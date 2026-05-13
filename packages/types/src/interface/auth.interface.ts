@@ -18,7 +18,9 @@ export interface TokenAdapter {
 }
 
 export type UserCredentials = {
-  token: string;
+  accessToken: string;
+  /** @deprecated use accessToken — will be removed after 1 release */
+  token?: string;
   user: UserSession;
 };
 

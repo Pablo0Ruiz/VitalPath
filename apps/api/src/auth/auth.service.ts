@@ -1,7 +1,10 @@
+import * as crypto from 'crypto';
+
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 import * as bcrypt from 'bcrypt';
 
@@ -30,9 +33,66 @@ export class AuthService {
     private readonly patientModel: Model<Patient>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
     @InjectModel(CentroSalud.name)
     private readonly centroSaludModel: Model<CentroSalud>,
   ) {}
+
+  // ─── Private helpers ────────────────────────────────────────────────────────
+
+  private getJwtToken(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
+  }
+
+  private async generateRefreshToken(
+    userId: string,
+  ): Promise<{ raw: string; hash: string }> {
+    const random = crypto.randomBytes(48).toString('base64url');
+    const payload = `${userId}.${random}`;
+    const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET') ?? '';
+    const hmac = crypto
+      .createHmac('sha256', secret)
+      .update(payload)
+      .digest('base64url');
+    const raw = `${payload}.${hmac}`;
+    const hash = await bcrypt.hash(raw, 10);
+    return { raw, hash };
+  }
+
+  private parseRefreshToken(
+    raw: string,
+  ): { userId: string; random: string; hmac: string } | null {
+    const parts = raw.split('.');
+    // format: <userId>.<random48b>.<hmacSha256> — exactly 3 dot-separated parts
+    if (parts.length !== 3) return null;
+    const [userId, random, hmac] = parts;
+    const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET') ?? '';
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(`${userId}.${random}`)
+      .digest('base64url');
+    // timing-safe compare to prevent timing attacks
+    const hmacBuf = Buffer.from(hmac);
+    const expectedBuf = Buffer.from(expected);
+    if (
+      hmacBuf.length !== expectedBuf.length ||
+      !crypto.timingSafeEqual(hmacBuf, expectedBuf)
+    )
+      return null;
+    return { userId, random, hmac };
+  }
+
+  private async issueTokens(
+    user: User,
+  ): Promise<{ accessToken: string; refreshTokenRaw: string }> {
+    const userId = (user._id as Types.ObjectId).toString();
+    const accessToken = this.getJwtToken({ id: userId, role: user.role });
+    const { raw, hash } = await this.generateRefreshToken(userId);
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken: hash });
+    return { accessToken, refreshTokenRaw: raw };
+  }
+
+  // ─── Public methods ──────────────────────────────────────────────────────────
 
   async create(createUserDto: RegisterDto) {
     try {
@@ -61,10 +121,13 @@ export class AuthService {
       }
 
       const { password: _, ...userWithoutPassword } = user.toObject();
+      const { accessToken, refreshTokenRaw } = await this.issueTokens(user);
 
       return {
         user: userWithoutPassword,
-        token: this.getJwtToken({ id: user.id }),
+        accessToken,
+        token: accessToken, // deprecated alias — remove after 1 release
+        refreshTokenRaw,
       };
     } catch (error) {
       handleServiceException(error);
@@ -82,10 +145,13 @@ export class AuthService {
       throw new UnauthorizedException('La contraseña es incorrecta');
 
     const { password: _, ...userWithoutPassword } = user.toObject();
+    const { accessToken, refreshTokenRaw } = await this.issueTokens(user);
 
     return {
       user: userWithoutPassword,
-      token: this.getJwtToken({ id: user.id }),
+      accessToken,
+      token: accessToken, // deprecated alias — remove after 1 release
+      refreshTokenRaw,
     };
   }
 
@@ -102,11 +168,41 @@ export class AuthService {
       throw new UnauthorizedException('Código inválido o acceso no autorizado');
 
     const { password: _, ...userWithoutPassword } = user.toObject();
+    const { accessToken, refreshTokenRaw } = await this.issueTokens(user);
 
     return {
       user: userWithoutPassword,
-      token: this.getJwtToken({ id: user.id }),
+      accessToken,
+      token: accessToken, // deprecated alias — remove after 1 release
+      refreshTokenRaw,
     };
+  }
+
+  async rotateRefreshToken(rawFromCookie: string) {
+    const parsed = this.parseRefreshToken(rawFromCookie);
+    if (!parsed) throw new UnauthorizedException('Invalid refresh token');
+
+    const user = await this.userModel
+      .findById(parsed.userId)
+      .select('+refreshToken');
+    if (!user || !user.refreshToken)
+      throw new UnauthorizedException('Session revoked');
+
+    const matches = await bcrypt.compare(rawFromCookie, user.refreshToken);
+    if (!matches) {
+      // theft detection: stolen-and-already-rotated token detected.
+      // defensive nuke: revoke whatever is on file so the legit client is also kicked.
+      user.refreshToken = null;
+      await user.save();
+      throw new UnauthorizedException('Refresh token mismatch');
+    }
+
+    const { accessToken, refreshTokenRaw } = await this.issueTokens(user);
+    return { accessToken, refreshTokenRaw };
+  }
+
+  async revokeRefreshToken(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken: null });
   }
 
   async setAccessCode(id: string, accessCode: string) {
@@ -130,11 +226,6 @@ export class AuthService {
     } catch (error) {
       handleServiceException(error);
     }
-  }
-
-  private getJwtToken(payload: JwtPayload) {
-    const token = this.jwtService.sign(payload);
-    return token;
   }
 
   async recoverPassword(recoverPasswordDto: RecoverPasswordDto) {
@@ -196,9 +287,13 @@ export class AuthService {
     centroSalud.listaTrabajadores_ID.push(user._id);
     await user.save();
     await centroSalud.save();
+
+    const { accessToken, refreshTokenRaw } = await this.issueTokens(user);
     return {
       user: user,
-      token: this.getJwtToken({ id: user.id }),
+      accessToken,
+      token: accessToken, // deprecated alias — remove after 1 release
+      refreshTokenRaw,
     };
   }
 }

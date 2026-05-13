@@ -2,16 +2,30 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import cookieParser = require('cookie-parser');
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('VitalPathAI');
 
+  // Production safety: WEB_ORIGIN must be set — wildcard + credentials is forbidden by browsers
+  if (process.env.NODE_ENV === 'production' && !process.env.WEB_ORIGIN) {
+    throw new Error(
+      'WEB_ORIGIN must be set in production. Set it to the exact frontend origin (e.g. https://vitalpath.onrender.com).',
+    );
+  }
+
   app.use(helmet());
 
+  // cookie-parser MUST be registered before setGlobalPrefix so req.cookies is available
+  app.use(cookieParser());
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin:
+      process.env.WEB_ORIGIN ||
+      process.env.FRONTEND_URL ||
+      'http://localhost:3000',
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

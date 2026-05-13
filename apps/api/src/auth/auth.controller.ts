@@ -5,7 +5,11 @@ import {
   Param,
   Patch,
   ForbiddenException,
+  Req,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { type Request, type Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import {
   ApiTags,
@@ -24,13 +28,39 @@ import { GetUser } from './decorators/get-user.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // ─── Private helpers ────────────────────────────────────────────────────────
+
+  private setRefreshCookie(res: Response, token: string) {
+    res.cookie('refresh_token', token, {
+      httpOnly: true,
+      secure: true, // always secure — Koyeb (API) + Render (web) are both HTTPS
+      sameSite: 'none', // cross-domain: Koyeb (API) ≠ Render (web) → SameSite=None required
+      path: '/api/auth',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+    });
+  }
+
+  private clearRefreshCookie(res: Response) {
+    res.clearCookie('refresh_token', { path: '/api/auth' });
+  }
+
+  // ─── Endpoints ──────────────────────────────────────────────────────────────
+
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
   @ApiResponse({ status: 400, description: 'Validation error' })
-  register(@Body() createAuthDto: RegisterDto) {
-    return this.authService.create(createAuthDto);
+  async register(
+    @Body() createAuthDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.create(createAuthDto);
+    if (result?.refreshTokenRaw) {
+      this.setRefreshCookie(res, result.refreshTokenRaw);
+    }
+    const { refreshTokenRaw: _, ...response } = result ?? {};
+    return response;
   }
 
   @Post('login')
@@ -41,8 +71,14 @@ export class AuthController {
     description: 'Login successful, returns JWT token',
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.authService.login(loginUserDto);
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshTokenRaw, ...response } =
+      await this.authService.login(loginUserDto);
+    this.setRefreshCookie(res, refreshTokenRaw);
+    return response;
   }
 
   @Post('login/code/:codigo')
@@ -53,8 +89,14 @@ export class AuthController {
     description: 'Login successful, returns JWT token',
   })
   @ApiResponse({ status: 401, description: 'Invalid code' })
-  loginWithCode(@Param('codigo') codigo: string) {
-    return this.authService.loginWithCode(codigo);
+  async loginWithCode(
+    @Param('codigo') codigo: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshTokenRaw, ...response } =
+      await this.authService.loginWithCode(codigo);
+    this.setRefreshCookie(res, refreshTokenRaw);
+    return response;
   }
 
   @Post('recover-password')
@@ -95,10 +137,50 @@ export class AuthController {
   @ApiOperation({ summary: 'Verify a doctor invite and complete registration' })
   @ApiResponse({ status: 201, description: 'Doctor verified successfully' })
   @ApiResponse({ status: 400, description: 'Invalid verification code' })
-  verifyDoctor(
+  async verifyDoctor(
     @Body() inviteDoctorDto: InviteDoctorDto,
     @Param('verificationCode') verificationCode: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.verifyDoctor(inviteDoctorDto, verificationCode);
+    const { refreshTokenRaw, ...response } =
+      await this.authService.verifyDoctor(inviteDoctorDto, verificationCode);
+    this.setRefreshCookie(res, refreshTokenRaw);
+    return response;
+  }
+
+  @Post('refresh')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({
+    summary: 'Rotate access + refresh tokens using the httpOnly refresh cookie',
+  })
+  @ApiResponse({ status: 201, description: 'New access token issued' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing refresh token' })
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const raw = req.cookies?.refresh_token as string | undefined;
+    if (!raw) throw new UnauthorizedException('No refresh cookie');
+    const { accessToken, refreshTokenRaw } =
+      await this.authService.rotateRefreshToken(raw);
+    this.setRefreshCookie(res, refreshTokenRaw);
+    return { accessToken };
+  }
+
+  @Post('logout')
+  @Auth()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Revoke server-side session and clear refresh cookie',
+  })
+  @ApiResponse({ status: 201, description: 'Logged out successfully' })
+  async logout(
+    @GetUser('_id') userId: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.revokeRefreshToken(String(userId));
+    this.clearRefreshCookie(res);
+    return { ok: true };
   }
 }
