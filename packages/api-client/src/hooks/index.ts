@@ -13,3 +13,4 @@ export * from './useVoiceChat';
 export * from './useChatHistory';
 export * from './useConversations';
 export * from './useMoodCheckIn';
+export * from './useStatsSummary';

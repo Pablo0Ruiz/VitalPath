@@ -6,5 +6,6 @@ export * from './actions/doctor.actions';
 export * from './actions/medical-results.actions';
 export * from './actions/user.actions';
 export * from './actions/ai.actions';
+export * from './actions/stats.actions';
 export * from './hooks';
 export * from './queryKeys';
