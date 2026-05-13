@@ -22,7 +22,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('VitalPath AI API')
     .setDescription(
-      'VitalPath AI — pilot REST API. Auth and Appointment surfaces documented; other controllers visible without descriptions (incremental rollout).',
+      'VitalPath AI — pilot REST API. Full controller coverage as of Sprint 4 post-pilot hardening.',
     )
     .setVersion('1.0')
     .addBearerAuth(
@@ -33,6 +33,11 @@ async function bootstrap() {
     .addTag('appointment', 'Citas (appointments)')
     .addTag('stats', 'Aggregated reports')
     .addTag('health', 'Liveness probe')
+    .addTag('ai', 'AI chat (Groq) + voice transcription')
+    .addTag('medications', 'Patient medication CRUD')
+    .addTag('hospitals', 'Healthcare centers and doctor invites')
+    .addTag('storage', 'File upload (Supabase) and medical results')
+    .addTag('mood', 'Daily mood check-in')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
