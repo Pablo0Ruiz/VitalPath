@@ -33,7 +33,7 @@ const DataTable = <T,>({
     >
       <table
         className="w-full text-sm"
-        aria-label={ariaLabel ?? 'Tabla de datos'}
+        {...(ariaLabel ? { 'aria-label': ariaLabel } : {})}
       >
         <thead>
           <tr className="bg-brand-neutral-50 border-b border-brand-border">
