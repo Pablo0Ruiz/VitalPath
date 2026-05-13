@@ -55,7 +55,7 @@ const DataTable = <T,>({
                   className="border-b border-brand-border last:border-0"
                 >
                   {columns.map(col => (
-                    <td key={String(col.key)} className="px-4 py-3">
+                    <td key={String(col.key)} className="px-4 py-4">
                       <Skeleton className="h-4 w-full" />
                     </td>
                   ))}
@@ -69,7 +69,7 @@ const DataTable = <T,>({
                   {columns.map(col => (
                     <td
                       key={String(col.key)}
-                      className="px-4 py-3 text-brand-text-primary"
+                      className="px-4 py-4 text-brand-text-primary"
                     >
                       {col.render
                         ? col.render(row)

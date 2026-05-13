@@ -81,13 +81,41 @@ const navItems: NavItem[] = [
   },
 ];
 
+const sections = [
+  {
+    title: 'CLÍNICO',
+    labels: ['Dashboard', 'Pacientes', 'Citas', 'Medicamentos'],
+  },
+  {
+    title: 'HERRAMIENTAS',
+    labels: ['Asistente IA', 'Registro paciente', 'Agendar'],
+  },
+  {
+    title: 'GESTIÓN',
+    labels: ['Médicos', 'Reportes'],
+  },
+];
+
+const roleLabelMap: Record<Role, string> = {
+  medico: 'Médico/a',
+  admin: 'Administrador/a',
+  trabajador_centro: 'Personal del centro',
+};
+
 type SidebarProps = {
   role: Role;
   currentPath: string;
+  user: { name: string; lastName?: string; role?: Role };
 };
 
-const Sidebar = ({ role, currentPath }: SidebarProps) => {
+const Sidebar = ({ role, currentPath, user }: SidebarProps) => {
   const filtered = navItems.filter(item => item.roles.includes(role));
+
+  const initials = (
+    (user.name[0] ?? '') + (user.lastName?.[0] ?? '')
+  ).toUpperCase();
+
+  const roleLabel = user.role ? roleLabelMap[user.role] : roleLabelMap[role];
 
   return (
     <aside className="w-64 bg-brand-background border-r border-brand-border h-screen sticky top-0 flex flex-col">
@@ -105,22 +133,52 @@ const Sidebar = ({ role, currentPath }: SidebarProps) => {
         </span>
       </div>
 
+      <div className="px-4 py-3 border-b border-brand-border flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-brand-primary-100 text-brand-primary-700 flex items-center justify-center text-sm font-semibold shrink-0">
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-brand-text-primary truncate">
+            {user.name}
+            {user.lastName ? ` ${user.lastName}` : ''}
+          </p>
+          <p className="text-xs text-brand-text-secondary capitalize">
+            {roleLabel}
+          </p>
+        </div>
+      </div>
+
       <nav
         aria-label="Navegación principal"
-        className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1"
+        className="flex-1 overflow-y-auto px-3 py-2 flex flex-col"
       >
-        {filtered.map(item => (
-          <SidebarItem
-            key={item.href}
-            icon={item.icon}
-            label={item.label}
-            href={item.href}
-            active={
-              currentPath === item.href ||
-              currentPath.startsWith(item.href + '/')
-            }
-          />
-        ))}
+        {sections.map(section => {
+          const sectionItems = filtered.filter(item =>
+            section.labels.includes(item.label),
+          );
+          if (sectionItems.length === 0) return null;
+          return (
+            <div key={section.title}>
+              <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-wider text-brand-neutral-400 uppercase">
+                {section.title}
+              </p>
+              <div className="flex flex-col gap-1">
+                {sectionItems.map(item => (
+                  <SidebarItem
+                    key={item.href}
+                    icon={item.icon}
+                    label={item.label}
+                    href={item.href}
+                    active={
+                      currentPath === item.href ||
+                      currentPath.startsWith(item.href + '/')
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       <div className="px-4 py-3 border-t border-brand-border flex items-center justify-between">

@@ -35,7 +35,15 @@ export default function PortalLayout({
   return (
     <SessionGate>
       <div className="flex h-screen overflow-hidden">
-        <Sidebar role={role} currentPath={pathname} />
+        <Sidebar
+          role={role}
+          currentPath={pathname}
+          user={{
+            name: user?.name ?? 'Usuario',
+            lastName: user?.lastName,
+            role,
+          }}
+        />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Topbar
             breadcrumbs={[
