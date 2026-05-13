@@ -105,7 +105,10 @@ const Sidebar = ({ role, currentPath }: SidebarProps) => {
         </span>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1">
+      <nav
+        aria-label="Navegación principal"
+        className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1"
+      >
         {filtered.map(item => (
           <SidebarItem
             key={item.href}

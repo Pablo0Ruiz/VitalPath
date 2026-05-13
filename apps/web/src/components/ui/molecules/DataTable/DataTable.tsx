@@ -13,6 +13,7 @@ export type DataTableProps<T> = {
   loading?: boolean;
   className?: string;
   getRowKey?: (row: T) => string;
+  ariaLabel?: string;
 };
 
 const DataTable = <T,>({
@@ -21,6 +22,7 @@ const DataTable = <T,>({
   loading,
   className,
   getRowKey,
+  ariaLabel,
 }: DataTableProps<T>) => {
   return (
     <div
@@ -29,7 +31,10 @@ const DataTable = <T,>({
         className,
       )}
     >
-      <table className="w-full text-sm">
+      <table
+        className="w-full text-sm"
+        aria-label={ariaLabel ?? 'Tabla de datos'}
+      >
         <thead>
           <tr className="bg-brand-neutral-50 border-b border-brand-border">
             {columns.map(col => (
