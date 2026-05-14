@@ -4,3 +4,4 @@ export { CreatePatientDto } from './create-patient.dto';
 export { RegisterDto } from './register.dto';
 export { LoginUserDto } from './login-user.dto';
 export { InviteDoctorDto } from './invite-doctor.dto';
+export { RefreshMobileDto } from './refresh-mobile.dto';

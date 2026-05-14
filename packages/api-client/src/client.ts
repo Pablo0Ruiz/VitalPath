@@ -1,7 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import type { TokenAdapter } from '@repo/types';
+import { attachRefreshInterceptor } from './refresh-interceptor';
 
 export const ACCESS_TOKEN_KEY = 'access_token';
+export const REFRESH_TOKEN_KEY = 'vitalpath.refresh';
 
 export const apiClient = axios.create({
   timeout: 30_000,
@@ -12,7 +14,6 @@ export const apiClient = axios.create({
   },
 });
 
-// TODO(sprint5): add 401 interceptor to aiApi (out of scope for sprint 4)
 export const aiApi = axios.create();
 
 // ─── Auth adapter ─────────────────────────────────────────────────────────────
@@ -28,89 +29,39 @@ export const attachAuthAdapter = (adapter: TokenAdapter): void => {
   tokenAdapter = adapter;
 };
 
-// ─── Request interceptor ──────────────────────────────────────────────────────
-// Attaches Authorization header if the adapter has a stored token and the
-// request does not already carry one (avoids overwriting explicit overrides).
+// ─── Auth header helper ────────────────────────────────────────────────────────
+// Attaches Authorization: Bearer to any Axios instance using the current adapter.
+// Applied to both apiClient and aiApi so all requests carry the token.
 
-apiClient.interceptors.request.use(async config => {
-  if (tokenAdapter && !config.headers.Authorization) {
-    const token = await tokenAdapter.getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+export const attachAuthHeader = (
+  instance: ReturnType<typeof axios.create>,
+): void => {
+  instance.interceptors.request.use(async config => {
+    if (tokenAdapter && !config.headers.Authorization) {
+      const token = await tokenAdapter.getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
-  }
-  return config;
-});
-
-// ─── Response interceptor — 401 refresh with concurrent-request queue ─────────
-
-let isRefreshing = false;
-let pendingQueue: Array<(token: string | null) => void> = [];
-
-const flushQueue = (token: string | null): void => {
-  pendingQueue.forEach(cb => cb(token));
-  pendingQueue = [];
+    return config;
+  });
 };
 
-apiClient.interceptors.response.use(
-  response => response,
-  async (error: AxiosError) => {
-    const status = error.response?.status;
-    const original = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
+attachAuthHeader(apiClient);
+attachAuthHeader(aiApi);
 
-    // Never trigger a refresh on auth endpoints — avoids infinite loops
-    const url = original?.url ?? '';
-    const isAuthEndpoint =
-      url.includes('/auth/refresh') ||
-      url.includes('/auth/login') ||
-      url.includes('/auth/register');
+// ─── wireRefresh ──────────────────────────────────────────────────────────────
+// Called ONCE at app boot. Registers the refresh interceptor on both instances.
+// mode 'cookie' → web httpOnly cookie flow (no body refresh token)
+// mode 'body'   → mobile body-based flow (reads/writes adapter refresh token)
 
-    if (status === 401 && !original._retry && !isAuthEndpoint) {
-      original._retry = true;
-
-      if (isRefreshing) {
-        // Another request is already refreshing — queue this one and resolve when done
-        return new Promise((resolve, reject) => {
-          pendingQueue.push(token => {
-            if (!token) return reject(error);
-            original.headers = {
-              ...original.headers,
-              Authorization: `Bearer ${token}`,
-            };
-            resolve(apiClient(original));
-          });
-        });
-      }
-
-      isRefreshing = true;
-      try {
-        const { data } = await apiClient.post<{ accessToken: string }>(
-          '/api/auth/refresh',
-        );
-        if (tokenAdapter) await tokenAdapter.setToken(data.accessToken);
-        flushQueue(data.accessToken);
-        original.headers = {
-          ...original.headers,
-          Authorization: `Bearer ${data.accessToken}`,
-        };
-        return apiClient(original);
-      } catch (refreshErr) {
-        flushQueue(null);
-        if (tokenAdapter) {
-          await tokenAdapter.deleteToken();
-          tokenAdapter.navigate('/login');
-        }
-        return Promise.reject(refreshErr);
-      } finally {
-        isRefreshing = false;
-      }
-    }
-
-    if (status && status >= 500) {
-      console.error('[API-CLIENT] Error de servidor:', status, original?.url);
-    }
-    return Promise.reject(error);
-  },
-);
+export const wireRefresh = (mode: 'cookie' | 'body'): void => {
+  const opts = {
+    getAdapter: () => tokenAdapter,
+    refreshUrl:
+      mode === 'body' ? '/api/auth/refresh-mobile' : '/api/auth/refresh',
+    bodyRefresh: mode === 'body',
+  };
+  attachRefreshInterceptor(apiClient, opts);
+  attachRefreshInterceptor(aiApi, opts);
+};

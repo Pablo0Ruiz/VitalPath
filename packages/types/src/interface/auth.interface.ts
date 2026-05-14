@@ -14,6 +14,9 @@ export interface TokenAdapter {
   getToken: () => Promise<string | null>;
   setToken: (token: string) => Promise<void>;
   deleteToken: () => Promise<void>;
+  getRefreshToken: () => Promise<string | null>;
+  setRefreshToken: (token: string) => Promise<void>;
+  deleteRefreshToken: () => Promise<void>;
   navigate: (route: string) => void;
 }
 
