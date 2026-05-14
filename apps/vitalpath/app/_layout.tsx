@@ -10,7 +10,7 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { useSession } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 

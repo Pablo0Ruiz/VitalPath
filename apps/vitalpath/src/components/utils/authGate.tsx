@@ -1,4 +1,4 @@
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { useSession } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 

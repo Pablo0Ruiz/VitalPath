@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter, useRootNavigationState } from 'expo-router';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { ROUTES } from '@/src/routes/routes';
 
 export default function Index() {

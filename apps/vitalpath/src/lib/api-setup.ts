@@ -1,5 +1,5 @@
 import { apiClient, ACCESS_TOKEN_KEY } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import * as SecureStore from 'expo-secure-store';
 
 export const setupApiInterceptors = () => {

@@ -8,7 +8,7 @@ import {
   TextField,
   UserAvatar,
 } from '@/src/components/ui/atoms';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { useLogout } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';

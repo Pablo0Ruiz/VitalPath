@@ -3,7 +3,7 @@ import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useMedicalResultsPaciente, useCitas } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import type { IMedicalResults } from '@repo/types';
 
 import {

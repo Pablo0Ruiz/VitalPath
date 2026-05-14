@@ -14,7 +14,8 @@ import {
   DailyCheckIn,
 } from '@/src/components/ui/molecules';
 import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
-import { useAuthStore, useChatContextStore } from '@repo/store';
+import { useChatContextStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import {
   useCitas,
   useDeleteMedication,
