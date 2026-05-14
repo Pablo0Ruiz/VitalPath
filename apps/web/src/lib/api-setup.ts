@@ -1,4 +1,4 @@
-import { apiClient, attachAuthAdapter } from '@repo/api-client';
+import { apiClient, attachAuthAdapter, wireRefresh } from '@repo/api-client';
 import { webTokenAdapter } from '../adapters/webTokenAdapter';
 
 export const setupWebApi = () => {
@@ -10,4 +10,7 @@ export const setupWebApi = () => {
   //   2. update the access_token cookie after a silent refresh
   //   3. navigate to /login on hard logout (refresh token expired / revoked)
   attachAuthAdapter(webTokenAdapter);
+
+  // Register the cookie-based refresh interceptor for web (httpOnly cookie flow).
+  wireRefresh('cookie');
 };

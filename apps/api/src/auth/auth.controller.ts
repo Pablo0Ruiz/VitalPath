@@ -18,7 +18,12 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { InviteDoctorDto, LoginUserDto, RegisterDto } from './dto';
+import {
+  InviteDoctorDto,
+  LoginUserDto,
+  RefreshMobileDto,
+  RegisterDto,
+} from './dto';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { Auth } from './decorators/auth.decorator';
 import { GetUser } from './decorators/get-user.decorator';
@@ -44,6 +49,11 @@ export class AuthController {
     res.clearCookie('refresh_token', { path: '/api/auth' });
   }
 
+  /** Returns true when the caller is a native mobile client (x-client-platform: mobile). */
+  private isMobile(req: Request): boolean {
+    return req.header('x-client-platform') === 'mobile';
+  }
+
   // ─── Endpoints ──────────────────────────────────────────────────────────────
 
   @Post('register')
@@ -53,13 +63,16 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Validation error' })
   async register(
     @Body() createAuthDto: RegisterDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.create(createAuthDto);
-    if (result?.refreshTokenRaw) {
-      this.setRefreshCookie(res, result.refreshTokenRaw);
+    const { refreshTokenRaw, ...response } = result ?? {};
+    if (refreshTokenRaw) {
+      if (this.isMobile(req))
+        return { ...response, refreshToken: refreshTokenRaw };
+      this.setRefreshCookie(res, refreshTokenRaw);
     }
-    const { refreshTokenRaw: _, ...response } = result ?? {};
     return response;
   }
 
@@ -73,10 +86,13 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(
     @Body() loginUserDto: LoginUserDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const { refreshTokenRaw, ...response } =
       await this.authService.login(loginUserDto);
+    if (this.isMobile(req))
+      return { ...response, refreshToken: refreshTokenRaw };
     this.setRefreshCookie(res, refreshTokenRaw);
     return response;
   }
@@ -91,10 +107,13 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid code' })
   async loginWithCode(
     @Param('codigo') codigo: string,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const { refreshTokenRaw, ...response } =
       await this.authService.loginWithCode(codigo);
+    if (this.isMobile(req))
+      return { ...response, refreshToken: refreshTokenRaw };
     this.setRefreshCookie(res, refreshTokenRaw);
     return response;
   }
@@ -140,10 +159,13 @@ export class AuthController {
   async verifyDoctor(
     @Body() inviteDoctorDto: InviteDoctorDto,
     @Param('verificationCode') verificationCode: string,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const { refreshTokenRaw, ...response } =
       await this.authService.verifyDoctor(inviteDoctorDto, verificationCode);
+    if (this.isMobile(req))
+      return { ...response, refreshToken: refreshTokenRaw };
     this.setRefreshCookie(res, refreshTokenRaw);
     return response;
   }
@@ -165,6 +187,23 @@ export class AuthController {
       await this.authService.rotateRefreshToken(raw);
     this.setRefreshCookie(res, refreshTokenRaw);
     return { accessToken };
+  }
+
+  @Post('refresh-mobile')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @ApiOperation({
+    summary:
+      'Body-based token rotation for native mobile clients (no cookies). Rotates both tokens per call.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'New access + refresh tokens issued',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid or revoked refresh token' })
+  async refreshMobile(@Body() dto: RefreshMobileDto) {
+    const { accessToken, refreshTokenRaw } =
+      await this.authService.rotateRefreshToken(dto.refreshToken);
+    return { accessToken, refreshToken: refreshTokenRaw };
   }
 
   @Post('logout')

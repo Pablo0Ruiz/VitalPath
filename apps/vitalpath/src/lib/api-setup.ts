@@ -1,34 +1,20 @@
-import { apiClient, ACCESS_TOKEN_KEY } from '@repo/api-client';
-import { useAuthStore } from '@/src/stores/auth';
-import * as SecureStore from 'expo-secure-store';
+import { apiClient, attachAuthAdapter, wireRefresh } from '@repo/api-client';
+import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 
 export const setupApiInterceptors = () => {
   apiClient.defaults.baseURL =
     process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
-  apiClient.interceptors.request.use(
-    async config => {
-      try {
-        const token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-      } catch (error) {
-        console.error('[API SETUP] Error al obtener el token:', error);
-      }
-      return config;
-    },
-    error => Promise.reject(error),
-  );
+  // Tell the server this is a native mobile client so login/register
+  // responses include the refresh token in the body instead of a cookie.
+  apiClient.defaults.headers.common['x-client-platform'] = 'mobile';
 
-  apiClient.interceptors.response.use(
-    response => response,
-    async error => {
-      if (error.response?.status === 401) {
-        useAuthStore.getState().clearSession();
-        await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-      }
-      return Promise.reject(error);
-    },
-  );
+  // Register the mobile adapter — enables the request interceptor to
+  // attach Authorization headers and the refresh interceptor to
+  // read/write tokens from SecureStore.
+  attachAuthAdapter(mobileTokenAdapter);
+
+  // Register the body-based refresh interceptor for mobile.
+  // This wires both apiClient and aiApi with the /auth/refresh-mobile flow.
+  wireRefresh('body');
 };

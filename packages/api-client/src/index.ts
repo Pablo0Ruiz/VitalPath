@@ -1,4 +1,5 @@
 export * from './client';
+export * from './refresh-interceptor';
 export * from './actions/auth.actions';
 export * from './actions/medication.actions';
 export * from './actions/appointment.actions';
