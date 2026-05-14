@@ -1,7 +1,23 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { CalendarAdd01Icon } from '@hugeicons/core-free-icons';
+import { useAuthStore } from '@repo/store';
+
+const ALLOWED_ROLES = ['admin', 'trabajador_centro'];
 
 export default function SchedulePage() {
+  const router = useRouter();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user && !ALLOWED_ROLES.includes(user.role)) {
+      router.replace('/dashboard');
+    }
+  }, [user, router]);
+
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="max-w-md w-full rounded-2xl border border-brand-border bg-brand-background p-8 text-center">

@@ -5,13 +5,12 @@ import { useAuthStore } from '@repo/store';
 import { Sidebar } from '@/components/ui/organisms/Sidebar';
 import { Topbar } from '@/components/ui/organisms/Topbar';
 import { SessionGate } from '@/components/SessionGate';
+import FloatingChat from '@/components/ui/organisms/FloatingChat';
 
 const pathLabels: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/patients': 'Pacientes',
   '/appointments': 'Citas',
-  '/medications': 'Medicamentos',
-  '/ai-assistant': 'Asistente IA',
   '/register-patient': 'Registro paciente',
   '/schedule': 'Agendar',
   '/doctors': 'Médicos',
@@ -55,6 +54,7 @@ export default function PortalLayout({
           <main className="flex-1 overflow-y-auto bg-brand-neutral-50 p-6 min-h-[calc(100vh-4rem)]">
             {children}
           </main>
+          <FloatingChat />
         </div>
       </div>
     </SessionGate>
