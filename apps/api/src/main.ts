@@ -10,9 +10,9 @@ async function bootstrap() {
   const logger = new Logger('VitalPathAI');
 
   // Production safety: WEB_ORIGIN must be set — wildcard + credentials is forbidden by browsers
-  if (process.env.NODE_ENV === 'production' && !process.env.WEB_ORIGIN) {
+  if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
     throw new Error(
-      'WEB_ORIGIN must be set in production. Set it to the exact frontend origin (e.g. https://vitalpath.onrender.com).',
+      'FRONTEND_URL must be set in production. Set it to the exact frontend origin (e.g. https://vitalpath.onrender.com).',
     );
   }
 
@@ -27,7 +27,7 @@ async function bootstrap() {
       process.env.FRONTEND_URL ||
       'http://localhost:3000',
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-client-platform'],
     credentials: true,
   });
 

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { HospitalsService } from './hospitals.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
 
 @ApiTags('hospitals')
@@ -16,25 +17,25 @@ export class HospitalsController {
   constructor(private readonly hospitalsService: HospitalsService) {}
 
   @Post()
-  @ApiOperation({
-    summary: 'Create a hospital',
-    description:
-      'PUBLIC endpoint — pending auth gate (security debt, tracked separately).',
-  })
+  @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Create a hospital' })
   @ApiResponse({ status: 201, description: 'Hospital created' })
   @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({ status: 403, description: 'Insufficient role' })
   createHospital(@Body() dto: CreateHospitalDto) {
     return this.hospitalsService.createHospital(dto);
   }
 
   @Post('doctors/:doctorId/invite')
-  @ApiOperation({
-    summary: 'Invite a doctor to a hospital',
-    description:
-      'PUBLIC endpoint — pending auth gate (security debt, tracked separately).',
-  })
+  @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Invite a doctor to a hospital' })
   @ApiResponse({ status: 201, description: 'Doctor invited successfully' })
   @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({ status: 403, description: 'Insufficient role' })
   @ApiBody({
     schema: {
       type: 'object',
