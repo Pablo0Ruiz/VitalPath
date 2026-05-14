@@ -5,8 +5,6 @@ import {
   DashboardSquare02Icon,
   UserGroupIcon,
   Calendar03Icon,
-  Medicine02Icon,
-  RoboticIcon,
   UserAdd01Icon,
   CalendarAdd01Icon,
   Stethoscope02Icon,
@@ -44,18 +42,6 @@ const navItems: NavItem[] = [
     roles: ['medico', 'admin', 'trabajador_centro'],
   },
   {
-    label: 'Medicamentos',
-    href: '/medications',
-    icon: Medicine02Icon,
-    roles: ['medico'],
-  },
-  {
-    label: 'Asistente IA',
-    href: '/ai-assistant',
-    icon: RoboticIcon,
-    roles: ['medico', 'admin', 'trabajador_centro'],
-  },
-  {
     label: 'Registro paciente',
     href: '/register-patient',
     icon: UserAdd01Icon,
@@ -84,11 +70,11 @@ const navItems: NavItem[] = [
 const sections = [
   {
     title: 'CLÍNICO',
-    labels: ['Dashboard', 'Pacientes', 'Citas', 'Medicamentos'],
+    labels: ['Dashboard', 'Pacientes', 'Citas'],
   },
   {
     title: 'HERRAMIENTAS',
-    labels: ['Asistente IA', 'Registro paciente', 'Agendar'],
+    labels: ['Registro paciente', 'Agendar'],
   },
   {
     title: 'GESTIÓN',
