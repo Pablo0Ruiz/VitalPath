@@ -3,10 +3,8 @@ import { jwtVerify } from 'jose';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET as string);
 
-// Roles that may access the portal at all
 const PORTAL_ROLES = ['admin', 'trabajador_centro', 'medico'];
 
-// All protected route prefixes — MUST be lowercase (Next.js App Router uses lowercase dirs)
 const PROTECTED_PREFIXES = [
   '/dashboard',
   '/patients',
@@ -15,7 +13,7 @@ const PROTECTED_PREFIXES = [
   '/reports',
 ];
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isProtected = PROTECTED_PREFIXES.some(p => pathname.startsWith(p));
@@ -41,9 +39,6 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch {
-    // Token expired or malformed — redirect and clear the stale cookie
-    // Note: middleware does NOT attempt server-side refresh (ADR-7).
-    // The client-side interceptor handles silent refresh on the next API call.
     const response = NextResponse.redirect(
       new URL('/login?message=session_expired', request.url),
     );

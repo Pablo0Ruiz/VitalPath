@@ -2,25 +2,12 @@ import type { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { TokenAdapter } from '@repo/types';
 
 export interface RefreshInterceptorOptions {
-  /** Returns the currently registered adapter (may be null if not yet set). */
   getAdapter: () => TokenAdapter | null;
-  /** URL for the refresh call, e.g. '/api/auth/refresh' or '/api/auth/refresh-mobile'. */
   refreshUrl: string;
-  /**
-   * When true the refresh call sends `{ refreshToken }` in the body and reads
-   * `{ accessToken, refreshToken }` back (mobile body-based flow).
-   * When false the refresh call relies on the httpOnly cookie (web cookie flow).
-   */
   bodyRefresh?: boolean;
-  /**
-   * URL substrings that identify auth endpoints — these are never retried to
-   * prevent infinite refresh loops. Defaults to common auth paths.
-   */
   authEndpointPatterns?: string[];
 }
 
-// Idempotent guard — prevents double-registration when wireRefresh is called
-// more than once (e.g. hot reload, StrictMode, accidental re-mount).
 const registered = new WeakSet<AxiosInstance>();
 
 export function attachRefreshInterceptor(
@@ -83,10 +70,7 @@ export function attachRefreshInterceptor(
         if (opts.bodyRefresh) {
           const refreshToken = adapter ? await adapter.getRefreshToken() : null;
           if (!refreshToken) throw new Error('No refresh token available');
-          // Use a plain axios import to avoid circular dependency — the refresh
-          // call must bypass this same interceptor (it hits /auth/refresh-mobile
-          // which is in authEndpointPatterns and therefore skipped anyway, but
-          // using instance directly is cleaner).
+
           const { data } = await instance.post<{
             accessToken: string;
             refreshToken: string;
