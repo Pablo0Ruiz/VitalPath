@@ -9,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('VitalPathAI');
 
-  // Production safety: WEB_ORIGIN must be set — wildcard + credentials is forbidden by browsers
   if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
     throw new Error(
       'FRONTEND_URL must be set in production. Set it to the exact frontend origin (e.g. https://vitalpath.onrender.com).',
@@ -18,7 +17,6 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  // cookie-parser MUST be registered before setGlobalPrefix so req.cookies is available
   app.use(cookieParser());
 
   app.enableCors({

@@ -33,15 +33,13 @@ import { GetUser } from './decorators/get-user.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // ─── Private helpers ────────────────────────────────────────────────────────
-
   private setRefreshCookie(res: Response, token: string) {
     res.cookie('refresh_token', token, {
       httpOnly: true,
-      secure: true, // always secure — Koyeb (API) + Render (web) are both HTTPS
-      sameSite: 'none', // cross-domain: Koyeb (API) ≠ Render (web) → SameSite=None required
+      secure: true,
+      sameSite: 'none',
       path: '/api/auth',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 
@@ -49,12 +47,9 @@ export class AuthController {
     res.clearCookie('refresh_token', { path: '/api/auth' });
   }
 
-  /** Returns true when the caller is a native mobile client (x-client-platform: mobile). */
   private isMobile(req: Request): boolean {
     return req.header('x-client-platform') === 'mobile';
   }
-
-  // ─── Endpoints ──────────────────────────────────────────────────────────────
 
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
