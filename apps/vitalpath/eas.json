@@ -12,12 +12,20 @@
       "node": "20.18.3",
       "pnpm": "8.15.6",
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/gemini"
+      },
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/gemini"
+      }
     }
   },
   "submit": {

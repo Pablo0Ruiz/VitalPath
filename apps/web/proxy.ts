@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
-
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET as string);
+import { decodeJwt } from 'jose';
 
 const PORTAL_ROLES = ['admin', 'trabajador_centro', 'medico'];
 
@@ -28,7 +26,7 @@ export default async function proxy(request: NextRequest) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const payload = decodeJwt(token);
     const role = payload.role as string | undefined;
 
     if (!role || !PORTAL_ROLES.includes(role)) {
