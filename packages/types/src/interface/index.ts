@@ -4,3 +4,4 @@ export * from './auth.interface';
 export * from './medication.interface';
 export * from './appointment.interface';
 export * from './medical-results.interface';
+export * from './stats.interface';

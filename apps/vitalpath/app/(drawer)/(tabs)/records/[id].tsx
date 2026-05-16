@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useCitas, useMedicalResultsPaciente } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import type { IMedicalResults } from '@repo/types';
 
 import { TextField } from '@/src/components/ui/atoms';
@@ -84,7 +84,9 @@ export default function StudyDetailScreen() {
     );
   }
 
-  const showActions = RESULT_STATES.includes(study.cita_ID.estado);
+  const showActions = RESULT_STATES.includes(
+    study.cita_ID?.estado || 'completada',
+  );
   const cachedEntry = pdfCache[study.fileUrl];
   const pdfData =
     cachedEntry && cachedEntry !== 'loading' && cachedEntry !== 'error'

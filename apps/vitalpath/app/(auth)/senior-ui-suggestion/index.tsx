@@ -8,7 +8,7 @@ import { useTheme } from '@/src/hooks/useTheme';
 import { Button } from '@/src/components/ui/atoms';
 import { ROUTES } from '@/src/routes/routes';
 import { useUpdateUser } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 
 const SeniorUISuggestionScreen = () => {
   const t = useTheme();

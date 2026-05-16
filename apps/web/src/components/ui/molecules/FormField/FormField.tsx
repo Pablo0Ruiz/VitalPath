@@ -1,3 +1,4 @@
+import React, { useId } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { AlertCircleIcon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
@@ -17,14 +18,36 @@ const FormField = ({
   children,
   className,
 }: FormFieldProps) => {
+  const generatedId = useId();
+  const inputId = generatedId + '-input';
+  const errorId = generatedId + '-error';
+  const hintId = generatedId + '-hint';
+
+  const describedBy = error ? errorId : hint ? hintId : undefined;
+
+  // TODO: degrades silently if multiple children are passed
+  const enhancedChild = React.isValidElement(children)
+    ? React.cloneElement(
+        children as React.ReactElement<Record<string, unknown>>,
+        {
+          id: (children.props as Record<string, unknown>).id ?? inputId,
+          'aria-describedby': describedBy,
+          'aria-invalid': error ? true : undefined,
+        },
+      )
+    : children;
+
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <label className="text-sm font-medium text-brand-text-primary">
+        <label
+          htmlFor={inputId}
+          className="text-sm font-medium text-brand-text-primary"
+        >
           {label}
         </label>
       )}
-      {children}
+      {enhancedChild}
       {error && (
         <div className="flex items-center gap-1">
           <HugeiconsIcon
@@ -32,11 +55,19 @@ const FormField = ({
             size={14}
             className="text-brand-state-error shrink-0"
           />
-          <span className="text-xs text-brand-state-error">{error}</span>
+          <span
+            id={errorId}
+            role="alert"
+            className="text-xs text-brand-state-error"
+          >
+            {error}
+          </span>
         </div>
       )}
       {!error && hint && (
-        <span className="text-xs text-brand-text-secondary">{hint}</span>
+        <span id={hintId} className="text-xs text-brand-text-secondary">
+          {hint}
+        </span>
       )}
     </div>
   );

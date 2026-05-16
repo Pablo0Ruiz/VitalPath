@@ -5,6 +5,7 @@ import { GroqToolsService } from 'src/groq-tools/groq-tools.service';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { ChatPromptDto } from '../dto/chat-prompt.dto';
 import { processChatFiles } from '../helpers/process-chat-files';
+import { sanitizeMedicalText } from 'src/common/helpers/sanitize-text.helper';
 
 const CHAT_MODEL = 'llama-3.3-70b-versatile';
 
@@ -74,7 +75,11 @@ export const chatPromptStreamUseCase = async ({
       ? `${prompt}\n\n---\nContenido de documentos adjuntos:\n${pdfTexts.map((t, i) => `[Documento ${i + 1}]\n${t}`).join('\n\n')}`
       : prompt;
 
-  const userMessage: ModelMessage = { role: 'user', content: userContent };
+  const sanitizedUserContent = sanitizeMedicalText(userContent);
+  const userMessage: ModelMessage = {
+    role: 'user',
+    content: sanitizedUserContent,
+  };
   const messages: ModelMessage[] = [...history, userMessage];
 
   const now = new Date();

@@ -20,6 +20,11 @@ export const sessionKeys = {
   all: ['session'] as const,
   current: () => [...sessionKeys.all, 'current'] as const,
 };
+export const statsKeys = {
+  all: ['stats'] as const,
+  summary: () => [...statsKeys.all, 'summary'] as const,
+};
+
 export const resumeKeys = {
   all: ['resume'] as const,
   current: () => [...resumeKeys.all, 'current'] as const,

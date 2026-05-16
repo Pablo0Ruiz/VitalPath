@@ -50,6 +50,9 @@ export class User extends Document {
   @Prop({ type: String, required: false })
   telefono: string;
 
+  @Prop({ type: String, default: null })
+  expoPushToken?: string | null;
+
   @Prop({ type: String, required: false })
   verificationCode?: string;
 
@@ -67,6 +70,9 @@ export class User extends Document {
 
   @Prop({ type: Boolean, default: false, required: false })
   seniorMode: boolean;
+
+  @Prop({ type: String, required: false, default: null, select: false })
+  refreshToken?: string | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

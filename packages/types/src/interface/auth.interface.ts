@@ -14,11 +14,16 @@ export interface TokenAdapter {
   getToken: () => Promise<string | null>;
   setToken: (token: string) => Promise<void>;
   deleteToken: () => Promise<void>;
+  getRefreshToken: () => Promise<string | null>;
+  setRefreshToken: (token: string) => Promise<void>;
+  deleteRefreshToken: () => Promise<void>;
   navigate: (route: string) => void;
 }
 
 export type UserCredentials = {
-  token: string;
+  accessToken: string;
+  /** @deprecated use accessToken — will be removed after 1 release */
+  token?: string;
   user: UserSession;
 };
 

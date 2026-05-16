@@ -21,7 +21,6 @@ import {
   providers: [AuthService, JwtStrategy],
   imports: [
     CommonModule,
-    CommonModule,
     ConfigModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
@@ -37,7 +36,7 @@ import {
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: '30d',
+            expiresIn: '1h',
           },
         };
       },

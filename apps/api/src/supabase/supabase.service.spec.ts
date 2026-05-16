@@ -108,33 +108,6 @@ describe('SupabaseService', () => {
     service = module.get(SupabaseService);
   });
 
-  // ─── listBuckets ─────────────────────────────────────────────────────────
-
-  describe('listBuckets', () => {
-    it('returns bucket data when successful', async () => {
-      const buckets = [{ name: 'vitalpath-storage' }];
-      supabase.storage.listBuckets.mockResolvedValue({
-        data: buckets,
-        error: null,
-      });
-
-      const result = await service.listBuckets();
-
-      expect(result).toBe(buckets);
-    });
-
-    it('throws when Supabase returns an error', async () => {
-      supabase.storage.listBuckets.mockResolvedValue({
-        data: null,
-        error: { message: 'auth error' },
-      });
-
-      await expect(service.listBuckets()).rejects.toThrow(
-        'Error listando buckets: auth error',
-      );
-    });
-  });
-
   // ─── uploadFile ───────────────────────────────────────────────────────────
 
   describe('uploadFile', () => {
@@ -284,7 +257,6 @@ describe('SupabaseService', () => {
 
     it('returns the file as a base64 string', async () => {
       const content = Buffer.from('PDF binary content');
-      // Usamos Uint8Array para asegurar un ArrayBuffer limpio sin pooling
       const arrayBuffer = Uint8Array.from(content).buffer;
       const fakeBlob = {
         arrayBuffer: jest.fn().mockResolvedValue(arrayBuffer),

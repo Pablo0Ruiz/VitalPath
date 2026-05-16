@@ -30,6 +30,8 @@ const FloatingChat = () => {
     addWelcomeMessage,
   } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const lastMessageContent = messages[messages.length - 1]?.content;
   useEffect(() => {
@@ -38,9 +40,29 @@ const FloatingChat = () => {
     }
   }, [messages.length, lastMessageContent]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const id = requestAnimationFrame(() => inputRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') toggleOpen();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen]);
+
   const toggleOpen = () => {
     const nextState = !isOpen;
     setIsOpen(nextState);
+
+    if (!nextState) {
+      requestAnimationFrame(() => triggerRef.current?.focus());
+    }
 
     if (nextState && !hasOpened && messages.length === 0) {
       setHasOpened(true);
@@ -50,7 +72,7 @@ const FloatingChat = () => {
 
   return (
     <>
-      <ChatTrigger isOpen={isOpen} onClick={toggleOpen} />
+      <ChatTrigger isOpen={isOpen} onClick={toggleOpen} ref={triggerRef} />
 
       <div className={floatingChatVariants({ isOpen })}>
         <ChatHeader />
@@ -96,9 +118,9 @@ const FloatingChat = () => {
             <div className="flex justify-start">
               <div className="bg-white border border-brand-border rounded-2xl rounded-bl-none px-4 py-3 shadow-sm">
                 <div className="flex gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-primary-400 animate-bounce [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-primary-400 animate-bounce [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-primary-400 animate-bounce" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-brand-primary-400 animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-brand-primary-400 animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-brand-primary-400 animate-bounce" />
                 </div>
               </div>
             </div>
@@ -113,6 +135,7 @@ const FloatingChat = () => {
           onSend={sendMessage}
           isLoading={isLoading}
           isOpen={isOpen}
+          ref={inputRef}
         />
       </div>
     </>

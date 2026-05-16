@@ -14,7 +14,8 @@ import {
   DailyCheckIn,
 } from '@/src/components/ui/molecules';
 import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
-import { useAuthStore, useChatContextStore } from '@repo/store';
+import { useChatContextStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import {
   useCitas,
   useDeleteMedication,
@@ -71,7 +72,7 @@ export default function DashboardScreen() {
     >
       <View style={s.topBar}>
         <HeaderHome
-          textLabel="Buenos dias"
+          textLabel="Buenos días"
           nameUser={user?.name}
           style={s.flex1}
         />
@@ -80,7 +81,9 @@ export default function DashboardScreen() {
             variant="ghost"
             size="sm"
             style={[s.iconButton, { backgroundColor: t.neutral100 }]}
-            onPress={() => console.log('Notification')}
+            onPress={() => {}}
+            accessibilityLabel="Notificaciones"
+            accessibilityRole="button"
           >
             <Ionicons
               name="notifications-outline"
@@ -93,6 +96,8 @@ export default function DashboardScreen() {
             size="sm"
             style={[s.iconButton, { backgroundColor: t.neutral100 }]}
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            accessibilityLabel="Abrir menú"
+            accessibilityRole="button"
           >
             <Ionicons name="menu-outline" size={24} color={t.textSecondary} />
           </Button>

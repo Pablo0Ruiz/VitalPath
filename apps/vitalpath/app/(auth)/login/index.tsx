@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { Divider, FormField } from '@/src/components/ui/molecules';
 import { useLogin, useLoginWithCode } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import {
   LoginFormValues,

@@ -31,15 +31,6 @@ export class SupabaseService {
     private readonly groqService: GroqService,
   ) {}
 
-  async listBuckets(): Promise<unknown> {
-    const { data, error } = await this.supabase.storage.listBuckets();
-
-    if (error) {
-      throw new Error(`Error listando buckets: ${error.message}`);
-    }
-    return data;
-  }
-
   async uploadFile(
     files: Array<Express.Multer.File>,
     ctx: UploadContextDto,
