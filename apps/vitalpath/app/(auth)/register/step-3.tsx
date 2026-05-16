@@ -11,7 +11,7 @@ import { FormField } from '@/src/components/ui/molecules';
 import { Step3FormValues, step3Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
 import { useRegister } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';

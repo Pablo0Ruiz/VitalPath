@@ -58,7 +58,7 @@ const LoginForm = () => {
   } = useMutation<UserCredentials, Error, LoginSchemaValues>({
     mutationFn: postLogin,
     onSuccess: data => {
-      document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(data.token)}; path=/; SameSite=Lax`;
+      document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(data.accessToken)}; path=/; SameSite=Lax`;
       window.location.href = '/dashboard';
     },
     onError: err => {
@@ -72,7 +72,7 @@ const LoginForm = () => {
   } = useMutation<UserCredentials, Error, InviteFormValues>({
     mutationFn: postInviteVerification,
     onSuccess: data => {
-      document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(data.token)}; path=/; SameSite=Lax`;
+      document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(data.accessToken)}; path=/; SameSite=Lax`;
       window.location.href = '/dashboard';
     },
     onError: err => {

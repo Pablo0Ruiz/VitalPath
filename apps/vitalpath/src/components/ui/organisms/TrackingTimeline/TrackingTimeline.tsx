@@ -39,16 +39,18 @@ const TrackingTimeline = ({
 }: TrackingTimelineProps) => {
   if (!resultado) return null;
 
-  const steps = deriveSteps(resultado.cita_ID.estado);
+  const steps = deriveSteps(resultado.cita_ID?.estado || 'completada');
   const doctorName = `Dr. ${resultado.medico_ID.name} ${resultado.medico_ID.lastName}`;
-  const fecha = resultado.cita_ID.fecha;
+  const fecha =
+    resultado.cita_ID?.fecha ||
+    new Date(resultado.createdAt).toLocaleDateString();
 
   return (
     <View style={[s.container, style]} {...props}>
       <TimelineStep
         status={steps.s1}
         title="Cita Completada"
-        time={resultado.cita_ID.hora}
+        time={resultado.cita_ID?.hora || ''}
         date={fecha}
         doctorName={doctorName}
       />

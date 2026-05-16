@@ -15,7 +15,14 @@ export const buttonContainerStyle = (
   t: ThemeTokens,
 ): ViewStyle => {
   const map: Record<ButtonVariant, ViewStyle> = {
-    primary: { backgroundColor: t.primary600 },
+    primary: {
+      backgroundColor: t.primary600,
+      shadowColor: t.primary600,
+      shadowOpacity: 0.28,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 6,
+    },
     secondary: { backgroundColor: '#F1F5F9' },
     outline: {
       backgroundColor: 'transparent',

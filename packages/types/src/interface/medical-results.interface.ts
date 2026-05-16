@@ -1,6 +1,6 @@
 export interface IMedicalResults {
   _id: string;
-  cita_ID: {
+  cita_ID?: {
     _id: string;
     fecha: string;
     hora: string;

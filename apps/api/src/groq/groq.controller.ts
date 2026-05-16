@@ -9,6 +9,14 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { type Response } from 'express';
 import { GroqService } from './groq.service';
@@ -18,6 +26,8 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import type { ModelMessage } from 'ai';
 
+@ApiTags('ai')
+@ApiBearerAuth('access-token')
 @Controller('ai')
 export class GroqController {
   constructor(private readonly groqService: GroqService) {}
@@ -25,6 +35,31 @@ export class GroqController {
   @Auth()
   @Post('chat-stream')
   @UseInterceptors(FilesInterceptor('files'))
+  @ApiOperation({
+    summary: 'Stream an AI chat response (text + optional file context)',
+  })
+  @ApiResponse({ status: 200, description: 'SSE stream of AI response chunks' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['prompt', 'chatId'],
+      properties: {
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          description: 'Optional context files',
+        },
+        prompt: { type: 'string', description: 'User message' },
+        chatId: {
+          type: 'string',
+          format: 'uuid',
+          description: 'Conversation UUID',
+        },
+      },
+    },
+  })
   async chatStream(
     @Body() chatPromptDto: ChatPromptDto,
     @Res() res: Response,
@@ -39,6 +74,30 @@ export class GroqController {
   @Auth()
   @Post('voice-chat')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Transcribe audio and send as AI chat message' })
+  @ApiResponse({
+    status: 201,
+    description: 'AI response to transcribed voice message',
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file', 'chatId'],
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Audio file to transcribe',
+        },
+        chatId: {
+          type: 'string',
+          description: 'Conversation ID (plain string)',
+        },
+      },
+    },
+  })
   async voiceChat(
     @UploadedFile() file: Express.Multer.File,
     @Body('chatId') chatId: string,
@@ -59,12 +118,21 @@ export class GroqController {
 
   @Auth()
   @Get('conversations')
+  @ApiOperation({ summary: 'Get all conversations for the authenticated user' })
+  @ApiResponse({ status: 200, description: 'List of conversations' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
   async getConversations(@GetUser('id') userId: string) {
     return this.groqService.getUserConversations(userId);
   }
 
   @Auth()
   @Get('chat-history/:chatId')
+  @ApiOperation({ summary: 'Get chat history for a conversation' })
+  @ApiResponse({
+    status: 200,
+    description: 'Ordered list of user and assistant messages',
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
   async getChatHistory(@Param('chatId') chatId: string) {
     const history = await this.groqService.getChatHistory(chatId);
 

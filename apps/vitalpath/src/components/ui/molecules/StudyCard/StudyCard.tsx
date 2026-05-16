@@ -32,7 +32,7 @@ function getEstadoBadge(estado: string): {
 
 const StudyCard = ({ study, onPress }: StudyCardProps) => {
   const t = useTheme();
-  const badge = getEstadoBadge(study.cita_ID.estado);
+  const badge = getEstadoBadge(study.cita_ID?.estado || 'completada');
   const doctorName = `Dr. ${study.medico_ID.name} ${study.medico_ID.lastName}`;
 
   return (
@@ -49,7 +49,8 @@ const StudyCard = ({ study, onPress }: StudyCardProps) => {
             variant="caption"
             style={[s.date, { color: t.textSecondary }]}
           >
-            {study.cita_ID.fecha}
+            {study.cita_ID?.fecha ||
+              new Date(study.createdAt).toLocaleDateString()}
           </TextField>
         </View>
         <View style={s.actions}>

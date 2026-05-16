@@ -14,7 +14,7 @@ export const useLoginWithCode = (
   return useMutation({
     mutationFn: postLoginWithCode,
     onSuccess: async data => {
-      await adapter.setToken(data.token);
+      await adapter.setToken(data.accessToken);
       callbacks.setSession(data.user);
       callbacks.afterSuccess(data.user);
     },

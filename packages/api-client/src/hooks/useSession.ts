@@ -13,9 +13,10 @@ interface SessionCallbacks {
 export const useSession = (
   adapter: TokenAdapter,
   callbacks: SessionCallbacks,
-  options?: { onSuccess?: () => void },
+  options?: { onSuccess?: () => void; enabled?: boolean },
 ): void => {
   const { setSession, clearSession, setIsLoading } = callbacks;
+  const enabled = options?.enabled ?? true;
 
   const { data, isError, isSuccess, isPending } = useQuery({
     queryKey: sessionKeys.current(),
@@ -26,6 +27,7 @@ export const useSession = (
     },
     retry: false,
     staleTime: Infinity,
+    enabled,
   });
 
   useEffect(() => {

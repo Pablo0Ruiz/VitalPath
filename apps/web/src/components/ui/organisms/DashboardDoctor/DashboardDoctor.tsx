@@ -11,7 +11,18 @@ import { ReportHistory } from '@/components/ui/organisms/ReportHistory';
 import { useCitasMedico } from '@repo/api-client';
 
 const DashboardDoctor = () => {
-  const { data: citas, isError, error } = useCitasMedico();
+  const { data: citas = [], isLoading, isError, error } = useCitasMedico();
+
+  const todayKey = new Date().toISOString().split('T')[0];
+  const citasHoy = isLoading
+    ? '—'
+    : citas.filter(c => c.fecha?.startsWith(todayKey)).length;
+  const pacientesUnicos = isLoading
+    ? '—'
+    : new Set(citas.map(c => c.paciente_ID._id)).size;
+  const checkInsRecibidos = isLoading
+    ? '—'
+    : citas.filter(c => c.estado === 'asistida').length;
 
   if (isError) {
     return <div>Error al cargar citas: {error.message}</div>;
@@ -21,25 +32,25 @@ const DashboardDoctor = () => {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={Calendar03Icon}
-          value={8}
+          value={citasHoy}
           label="Citas hoy"
           tone="brand"
         />
         <StatCard
           icon={UserGroupIcon}
-          value={24}
+          value={pacientesUnicos}
           label="Mis pacientes"
           tone="neutral"
         />
         <StatCard
           icon={Tick02Icon}
-          value={3}
+          value={checkInsRecibidos}
           label="Check-in recibidos"
           tone="success"
         />
         <StatCard
           icon={Medicine02Icon}
-          value={12}
+          value="—"
           label="Recetas activas"
           tone="warning"
         />

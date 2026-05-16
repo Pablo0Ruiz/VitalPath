@@ -63,7 +63,8 @@ const ReportHistory = () => {
                   {study.paciente_ID.name} {study.paciente_ID.lastName}
                 </span>
                 <span className="text-xs text-brand-text-secondary">
-                  {study.cita_ID.fecha}
+                  {study.cita_ID?.fecha ||
+                    new Date(study.createdAt).toLocaleDateString()}
                 </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">

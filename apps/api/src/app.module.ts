@@ -13,6 +13,9 @@ import { MedicationsModule } from './medications/medications.module';
 import { HospitalsModule } from './hospitals/hospitals.module';
 import { GroqToolsModule } from './groq-tools/groq-tools.module';
 import { AuditModule } from './audit/audit.module';
+import { MoodModule } from './mood/mood.module';
+import { HealthModule } from './health/health.module';
+import { StatsModule } from './stats/stats.module';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { AuditLoggerInterceptor } from './common/interceptors/audit-logger.interceptor';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -49,6 +52,13 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     GroqToolsModule,
 
     AuditModule,
+
+    MoodModule,
+
+    HealthModule,
+
+    StatsModule,
+
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

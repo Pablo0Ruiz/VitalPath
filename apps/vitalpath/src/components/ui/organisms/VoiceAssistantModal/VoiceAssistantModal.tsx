@@ -1,4 +1,6 @@
+import { useRef, useEffect } from 'react';
 import {
+  Animated,
   Modal,
   StyleSheet,
   View,
@@ -13,6 +15,8 @@ import { useTheme } from '@/src/hooks/useTheme';
 import { useVoiceAssistant } from '@/src/hooks/useVoiceAssistant';
 import { useChatContextStore } from '@repo/store';
 
+const RECORDING_AMBER = '#D97706';
+
 interface VoiceAssistantModalProps {
   visible: boolean;
   onClose: () => void;
@@ -26,6 +30,7 @@ const VoiceAssistantModal = ({
 }: VoiceAssistantModalProps) => {
   const t = useTheme();
   const addVoiceMessage = useChatContextStore(state => state.addVoiceMessage);
+  const pulseAnim = useRef(new Animated.Value(0)).current;
 
   const {
     isRecording,
@@ -40,6 +45,38 @@ const VoiceAssistantModal = ({
     onSuccess: (transcript, replyText) => {
       addVoiceMessage(transcript, replyText);
     },
+  });
+
+  useEffect(() => {
+    if (isRecording || isSpeaking) {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
+      );
+      loop.start();
+      return () => loop.stop();
+    } else {
+      pulseAnim.setValue(0);
+    }
+  }, [isRecording, isSpeaking]);
+
+  const pulseScale = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.25],
+  });
+  const pulseOpacity = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
   });
 
   const handlePress = () => {
@@ -83,7 +120,16 @@ const VoiceAssistantModal = ({
               <Ionicons name="chatbubbles" size={40} color="white" />
             </LinearGradient>
             {(isRecording || isSpeaking) && (
-              <View style={[s.pulse, { borderColor: t.primary500 }]} />
+              <Animated.View
+                style={[
+                  s.pulse,
+                  {
+                    borderColor: t.primary500,
+                    transform: [{ scale: pulseScale }],
+                    opacity: pulseOpacity,
+                  },
+                ]}
+              />
             )}
           </View>
 
@@ -100,6 +146,15 @@ const VoiceAssistantModal = ({
                   : '¿En qué puedo ayudarte?'}
           </TextField>
 
+          {isProcessing && (
+            <TextField
+              variant="subtitle"
+              style={[s.processingText, { color: t.textSecondary }]}
+            >
+              Analizando tu consulta...
+            </TextField>
+          )}
+
           {lastReply && !isRecording && !isProcessing && (
             <TextField
               variant="subtitle"
@@ -115,7 +170,7 @@ const VoiceAssistantModal = ({
               style={({ pressed }) => [
                 s.mainButton,
                 {
-                  backgroundColor: isRecording ? t.error : t.primary600,
+                  backgroundColor: isRecording ? RECORDING_AMBER : t.primary600,
                   opacity: pressed ? 0.8 : 1,
                 },
               ]}
@@ -187,11 +242,14 @@ const s = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 2,
-    opacity: 0.5,
   },
   title: {
     textAlign: 'center',
     marginBottom: 10,
+  },
+  processingText: {
+    textAlign: 'center',
+    marginBottom: 8,
   },
   reply: {
     textAlign: 'center',

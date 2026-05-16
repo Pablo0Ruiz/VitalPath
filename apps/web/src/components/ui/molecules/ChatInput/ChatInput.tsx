@@ -1,4 +1,3 @@
-import { useRef, useEffect } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { SentIcon, Loading02Icon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
@@ -16,6 +15,7 @@ interface ChatInputProps {
   onSend: () => void;
   isLoading: boolean;
   isOpen: boolean;
+  ref?: React.Ref<HTMLTextAreaElement>;
 }
 
 const ChatInput = ({
@@ -23,17 +23,9 @@ const ChatInput = ({
   setInput,
   onSend,
   isLoading,
-  isOpen,
+  isOpen: _isOpen,
+  ref,
 }: ChatInputProps) => {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => inputRef.current?.focus(), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -45,7 +37,7 @@ const ChatInput = ({
     <div className={chatInputContainerVariants()}>
       <div className={chatInputWrapperVariants({ isLoading })}>
         <textarea
-          ref={inputRef}
+          ref={ref}
           rows={1}
           placeholder="Escribí tu mensaje aquí..."
           value={input}

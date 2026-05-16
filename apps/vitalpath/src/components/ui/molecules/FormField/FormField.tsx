@@ -61,12 +61,14 @@ const FormField = ({
         rightIcon={rightIcon}
         variant={inputVariant}
         style={inputStyle}
+        accessibilityLabel={label}
         {...inputProps}
       />
       {helperText && (
         <TextField
           variant="caption"
           style={[s.helperText, { color: error ? t.error : t.textSecondary }]}
+          accessibilityLiveRegion="polite"
         >
           {helperText}
         </TextField>

@@ -14,7 +14,7 @@ import {
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organisms';
 import { useCitas, useCancelCita } from '@repo/api-client';
-import { useAuthStore } from '@repo/store';
+import { useAuthStore } from '@/src/stores/auth';
 import { extractDateKey } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';

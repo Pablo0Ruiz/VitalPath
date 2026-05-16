@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { Types } from 'mongoose';
 
 import { AuthService } from './auth.service';
@@ -16,6 +17,8 @@ import { Especialidad } from './enum/especialidad.enum';
 jest.mock('bcrypt', () => ({
   hashSync: jest.fn(() => 'hashed_password'),
   compareSync: jest.fn(() => true),
+  hash: jest.fn().mockResolvedValue('hashed_refresh_token'),
+  compare: jest.fn().mockResolvedValue(true),
 }));
 
 import * as bcrypt from 'bcrypt';
@@ -90,6 +93,7 @@ const makeUserModel = () => ({
   create: jest.fn(),
   findOne: jest.fn(),
   findById: jest.fn(),
+  findByIdAndUpdate: jest.fn().mockResolvedValue(null),
 });
 
 // ─── Suite ───────────────────────────────────────────────────────────────────
@@ -102,6 +106,7 @@ describe('AuthService', () => {
   let centroSaludModel: { findOne: jest.Mock };
   let jwtService: { sign: jest.Mock };
   let emailService: { sendRecoverPasswordEmail: jest.Mock };
+  let configService: { get: jest.Mock };
 
   beforeEach(async () => {
     userModel = makeUserModel();
@@ -112,6 +117,7 @@ describe('AuthService', () => {
     emailService = {
       sendRecoverPasswordEmail: jest.fn().mockResolvedValue(undefined),
     };
+    configService = { get: jest.fn().mockReturnValue('test_refresh_secret') };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -125,6 +131,7 @@ describe('AuthService', () => {
         },
         { provide: JwtService, useValue: jwtService },
         { provide: EmailService, useValue: emailService },
+        { provide: ConfigService, useValue: configService },
       ],
     }).compile();
 

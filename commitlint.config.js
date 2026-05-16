@@ -8,7 +8,17 @@ module.exports = {
     'scope-enum': [
       2,
       'always',
-      ['ui', 'api', 'vitalpath', 'web', 'shared', 'config', 'deps', 'root'],
+      [
+        'ui',
+        'api',
+        'vitalpath',
+        'web',
+        'shared',
+        'config',
+        'deps',
+        'root',
+        'docs',
+      ],
     ],
 
     'type-enum': [

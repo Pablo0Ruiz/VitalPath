@@ -5,11 +5,13 @@ import { chatTriggerVariants } from './ChatTrigger.variants';
 interface ChatTriggerProps {
   isOpen: boolean;
   onClick: () => void;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
-const ChatTrigger = ({ isOpen, onClick }: ChatTriggerProps) => {
+const ChatTrigger = ({ isOpen, onClick, ref }: ChatTriggerProps) => {
   return (
     <button
+      ref={ref}
       onClick={onClick}
       aria-label={isOpen ? 'Cerrar asistente IA' : 'Abrir asistente IA'}
       className={chatTriggerVariants({ isOpen })}
