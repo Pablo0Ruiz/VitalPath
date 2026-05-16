@@ -30,7 +30,7 @@ export default function RecordsScreen() {
     const ongoingCitas = citas.filter(
       c =>
         ongoingStates.includes(c.estado) &&
-        !list.some(r => r.cita_ID._id === c._id),
+        !list.some(r => r.cita_ID?._id === c._id),
     );
 
     const virtualResults = ongoingCitas.map(c => ({
@@ -48,9 +48,11 @@ export default function RecordsScreen() {
       updatedAt: c.updatedAt,
     })) as IMedicalResults[];
 
-    return [...virtualResults, ...list].sort((a, b) =>
-      b.cita_ID.fecha.localeCompare(a.cita_ID.fecha),
-    );
+    return [...virtualResults, ...list].sort((a, b) => {
+      const dateA = a.cita_ID?.fecha || a.createdAt;
+      const dateB = b.cita_ID?.fecha || b.createdAt;
+      return dateB.localeCompare(dateA);
+    });
   }, [resultados, citas]);
 
   const isLoading = isLoadResults || isLoadCitas;

@@ -84,7 +84,9 @@ export default function StudyDetailScreen() {
     );
   }
 
-  const showActions = RESULT_STATES.includes(study.cita_ID.estado);
+  const showActions = RESULT_STATES.includes(
+    study.cita_ID?.estado || 'completada',
+  );
   const cachedEntry = pdfCache[study.fileUrl];
   const pdfData =
     cachedEntry && cachedEntry !== 'loading' && cachedEntry !== 'error'

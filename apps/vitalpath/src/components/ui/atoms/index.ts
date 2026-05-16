@@ -29,3 +29,5 @@ export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { LoadingScreen } from './LoadingScreen';
 export type { LoadingScreenProps } from './LoadingScreen';
+export { default as MoodItem, MOODS } from './MoodItem/MoodItem';
+export type { MoodItemProps, Mood } from './MoodItem/MoodItem';

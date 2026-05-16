@@ -1,19 +1,44 @@
-import { useState } from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
-import { TextField } from '@/src/components/ui/atoms/TextField';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useRef, useState } from 'react';
+import { Animated, View, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
-const MOODS = [
-  { id: '1', emoji: '😞', label: 'Mal' },
-  { id: '2', emoji: '😕', label: 'Regular' },
-  { id: '3', emoji: '😐', label: 'Normal' },
-  { id: '4', emoji: '🙂', label: 'Bien' },
-  { id: '5', emoji: '🤩', label: 'Excelente' },
-];
+import { TextField } from '@/src/components/ui/atoms/TextField';
+import MoodItem, {
+  MOODS,
+  type Mood,
+} from '@/src/components/ui/atoms/MoodItem/MoodItem';
+import { useTheme } from '@/src/hooks/useTheme';
+import { useMoodCheckIn } from '@repo/api-client';
 
 export const DailyCheckIn = () => {
-  const [selected, setSelected] = useState<string | null>(null);
   const t = useTheme();
+  const [selected, setSelected] = useState<string | null>(null);
+  const confirmOpacity = useRef(new Animated.Value(0)).current;
+  const { mutate: checkIn } = useMoodCheckIn();
+
+  const showConfirmation = () => {
+    confirmOpacity.setValue(0);
+    Animated.sequence([
+      Animated.timing(confirmOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.delay(3000),
+      Animated.timing(confirmOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handleSelect = (mood: Mood) => {
+    setSelected(mood.id);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    checkIn({ mood: mood.id, date: new Date().toISOString().split('T')[0] });
+    showConfirmation();
+  };
 
   return (
     <View style={s.container}>
@@ -21,32 +46,24 @@ export const DailyCheckIn = () => {
         ¿Cómo te sentís hoy?
       </TextField>
       <View style={s.moodList}>
-        {MOODS.map(mood => {
-          const isSelected = selected === mood.id;
-          return (
-            <Pressable
-              key={mood.id}
-              onPress={() => setSelected(mood.id)}
-              accessibilityLabel={mood.label}
-              accessibilityRole="button"
-              style={[
-                s.moodItem,
-                isSelected
-                  ? [
-                      s.selected,
-                      {
-                        backgroundColor: t.surfaceElevated,
-                        shadowColor: '#000',
-                      },
-                    ]
-                  : null,
-              ]}
-            >
-              <Text style={s.emoji}>{mood.emoji}</Text>
-            </Pressable>
-          );
-        })}
+        {MOODS.map(mood => (
+          <MoodItem
+            key={mood.id}
+            mood={mood}
+            isSelected={selected === mood.id}
+            hasSelection={selected !== null}
+            onPress={handleSelect}
+          />
+        ))}
       </View>
+      <Animated.View style={{ opacity: confirmOpacity }}>
+        <TextField
+          variant="caption"
+          style={[s.confirmation, { color: t.primary600 }]}
+        >
+          Gracias, lo registramos
+        </TextField>
+      </Animated.View>
     </View>
   );
 };
@@ -59,18 +76,8 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  moodItem: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+  confirmation: {
+    textAlign: 'center',
+    marginTop: 10,
   },
-  selected: {
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  emoji: { fontSize: 32 },
 });
