@@ -13,7 +13,7 @@ export default function RegisterPatientPage() {
   const { user } = useAuthStore();
 
   useEffect(() => {
-    if (user && !ALLOWED_ROLES.includes(user.role)) {
+    if (user && !ALLOWED_ROLES.includes(user.role || '')) {
       router.replace('/dashboard');
     }
   }, [user, router]);
