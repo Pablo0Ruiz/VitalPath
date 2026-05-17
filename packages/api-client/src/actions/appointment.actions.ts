@@ -60,3 +60,13 @@ export const getCitasMedico = async (): Promise<CitaPopulated[]> => {
     fecha: cita.fecha ? cita.fecha.split('T')[0] : '',
   }));
 };
+
+export const postScheduleForPatient = async (
+  payload: CreateCitaPayload & { paciente_ID: string },
+): Promise<Cita> => {
+  const { data } = await apiClient.post<Cita>(
+    '/api/appointment/worker',
+    payload,
+  );
+  return data;
+};

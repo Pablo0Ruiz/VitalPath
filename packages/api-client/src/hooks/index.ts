@@ -3,6 +3,7 @@ export * from './useUser';
 export * from './useLogin';
 export * from './useLoginWithCode';
 export * from './useRegister';
+export * from './useRegisterPatientByWorker';
 export * from './useLogout';
 export * from './useRecoverPassword';
 export * from './useMedication';

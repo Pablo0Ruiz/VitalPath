@@ -47,6 +47,32 @@ export interface UploadContext {
   cita_ID?: string;
 }
 
+export interface DoctorSchedulePayload {
+  doctorUserId: string;
+  slots: string[];
+}
+
+export interface DoctorWithSlots {
+  _id: string;
+  slots: string[];
+  user: {
+    _id: string;
+    name: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+export const patchDoctorSchedule = async (
+  payload: DoctorSchedulePayload,
+): Promise<DoctorWithSlots> => {
+  const { data } = await apiClient.patch<DoctorWithSlots>(
+    `/api/hospitals/doctors/${payload.doctorUserId}/schedule`,
+    { slots: payload.slots },
+  );
+  return data;
+};
+
 export const uploadFile = async (file: File, ctx: UploadContext) => {
   const formData = new FormData();
   formData.append('files', file);

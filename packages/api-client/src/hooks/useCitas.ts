@@ -7,6 +7,7 @@ import {
   getCitasAdministrator,
   getCitasMedico,
   patchCitaEstadoWorker,
+  postScheduleForPatient,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -30,6 +31,21 @@ export const useCreateCita = () => {
     },
     onError: (error: unknown) => {
       console.error('[useCreateCita] Error al crear cita:', error);
+    },
+  });
+};
+
+export const useScheduleForPatient = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: CreateCitaPayload & { paciente_ID: string }) =>
+      postScheduleForPatient(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useScheduleForPatient] Error al agendar cita:', error);
     },
   });
 };
