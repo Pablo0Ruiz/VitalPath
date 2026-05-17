@@ -12,3 +12,23 @@ export const registerPatientSchema = z.object({
 });
 
 export type RegisterPatientFormData = z.infer<typeof registerPatientSchema>;
+
+export const bookAppointmentSchema = z.object({
+  paciente_ID: z.string().min(1, 'El paciente es requerido'),
+  medico_ID: z.string().min(1, 'El médico es requerido'),
+  fecha: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD')
+    .refine(
+      v => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const d = new Date(v + 'T00:00:00');
+        return d.getTime() >= today.getTime();
+      },
+      { message: 'La fecha no puede estar en el pasado' },
+    ),
+  hora: z.string().regex(/^\d{2}:\d{2}$/, 'Formato HH:MM'),
+});
+
+export type BookAppointmentFormData = z.infer<typeof bookAppointmentSchema>;

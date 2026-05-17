@@ -70,3 +70,18 @@ export const postScheduleForPatient = async (
   );
   return data;
 };
+
+export const patchCitaByWorker = async (
+  id: string,
+  payload: UpdateCitaPayload,
+): Promise<Cita> => {
+  const { data } = await apiClient.patch<Cita>(
+    `/api/appointment/${id}/worker`,
+    payload,
+  );
+  return data;
+};
+
+export const deleteCitaByWorker = async (id: string): Promise<void> => {
+  await apiClient.delete(`/api/appointment/${id}/worker`);
+};

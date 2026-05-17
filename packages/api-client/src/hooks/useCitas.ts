@@ -8,6 +8,8 @@ import {
   getCitasMedico,
   patchCitaEstadoWorker,
   postScheduleForPatient,
+  patchCitaByWorker,
+  deleteCitaByWorker,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -106,6 +108,33 @@ export const useAvanzarCitaEstado = () => {
     },
     onError: (error: unknown) => {
       console.error('[useAvanzarCitaEstado] Error al avanzar estado:', error);
+    },
+  });
+};
+
+export const useUpdateCitaByWorker = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateCitaPayload }) =>
+      patchCitaByWorker(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useUpdateCitaByWorker] Error al actualizar cita:', error);
+    },
+  });
+};
+
+export const useDeleteCitaByWorker = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteCitaByWorker(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useDeleteCitaByWorker] Error al cancelar cita:', error);
     },
   });
 };

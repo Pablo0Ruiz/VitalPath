@@ -10,3 +10,4 @@ export * from './actions/ai.actions';
 export * from './actions/stats.actions';
 export * from './hooks';
 export * from './queryKeys';
+export * from './utils/parseApiError';
