@@ -16,9 +16,12 @@ import { AuditModule } from './audit/audit.module';
 import { MoodModule } from './mood/mood.module';
 import { HealthModule } from './health/health.module';
 import { StatsModule } from './stats/stats.module';
+import { SeedModule } from './seed/seed.module';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { AuditLoggerInterceptor } from './common/interceptors/audit-logger.interceptor';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AppointmentRemindersModule } from './appointment-reminders/appointment-reminders.module';
 
 @Module({
   imports: [
@@ -58,6 +61,12 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     HealthModule,
 
     StatsModule,
+
+    SeedModule,
+
+    ScheduleModule.forRoot(),
+
+    AppointmentRemindersModule,
 
     ThrottlerModule.forRoot([
       {

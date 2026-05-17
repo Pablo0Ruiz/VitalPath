@@ -23,6 +23,9 @@ export class Appointment extends Document {
 
   @Prop({ type: String, enum: CitaState, default: CitaState.AGENDADA })
   estado: CitaState;
+
+  @Prop({ type: Date, required: false })
+  reminderSentAt?: Date | null;
 }
 
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);

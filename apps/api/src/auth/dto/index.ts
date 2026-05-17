@@ -5,3 +5,6 @@ export { RegisterDto } from './register.dto';
 export { LoginUserDto } from './login-user.dto';
 export { InviteDoctorDto } from './invite-doctor.dto';
 export { RefreshMobileDto } from './refresh-mobile.dto';
+export { ResetPasswordDto } from './reset-password.dto';
+export { RecoverPasswordDto } from './recover-password.dto';
+export { RegisterPatientByWorkerDto } from './register-patient-by-worker.dto';

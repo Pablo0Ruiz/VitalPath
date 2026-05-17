@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { CreateAppointmentWorkerDto } from './dto/create-appointment-worker.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { UpdateCitaEstadoDto } from './dto/update-cita-estado.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
@@ -50,6 +51,21 @@ export class AppointmentController {
   @ApiResponse({ status: 200, description: 'List of appointments' })
   findAll(@GetUser('_id') userId: string) {
     return this.appointmentService.getAppointments(userId);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.ADMIN)
+  @Post('worker')
+  @ApiOperation({
+    summary: 'Schedule an appointment for a patient (worker/admin)',
+  })
+  @ApiResponse({ status: 201, description: 'Appointment created successfully' })
+  @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — requires trabajador_centro or admin role',
+  })
+  createForPatient(@Body() dto: CreateAppointmentWorkerDto) {
+    return this.appointmentService.createAppointmentForPatient(dto);
   }
 
   @Auth(UserRoles.TRABAJADOR_CENTRO)

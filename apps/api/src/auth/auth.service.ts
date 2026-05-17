@@ -1,6 +1,10 @@
 import * as crypto from 'crypto';
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +12,12 @@ import { ConfigService } from '@nestjs/config';
 
 import * as bcrypt from 'bcrypt';
 
-import { InviteDoctorDto, LoginUserDto, RegisterDto } from './dto';
+import {
+  InviteDoctorDto,
+  LoginUserDto,
+  RegisterDto,
+  RegisterPatientByWorkerDto,
+} from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
@@ -38,8 +47,6 @@ export class AuthService {
     private readonly centroSaludModel: Model<CentroSalud>,
   ) {}
 
-  // ─── Private helpers ────────────────────────────────────────────────────────
-
   private getJwtToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
@@ -63,7 +70,6 @@ export class AuthService {
     raw: string,
   ): { userId: string; random: string; hmac: string } | null {
     const parts = raw.split('.');
-    // format: <userId>.<random48b>.<hmacSha256> — exactly 3 dot-separated parts
     if (parts.length !== 3) return null;
     const [userId, random, hmac] = parts;
     const secret = this.configService.get<string>('REFRESH_TOKEN_SECRET') ?? '';
@@ -71,7 +77,6 @@ export class AuthService {
       .createHmac('sha256', secret)
       .update(`${userId}.${random}`)
       .digest('base64url');
-    // timing-safe compare to prevent timing attacks
     const hmacBuf = Buffer.from(hmac);
     const expectedBuf = Buffer.from(expected);
     if (
@@ -91,8 +96,6 @@ export class AuthService {
     await this.userModel.findByIdAndUpdate(userId, { refreshToken: hash });
     return { accessToken, refreshTokenRaw: raw };
   }
-
-  // ─── Public methods ──────────────────────────────────────────────────────────
 
   async create(createUserDto: RegisterDto) {
     try {
@@ -126,7 +129,7 @@ export class AuthService {
       return {
         user: userWithoutPassword,
         accessToken,
-        token: accessToken, // deprecated alias — remove after 1 release
+        token: accessToken,
         refreshTokenRaw,
       };
     } catch (error) {
@@ -150,7 +153,7 @@ export class AuthService {
     return {
       user: userWithoutPassword,
       accessToken,
-      token: accessToken, // deprecated alias — remove after 1 release
+      token: accessToken,
       refreshTokenRaw,
     };
   }
@@ -173,7 +176,7 @@ export class AuthService {
     return {
       user: userWithoutPassword,
       accessToken,
-      token: accessToken, // deprecated alias — remove after 1 release
+      token: accessToken,
       refreshTokenRaw,
     };
   }
@@ -190,8 +193,6 @@ export class AuthService {
 
     const matches = await bcrypt.compare(rawFromCookie, user.refreshToken);
     if (!matches) {
-      // theft detection: stolen-and-already-rotated token detected.
-      // defensive nuke: revoke whatever is on file so the legit client is also kicked.
       user.refreshToken = null;
       await user.save();
       throw new UnauthorizedException('Refresh token mismatch');
@@ -292,8 +293,53 @@ export class AuthService {
     return {
       user: user,
       accessToken,
-      token: accessToken, // deprecated alias — remove after 1 release
+      token: accessToken,
       refreshTokenRaw,
     };
+  }
+
+  async createPatientByWorker(dto: RegisterPatientByWorkerDto): Promise<{
+    _id: string;
+    name: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }> {
+    const existing = await this.userModel.findOne({
+      email: dto.email.toLowerCase(),
+    });
+    if (existing) {
+      throw new ConflictException('El correo ya está en uso');
+    }
+
+    try {
+      const hashed = bcrypt.hashSync(dto.password, 12);
+      const user = await this.userModel.create({
+        name: dto.name,
+        lastName: dto.lastName,
+        email: dto.email,
+        password: hashed,
+        fechaNacimiento: dto.fechaNacimiento,
+        genero: dto.genero,
+        centroSalud_ID: dto.centroSalud_ID,
+        role: UserRoles.PACIENTE,
+        isActive: true,
+      });
+
+      await this.patientModel.create({
+        user: user._id,
+        medications: [],
+      });
+
+      return {
+        _id: (user._id as Types.ObjectId).toString(),
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      };
+    } catch (error) {
+      handleServiceException(error);
+    }
   }
 }

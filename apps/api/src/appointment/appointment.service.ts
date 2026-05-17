@@ -13,6 +13,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { Doctor } from '../user/entities/doctor.entity';
 import { Patient } from '../user/entities/patient.entity';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
+import { CreateAppointmentWorkerDto } from './dto/create-appointment-worker.dto';
 import { Appointment } from './entities/appointment.entity';
 import { PushNotificationsService } from '../push-notifications/push-notifications.service';
 import { CITA_PUSH_COPY } from '../push-notifications/constants/cita-push-copy';
@@ -53,6 +54,42 @@ export class AppointmentService {
     createAppointmentDto: CreateAppointmentDto,
   ) {
     const pacienteId = new Types.ObjectId(userId);
+    const medicoId = new Types.ObjectId(createAppointmentDto.medico_ID);
+    const centroSaludId = new Types.ObjectId(
+      createAppointmentDto.centroSalud_ID,
+    );
+
+    const appointment = await this.citaModel.create({
+      paciente_ID: pacienteId,
+      medico_ID: medicoId,
+      centroSalud_ID: centroSaludId,
+      fecha: createAppointmentDto.fecha,
+      hora: createAppointmentDto.hora,
+      estado: CitaState.AGENDADA,
+    });
+
+    if (!appointment) {
+      throw new Error('Error al crear la cita');
+    }
+
+    await Promise.all([
+      this.patientModel.findOneAndUpdate(
+        { user: pacienteId },
+        { $push: { citas: appointment._id } },
+      ),
+      this.doctorModel.findOneAndUpdate(
+        { user: medicoId },
+        { $push: { citas: appointment._id } },
+      ),
+    ]);
+
+    return appointment;
+  }
+
+  async createAppointmentForPatient(
+    createAppointmentDto: CreateAppointmentWorkerDto,
+  ) {
+    const pacienteId = new Types.ObjectId(createAppointmentDto.paciente_ID);
     const medicoId = new Types.ObjectId(createAppointmentDto.medico_ID);
     const centroSaludId = new Types.ObjectId(
       createAppointmentDto.centroSalud_ID,

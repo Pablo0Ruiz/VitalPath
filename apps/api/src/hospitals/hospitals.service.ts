@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { User } from '../auth/entities/user.entity';
 import {
@@ -105,5 +105,27 @@ export class HospitalsService {
         path: 'centroSalud_ID',
       },
     });
+  }
+
+  async updateDoctorSchedule(doctorUserId: string, slots: string[]) {
+    if (!Types.ObjectId.isValid(doctorUserId)) {
+      throw new NotFoundException('Médico no encontrado');
+    }
+
+    const deduped = Array.from(new Set(slots)).sort();
+
+    const doctor = await this.doctorModel
+      .findOneAndUpdate(
+        { user: new Types.ObjectId(doctorUserId) },
+        { $set: { slots: deduped } },
+        { new: true },
+      )
+      .populate('user', 'name lastName email');
+
+    if (!doctor) {
+      throw new NotFoundException('Médico no encontrado');
+    }
+
+    return doctor;
   }
 }

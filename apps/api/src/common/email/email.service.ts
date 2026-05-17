@@ -36,4 +36,33 @@ export class EmailService {
       handleServiceException(error);
     }
   }
+
+  async sendWelcomePatientEmail(to: string, html: string) {
+    try {
+      const url = 'https://api.brevo.com/v3/smtp/email';
+
+      await axios.post(
+        url,
+        {
+          sender: {
+            email: this.senderEmail,
+            name: this.senderName,
+          },
+          to: [{ email: to }],
+          subject: '¡Bienvenido a VitalPath! - Tus credenciales',
+          htmlContent: html,
+        },
+        {
+          headers: {
+            'api-key': this.apiKey,
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+          },
+        },
+      );
+    } catch (error) {
+      console.error('[BrevoEmailError]', error.response?.data ?? error);
+      handleServiceException(error);
+    }
+  }
 }
