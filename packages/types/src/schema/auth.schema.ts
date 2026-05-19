@@ -75,3 +75,22 @@ export const codigoSchema = z.object({
     .regex(/^\d{6}$/, 'Solo dígitos numéricos'),
 });
 export type CodigoFormValues = z.infer<typeof codigoSchema>;
+
+export const registerCuidadorSchema = z.object({
+  name: z.string().min(1, 'El nombre es obligatorio'),
+  lastName: z.string().min(1, 'El apellido es obligatorio'),
+  fechaNacimiento: z
+    .string()
+    .min(1, 'La fecha de nacimiento es obligatoria')
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Formato inválido (DD/MM/AAAA)'),
+  genero: z.enum(['Masculino', 'Femenino', 'Otro']),
+  email: z
+    .string()
+    .min(1, 'El email es obligatorio')
+    .email('Introduce un email válido'),
+  password: z
+    .string()
+    .min(1, 'La contraseña es obligatoria')
+    .min(6, 'Mínimo 6 caracteres'),
+});
+export type RegisterCuidadorFormValues = z.infer<typeof registerCuidadorSchema>;

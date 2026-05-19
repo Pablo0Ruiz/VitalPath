@@ -18,7 +18,7 @@ export interface IMedicalResults {
   };
   fileUrl: string;
   resumenIA?: string;
-  resumenMedico?: string;
+  notasMedico?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,5 +34,5 @@ export interface IMedicalResultsRequest {
   paciente_ID: string;
   fileUrl: string;
   resumenIA?: string;
-  resumenMedico?: string;
+  notasMedico?: string;
 }
