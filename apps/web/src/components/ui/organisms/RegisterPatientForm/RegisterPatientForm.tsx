@@ -17,13 +17,12 @@ import { Button } from '@/components/ui/atoms/Button';
 import { Input } from '@/components/ui/atoms/Input';
 import { Select } from '@/components/ui/atoms/Select';
 import { FormField } from '@/components/ui/molecules/FormField';
-import { useRegisterPatientByWorker } from '@repo/api-client';
+import { useRegisterPatientByWorker, parseApiError } from '@repo/api-client';
 import type { CreatedPatientResponse } from '@repo/api-client';
 import {
   registerPatientSchema,
   type RegisterPatientFormData,
 } from '@repo/types';
-
 const generoOptions = [
   { value: 'Masculino', label: 'Masculino' },
   { value: 'Femenino', label: 'Femenino' },
@@ -36,7 +35,6 @@ interface RegisterPatientFormProps {
 
 const RegisterPatientForm = ({ onSuccess }: RegisterPatientFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -47,31 +45,25 @@ const RegisterPatientForm = ({ onSuccess }: RegisterPatientFormProps) => {
     resolver: zodResolver(registerPatientSchema),
   });
 
-  const { mutate, isPending } = useRegisterPatientByWorker({
-    onSuccess: patient => {
-      setServerError(null);
-      onSuccess(patient);
-    },
-    onError: (error: unknown) => {
-      const err = error as {
-        response?: { status?: number; data?: { message?: string } };
-      };
-      if (err?.response?.status === 409) {
+  const {
+    mutate: registerByWorker,
+    isPending,
+    isError,
+    error,
+  } = useRegisterPatientByWorker({
+    onSuccess,
+    onError: err => {
+      if (parseApiError(err).status === 409) {
         setError('email', {
           type: 'server',
           message: 'Este email ya está registrado',
         });
-      } else {
-        setServerError(
-          'Ocurrió un error al registrar el paciente. Intentá de nuevo.',
-        );
       }
     },
   });
 
   const onSubmit = (data: RegisterPatientFormData) => {
-    setServerError(null);
-    mutate(data);
+    registerByWorker(data);
   };
 
   return (
@@ -166,9 +158,9 @@ const RegisterPatientForm = ({ onSuccess }: RegisterPatientFormProps) => {
           </FormField>
         </div>
 
-        {serverError && (
+        {isError && !errors.email && (
           <p className="text-sm text-brand-state-error text-center">
-            {serverError}
+            {parseApiError(error).message}
           </p>
         )}
 

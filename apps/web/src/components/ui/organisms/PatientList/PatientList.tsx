@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import { Card } from '@/components/ui/atoms/Card';
 import { Input } from '@/components/ui/atoms/Input';
@@ -75,9 +76,10 @@ const PatientList = () => {
         </div>
         <div className="divide-y divide-brand-border">
           {filtered?.map(patient => (
-            <div
+            <Link
               key={patient._id}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"
+              href={`/patients/${patient.paciente_ID._id}`}
+              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600"
             >
               <Avatar
                 name={`${patient.paciente_ID.name} ${patient.paciente_ID.lastName}`}
@@ -95,7 +97,7 @@ const PatientList = () => {
               >
                 {patient.estado}
               </Badge>
-            </div>
+            </Link>
           ))}
         </div>
       </Card>

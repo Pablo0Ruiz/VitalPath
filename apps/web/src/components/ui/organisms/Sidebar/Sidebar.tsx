@@ -10,6 +10,7 @@ import {
   Stethoscope02Icon,
   ChartLineData01Icon,
   InboxIcon,
+  Audit01Icon,
 } from '@hugeicons/core-free-icons';
 import { SidebarItem } from '@/components/ui/molecules/SidebarItem';
 
@@ -51,7 +52,7 @@ const navItems: NavItem[] = [
     label: 'Agendar',
     href: '/schedule',
     icon: CalendarAdd01Icon,
-    roles: ['admin', 'trabajador_centro'],
+    roles: ['admin'],
   },
   {
     label: 'Médicos',
@@ -64,6 +65,12 @@ const navItems: NavItem[] = [
     href: '/reports',
     icon: ChartLineData01Icon,
     roles: ['admin', 'trabajador_centro'],
+  },
+  {
+    label: 'Auditoría',
+    href: '/audit-logs',
+    icon: Audit01Icon,
+    roles: ['admin'],
   },
 ];
 
@@ -78,7 +85,7 @@ const sections = [
   },
   {
     title: 'GESTIÓN',
-    labels: ['Médicos', 'Reportes'],
+    labels: ['Médicos', 'Reportes', 'Auditoría'],
   },
 ];
 

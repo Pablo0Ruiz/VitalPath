@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@repo/store';
 import { DoctorScheduleManager } from '@/components/ui/organisms/DoctorScheduleManager';
 
-const ALLOWED_ROLES = ['admin', 'trabajador_centro'];
+const ALLOWED_ROLES = ['admin'];
 
 export default function SchedulePage() {
   const router = useRouter();

@@ -9,3 +9,4 @@ export * from './Checkbox';
 export * from './Skeleton';
 export * from './Spinner';
 export * from './Checkbox';
+export * from './AlertItem';
