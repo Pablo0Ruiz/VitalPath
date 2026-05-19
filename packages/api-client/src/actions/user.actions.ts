@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import type { UserSession } from '@repo/types';
+import type { UserSession, IPatientProfile } from '@repo/types';
 
 export const patchMe = async (
   data: Partial<UserSession>,
@@ -13,4 +13,11 @@ export const patchMe = async (
 
 export const savePushToken = async (token: string | null): Promise<void> => {
   await apiClient.patch('/api/user/me/push-token', { token });
+};
+
+export const getPatientById = async (id: string): Promise<IPatientProfile> => {
+  const { data } = await apiClient.get<IPatientProfile>(
+    `/api/user/patients/${id}`,
+  );
+  return data;
 };

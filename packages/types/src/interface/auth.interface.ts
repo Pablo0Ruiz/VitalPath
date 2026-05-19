@@ -32,6 +32,16 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCuidadorCredentials {
+  name: string;
+  lastName: string;
+  email: string;
+  password: string;
+  fechaNacimiento: string;
+  genero: 'Masculino' | 'Femenino' | 'Otro';
+  role: 'CUIDADOR_FAMILIAR';
+}
+
 export interface RegisterCredentials {
   name: string;
   lastName: string;

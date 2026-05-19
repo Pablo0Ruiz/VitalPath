@@ -8,6 +8,8 @@ export * from './actions/medical-results.actions';
 export * from './actions/user.actions';
 export * from './actions/ai.actions';
 export * from './actions/stats.actions';
+export * from './actions/vinculacion.actions';
+export * from './actions/audit.actions';
 export * from './hooks';
 export * from './queryKeys';
 export * from './utils/parseApiError';

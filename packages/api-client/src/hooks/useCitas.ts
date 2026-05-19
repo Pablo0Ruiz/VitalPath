@@ -10,6 +10,7 @@ import {
   postScheduleForPatient,
   patchCitaByWorker,
   deleteCitaByWorker,
+  getCitasForCuidador,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -136,5 +137,14 @@ export const useDeleteCitaByWorker = () => {
     onError: (error: unknown) => {
       console.error('[useDeleteCitaByWorker] Error al cancelar cita:', error);
     },
+  });
+};
+
+export const useCitasForCuidador = (pacienteId: string | null) => {
+  return useQuery({
+    queryKey: appointmentKeys.cuidador(pacienteId),
+    queryFn: () => getCitasForCuidador(pacienteId ?? undefined),
+    enabled: !!pacienteId,
+    staleTime: 1000 * 60 * 5,
   });
 };

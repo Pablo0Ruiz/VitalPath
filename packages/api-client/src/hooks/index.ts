@@ -15,3 +15,6 @@ export * from './useChatHistory';
 export * from './useConversations';
 export * from './useMoodCheckIn';
 export * from './useStatsSummary';
+export * from './useVinculacion';
+export * from './useRegisterCuidador';
+export * from './useAuditLogs';

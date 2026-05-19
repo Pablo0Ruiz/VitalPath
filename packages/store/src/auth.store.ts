@@ -37,7 +37,6 @@ export const createAuthStore = (storage: StorageAdapter) =>
         partialize: state => ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,
-          // isLoading y _hasHydrated NO se persisten
         }),
         onRehydrateStorage: () => state => {
           state?.setHasHydrated();

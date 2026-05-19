@@ -39,3 +39,12 @@ export const updateMedication = async (
 export const deleteMedication = async (id: string): Promise<void> => {
   await apiClient.delete(`/api/medications/${id}`);
 };
+
+export const getMedicationsByPatient = async (
+  id: string,
+): Promise<Medication[]> => {
+  const { data } = await apiClient.get<Medication[]>(
+    `/api/medications/patient/${id}`,
+  );
+  return data;
+};

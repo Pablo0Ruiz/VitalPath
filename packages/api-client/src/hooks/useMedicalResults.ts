@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getMedicalResults,
   getMedicalResultsPaciente,
+  getResultadosByPatient,
   uploadStudy,
 } from '../actions/medical-results.actions';
+import type { IMedicalResults } from '@repo/types';
 import { appointmentKeys, resumeKeys } from '../queryKeys';
 
 export const useMedicalResults = () => {
@@ -38,5 +40,14 @@ export const useUploadStudy = () => {
       queryClient.invalidateQueries({ queryKey: resumeKeys.all });
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
+  });
+};
+
+export const useResultadosByPatient = (id?: string) => {
+  return useQuery<IMedicalResults[]>({
+    queryKey: [...resumeKeys.all, 'patient', id],
+    queryFn: () => getResultadosByPatient(id!),
+    enabled: !!id,
+    staleTime: 300_000,
   });
 };

@@ -85,3 +85,13 @@ export const patchCitaByWorker = async (
 export const deleteCitaByWorker = async (id: string): Promise<void> => {
   await apiClient.delete(`/api/appointment/${id}/worker`);
 };
+
+export const getCitasForCuidador = async (
+  pacienteId?: string,
+): Promise<CitaPopulated[]> => {
+  const url = pacienteId
+    ? `/api/appointment/cuidador?pacienteId=${pacienteId}`
+    : '/api/appointment/cuidador';
+  const { data } = await apiClient.get<CitaPopulated[]>(url);
+  return data.map(cita => ({ ...cita, fecha: cita.fecha.split('T')[0] }));
+};
