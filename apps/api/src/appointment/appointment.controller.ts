@@ -75,13 +75,13 @@ export class AppointmentController {
     return this.appointmentService.createAppointmentForPatient(dto);
   }
 
-  @Auth(UserRoles.TRABAJADOR_CENTRO)
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.ADMIN)
   @Get('allCitas')
   @ApiOperation({ summary: 'Get all appointments (admin/worker view)' })
   @ApiResponse({ status: 200, description: 'List of all appointments' })
   @ApiResponse({
     status: 403,
-    description: 'Forbidden — requires trabajador_centro role',
+    description: 'Forbidden — requires trabajador_centro or admin role',
   })
   findAllAdmin() {
     return this.appointmentService.getAppointmentsAdministrator();

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ExecutionContext } from '@nestjs/common';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
+import { UserRoleGuard } from '../auth/guards/user-role.guard';
 import { HospitalsController } from './hospitals.controller';
 import { HospitalsService } from './hospitals.service';
 
@@ -25,6 +26,12 @@ describe('HospitalsController (Integration)', () => {
       ],
     })
       .overrideGuard(AuthGuard())
+      .useValue({
+        canActivate: (_context: ExecutionContext) => {
+          return true;
+        },
+      })
+      .overrideGuard(UserRoleGuard)
       .useValue({
         canActivate: (_context: ExecutionContext) => {
           return true;
