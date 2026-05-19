@@ -1,4 +1,6 @@
+import { Alert } from 'react-native';
+
 export function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
+  Alert.alert('Error', errorMessage);
   throw new Error(errorMessage);
 }

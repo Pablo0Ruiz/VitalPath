@@ -7,6 +7,7 @@ import { MedicationsService } from './medications.service';
 import { Medication } from './entities/medication.entity';
 import { Patient } from 'src/user/entities/patient.entity';
 import { UserService } from 'src/user/user.service';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
 
@@ -42,6 +43,7 @@ const makeMedicationModel = () => ({
 });
 
 const makePatientModel = () => ({
+  findOne: jest.fn(),
   findOneAndUpdate: jest.fn().mockResolvedValue(null),
 });
 
@@ -182,6 +184,60 @@ describe('MedicationsService', () => {
 
       expect(result.medication).toBe(updated);
       expect(result.message).toBe('Medicamento actualizado exitosamente');
+    });
+  });
+
+  // ─── findActiveByPatient ──────────────────────────────────────────────────
+
+  describe('findActiveByPatient', () => {
+    const patientId = makeId().toString();
+    const staffCaller = { _id: makeId().toString(), role: UserRoles.MEDICO };
+    const ownerCaller = { _id: patientId, role: UserRoles.PACIENTE };
+    const otherPatientCaller = {
+      _id: makeId().toString(),
+      role: UserRoles.PACIENTE,
+    };
+
+    const makeFindOneChain = (result: unknown) => ({
+      populate: jest.fn().mockResolvedValue(result),
+    });
+
+    it('allows staff to see another patient medications (200)', async () => {
+      const med = { _id: makeId(), name: 'Ibuprofeno' };
+      patientModel.findOne.mockReturnValue(
+        makeFindOneChain({ medications: [med] }),
+      );
+
+      const result = await service.findActiveByPatient(patientId, staffCaller);
+
+      expect(result).toEqual([med]);
+      expect(patientModel.findOne).toHaveBeenCalledWith({ user: patientId });
+    });
+
+    it('allows the owner patient to see their own medications (200)', async () => {
+      const med = { _id: makeId(), name: 'Paracetamol' };
+      patientModel.findOne.mockReturnValue(
+        makeFindOneChain({ medications: [med] }),
+      );
+
+      const result = await service.findActiveByPatient(patientId, ownerCaller);
+
+      expect(result).toEqual([med]);
+    });
+
+    it('throws ForbiddenException when a non-owner patient accesses another patient', async () => {
+      await expect(
+        service.findActiveByPatient(patientId, otherPatientCaller),
+      ).rejects.toThrow(ForbiddenException);
+      expect(patientModel.findOne).not.toHaveBeenCalled();
+    });
+
+    it('returns empty array when patient has no profile', async () => {
+      patientModel.findOne.mockReturnValue(makeFindOneChain(null));
+
+      const result = await service.findActiveByPatient(patientId, staffCaller);
+
+      expect(result).toEqual([]);
     });
   });
 

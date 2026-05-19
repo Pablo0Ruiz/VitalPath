@@ -10,12 +10,15 @@ import { Model, Types } from 'mongoose';
 
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
 import { User } from 'src/auth/entities/user.entity';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { Doctor } from '../user/entities/doctor.entity';
 import { Patient } from '../user/entities/patient.entity';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
+import { CreateAppointmentWorkerDto } from './dto/create-appointment-worker.dto';
 import { Appointment } from './entities/appointment.entity';
 import { PushNotificationsService } from '../push-notifications/push-notifications.service';
 import { CITA_PUSH_COPY } from '../push-notifications/constants/cita-push-copy';
+import { VinculacionService } from '../vinculacion/vinculacion.service';
 
 type LeanMedico = { _id: Types.ObjectId; name: string; lastName: string };
 type LeanCentro = { _id: Types.ObjectId; nombre: string; direccion: string };
@@ -46,6 +49,7 @@ export class AppointmentService {
     @InjectModel(Patient.name)
     private readonly patientModel: Model<Patient>,
     private readonly pushService: PushNotificationsService,
+    private readonly vinculacionService: VinculacionService,
   ) {}
 
   async createAppointment(
@@ -82,6 +86,46 @@ export class AppointmentService {
       ),
     ]);
 
+    void this.notifyAgendada(appointment);
+
+    return appointment;
+  }
+
+  async createAppointmentForPatient(
+    createAppointmentDto: CreateAppointmentWorkerDto,
+  ) {
+    const pacienteId = new Types.ObjectId(createAppointmentDto.paciente_ID);
+    const medicoId = new Types.ObjectId(createAppointmentDto.medico_ID);
+    const centroSaludId = new Types.ObjectId(
+      createAppointmentDto.centroSalud_ID,
+    );
+
+    const appointment = await this.citaModel.create({
+      paciente_ID: pacienteId,
+      medico_ID: medicoId,
+      centroSalud_ID: centroSaludId,
+      fecha: createAppointmentDto.fecha,
+      hora: createAppointmentDto.hora,
+      estado: CitaState.AGENDADA,
+    });
+
+    if (!appointment) {
+      throw new Error('Error al crear la cita');
+    }
+
+    await Promise.all([
+      this.patientModel.findOneAndUpdate(
+        { user: pacienteId },
+        { $push: { citas: appointment._id } },
+      ),
+      this.doctorModel.findOneAndUpdate(
+        { user: medicoId },
+        { $push: { citas: appointment._id } },
+      ),
+    ]);
+
+    void this.notifyAgendada(appointment);
+
     return appointment;
   }
 
@@ -97,6 +141,7 @@ export class AppointmentService {
 
     return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
   }
+
   async getAppointmentsMedico(userId: string) {
     const citas = await this.citaModel
       .find({ medico_ID: userId })
@@ -123,7 +168,7 @@ export class AppointmentService {
     return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
   }
 
-  async getAppointmentById(userId: string, citaId: string) {
+  async getAppointmentById(userId: string, citaId: string, role: UserRoles) {
     if (!Types.ObjectId.isValid(citaId)) {
       throw new NotFoundException('La cita no existe');
     }
@@ -135,7 +180,25 @@ export class AppointmentService {
       .lean();
 
     if (!cita) throw new NotFoundException('La cita no existe');
-    if (cita.paciente_ID.toString() !== userId.toString()) {
+
+    if (role === UserRoles.CUIDADOR_FAMILIAR) {
+      const linked = await this.vinculacionService.isCuidadorLinkedToPaciente(
+        userId,
+        cita.paciente_ID.toString(),
+      );
+      if (!linked) {
+        throw new ForbiddenException('No autorizado para ver esta cita');
+      }
+      const [enriched] = await this.enrichWithEspecialidad([
+        cita,
+      ] as unknown as LeanCita[]);
+      return enriched;
+    }
+
+    if (
+      role === UserRoles.PACIENTE &&
+      cita.paciente_ID.toString() !== userId.toString()
+    ) {
       throw new ForbiddenException('No tienes permisos para ver esta cita');
     }
 
@@ -143,6 +206,32 @@ export class AppointmentService {
       cita,
     ] as unknown as LeanCita[]);
     return enriched;
+  }
+
+  async getAppointmentsForCuidador(cuidadorId: string, pacienteId?: string) {
+    const pacienteIds =
+      await this.vinculacionService.getActivePacienteIdsForCuidador(cuidadorId);
+
+    if (!pacienteIds.length) return [];
+
+    const filter: Record<string, unknown> = {
+      paciente_ID: { $in: pacienteIds.map(id => new Types.ObjectId(id)) },
+    };
+
+    if (pacienteId && Types.ObjectId.isValid(pacienteId)) {
+      filter['paciente_ID'] = new Types.ObjectId(pacienteId);
+    }
+
+    const citas = await this.citaModel
+      .find(filter)
+      .populate('medico_ID', 'name lastName')
+      .populate('centroSalud_ID', 'nombre direccion')
+      .populate('paciente_ID', 'name lastName')
+      .sort({ fecha: 1, hora: 1 })
+      .lean()
+      .exec();
+
+    return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
   }
 
   private async enrichWithEspecialidad(citas: LeanCita[]) {
@@ -271,16 +360,69 @@ export class AppointmentService {
         .select('+expoPushToken')
         .lean();
 
-      if (!patient?.expoPushToken) return;
+      const cuidadorTokens =
+        await this.vinculacionService.getActiveTokensForPaciente(
+          pacienteId.toString(),
+        );
+
+      const tokens = [patient?.expoPushToken, ...cuidadorTokens].filter(
+        Boolean,
+      ) as string[];
+      if (tokens.length === 0) return;
+
+      const bodyText =
+        typeof copy.body === 'function'
+          ? (copy.body as (cita: { _id: Types.ObjectId }) => string)({
+              _id: citaId,
+            })
+          : copy.body;
 
       await this.pushService.sendPushNotification({
-        tokens: [patient.expoPushToken],
+        tokens,
         title: copy.title,
-        body: copy.body,
+        body: bodyText,
         data: { type: 'cita_state_change', citaId: String(citaId) },
       });
     } catch (error) {
       this.logger.warn('notifyStateChange failed (non-critical):', error);
+    }
+  }
+
+  private async notifyAgendada(cita: Appointment): Promise<void> {
+    try {
+      const copy = CITA_PUSH_COPY[CitaState.AGENDADA];
+      if (!copy) return;
+
+      const patient = await this.userModel
+        .findById(cita.paciente_ID)
+        .select('+expoPushToken')
+        .lean();
+
+      const cuidadorTokens =
+        await this.vinculacionService.getActiveTokensForPaciente(
+          cita.paciente_ID.toString(),
+        );
+
+      const tokens = [patient?.expoPushToken, ...cuidadorTokens].filter(
+        Boolean,
+      ) as string[];
+      if (tokens.length === 0) return;
+
+      const citaId = (cita._id as Types.ObjectId).toString();
+
+      const bodyText =
+        typeof copy.body === 'function'
+          ? (copy.body as (cita: Appointment) => string)(cita)
+          : copy.body;
+
+      void this.pushService.sendPushNotification({
+        tokens,
+        title: copy.title,
+        body: bodyText,
+        data: { type: 'AGENDADA', citaId },
+      });
+    } catch (error) {
+      this.logger.warn('notifyAgendada failed (non-critical):', error);
     }
   }
 
@@ -296,6 +438,64 @@ export class AppointmentService {
     await Promise.all([
       this.patientModel.findOneAndUpdate(
         { user: new Types.ObjectId(userId) },
+        { $pull: { citas: appointment._id } },
+      ),
+      this.doctorModel.findOneAndUpdate(
+        { user: appointment.medico_ID },
+        { $pull: { citas: appointment._id } },
+      ),
+    ]);
+
+    await this.citaModel.findByIdAndDelete(citaId);
+  }
+
+  async updateAppointmentByWorker(
+    citaId: string,
+    dto: UpdateAppointmentDto,
+  ): Promise<Appointment> {
+    if (!Types.ObjectId.isValid(citaId)) {
+      throw new NotFoundException('La cita no existe');
+    }
+    const appointment = await this.citaModel.findById(citaId);
+    if (!appointment) throw new NotFoundException('La cita no existe');
+
+    if (dto.fecha) appointment.fecha = dto.fecha;
+    if (dto.hora) appointment.hora = dto.hora;
+
+    if (dto.medico_ID && dto.medico_ID !== appointment.medico_ID.toString()) {
+      const oldMedicoId = appointment.medico_ID;
+      const newMedicoId = new Types.ObjectId(dto.medico_ID);
+      await Promise.all([
+        this.doctorModel.findOneAndUpdate(
+          { user: oldMedicoId },
+          { $pull: { citas: appointment._id } },
+        ),
+        this.doctorModel.findOneAndUpdate(
+          { user: newMedicoId },
+          { $push: { citas: appointment._id } },
+        ),
+      ]);
+      appointment.medico_ID = newMedicoId;
+    }
+
+    if (dto.centroSalud_ID) {
+      appointment.centroSalud_ID = new Types.ObjectId(dto.centroSalud_ID);
+    }
+    if (dto.estado) appointment.estado = dto.estado;
+
+    return appointment.save();
+  }
+
+  async deleteAppointmentByWorker(citaId: string): Promise<void> {
+    if (!Types.ObjectId.isValid(citaId)) {
+      throw new NotFoundException('La cita no existe');
+    }
+    const appointment = await this.citaModel.findById(citaId);
+    if (!appointment) throw new NotFoundException('La cita no existe');
+
+    await Promise.all([
+      this.patientModel.findOneAndUpdate(
+        { user: appointment.paciente_ID },
         { $pull: { citas: appointment._id } },
       ),
       this.doctorModel.findOneAndUpdate(

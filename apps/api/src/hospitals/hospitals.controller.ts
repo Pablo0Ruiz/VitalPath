@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Param } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Param } from '@nestjs/common';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -10,6 +10,7 @@ import { HospitalsService } from './hospitals.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
+import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
 
 @ApiTags('hospitals')
 @Controller('hospitals')
@@ -62,5 +63,21 @@ export class HospitalsController {
   @ApiResponse({ status: 401, description: 'Missing or invalid token' })
   async getDoctors() {
     return this.hospitalsService.getDoctors();
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.ADMIN)
+  @Patch('doctors/:doctorUserId/schedule')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Full-replace doctor availability slots' })
+  @ApiResponse({ status: 200, description: 'Updated doctor document' })
+  @ApiResponse({ status: 400, description: 'Invalid slot format' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({ status: 403, description: 'Insufficient role' })
+  @ApiResponse({ status: 404, description: 'Doctor not found' })
+  updateSchedule(
+    @Param('doctorUserId') doctorUserId: string,
+    @Body() dto: UpdateDoctorScheduleDto,
+  ) {
+    return this.hospitalsService.updateDoctorSchedule(doctorUserId, dto.slots);
   }
 }

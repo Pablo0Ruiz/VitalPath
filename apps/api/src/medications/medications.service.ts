@@ -10,8 +10,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Medication } from './entities/medication.entity';
 import { UserService } from 'src/user/user.service';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 
 import { Patient } from 'src/user/entities/patient.entity';
+
+const STAFF_ROLES: UserRoles[] = [
+  UserRoles.MEDICO,
+  UserRoles.TRABAJADOR_CENTRO,
+  UserRoles.ADMIN,
+];
 
 @Injectable()
 export class MedicationsService {
@@ -84,6 +91,27 @@ export class MedicationsService {
       { $pull: { medications: medicationId } },
     );
     return { message: 'Medicamento eliminado exitosamente' };
+  }
+
+  async findActiveByPatient(
+    patientId: string,
+    caller: { _id: string; role: UserRoles },
+  ): Promise<Medication[]> {
+    const isStaff = STAFF_ROLES.includes(caller.role);
+
+    if (!isStaff && caller._id !== patientId) {
+      throw new ForbiddenException(
+        'No tienes permiso para ver los medicamentos de este paciente',
+      );
+    }
+
+    const patient = await this.patientModel
+      .findOne({ user: patientId })
+      .populate('medications');
+
+    if (!patient) return [];
+
+    return (patient.medications as unknown as Medication[]) ?? [];
   }
 
   private async validateUserAndMedication(

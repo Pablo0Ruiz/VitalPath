@@ -6,14 +6,14 @@ interface SummaryBottomSheetProps {
   isVisible: boolean;
   onClose: () => void;
   resumenIA?: string;
-  resumenMedico?: string;
+  notasMedico?: string;
 }
 
 const SummaryBottomSheet = ({
   isVisible,
   onClose,
   resumenIA,
-  resumenMedico,
+  notasMedico,
 }: SummaryBottomSheetProps) => {
   const t = useTheme();
 
@@ -64,7 +64,7 @@ const SummaryBottomSheet = ({
                 </View>
               )}
 
-              {resumenMedico && (
+              {notasMedico && (
                 <View style={s.section}>
                   <TextField
                     variant="label"
@@ -76,12 +76,12 @@ const SummaryBottomSheet = ({
                     variant="body"
                     style={[s.sectionBody, { color: t.textPrimary }]}
                   >
-                    {resumenMedico}
+                    {notasMedico}
                   </TextField>
                 </View>
               )}
 
-              {!resumenIA && !resumenMedico && (
+              {!resumenIA && !notasMedico && (
                 <TextField
                   variant="caption"
                   style={[s.emptyText, { color: t.textSecondary }]}

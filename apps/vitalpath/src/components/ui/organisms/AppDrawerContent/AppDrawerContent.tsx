@@ -11,6 +11,7 @@ import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
 import { TextField, UserAvatar } from '@/src/components/ui/atoms';
 import { useTheme } from '@/src/hooks/useTheme';
+import { PacienteActivoSelector } from '@/src/components/ui/molecules/PacienteActivoSelector';
 
 export default function AppDrawerContent(props: DrawerContentComponentProps) {
   const t = useTheme();
@@ -49,6 +50,13 @@ export default function AppDrawerContent(props: DrawerContentComponentProps) {
 
       <View style={[s.separator, { backgroundColor: t.border }]} />
 
+      {user?.role === 'CUIDADOR_FAMILIAR' && (
+        <>
+          <PacienteActivoSelector />
+          <View style={[s.separator, { backgroundColor: t.border }]} />
+        </>
+      )}
+
       <View>
         <Pressable
           onPress={() => navigateAndClose(ROUTES.PROFILE)}
@@ -59,6 +67,28 @@ export default function AppDrawerContent(props: DrawerContentComponentProps) {
             Mi Perfil
           </TextField>
         </Pressable>
+        {user?.role === 'paciente' && (
+          <Pressable
+            onPress={() => navigateAndClose(ROUTES.CUIDADORES)}
+            style={[s.navItem, { height: t.minTouchTarget }]}
+          >
+            <Ionicons name="people-outline" size={20} color={t.textPrimary} />
+            <TextField variant="body" style={s.navLabel}>
+              Mis Cuidadores
+            </TextField>
+          </Pressable>
+        )}
+        {user?.role === 'CUIDADOR_FAMILIAR' && (
+          <Pressable
+            onPress={() => navigateAndClose(ROUTES.PACIENTES)}
+            style={[s.navItem, { height: t.minTouchTarget }]}
+          >
+            <Ionicons name="heart-outline" size={20} color={t.textPrimary} />
+            <TextField variant="body" style={s.navLabel}>
+              Mis Pacientes
+            </TextField>
+          </Pressable>
+        )}
         <Pressable
           onPress={() => navigateAndClose(ROUTES.SETTINGS)}
           style={[s.navItem, { height: t.minTouchTarget }]}

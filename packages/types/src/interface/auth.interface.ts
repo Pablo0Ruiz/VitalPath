@@ -22,14 +22,24 @@ export interface TokenAdapter {
 
 export type UserCredentials = {
   accessToken: string;
-  /** @deprecated use accessToken — will be removed after 1 release */
   token?: string;
+  refreshToken?: string;
   user: UserSession;
 };
 
 export interface LoginCredentials {
   email: string;
   password: string;
+}
+
+export interface RegisterCuidadorCredentials {
+  name: string;
+  lastName: string;
+  email: string;
+  password: string;
+  fechaNacimiento: string;
+  genero: 'Masculino' | 'Femenino' | 'Otro';
+  role: 'CUIDADOR_FAMILIAR';
 }
 
 export interface RegisterCredentials {

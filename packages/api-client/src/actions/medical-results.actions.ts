@@ -38,3 +38,12 @@ export const uploadStudy = async (
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
+
+export const getResultadosByPatient = async (
+  id: string,
+): Promise<IMedicalResults[]> => {
+  const { data } = await apiClient.get<IMedicalResults[]>(
+    `/api/storage/resultado/pacientes/${id}`,
+  );
+  return data;
+};

@@ -113,7 +113,6 @@ const LoginForm = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 leftIcon={LockPasswordIcon}
-                rightIcon={showPassword ? ViewOffSlashIcon : ViewIcon}
                 className="pr-10"
                 {...register('password')}
               />

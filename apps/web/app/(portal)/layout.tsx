@@ -15,7 +15,20 @@ const pathLabels: Record<string, string> = {
   '/schedule': 'Agendar',
   '/doctors': 'Médicos',
   '/reports': 'Reportes',
+  '/audit-logs': 'Auditoría',
 };
+
+const dynamicPatterns: Array<{ pattern: RegExp; label: string }> = [
+  { pattern: /^\/patients\/[a-f0-9]{24}$/, label: 'Paciente' },
+];
+
+function resolvePathLabel(pathname: string): string {
+  if (pathLabels[pathname]) return pathLabels[pathname];
+  for (const { pattern, label } of dynamicPatterns) {
+    if (pattern.test(pathname)) return label;
+  }
+  return 'Portal';
+}
 
 export default function PortalLayout({
   children,
@@ -24,7 +37,16 @@ export default function PortalLayout({
 }) {
   const pathname = usePathname();
   const { user } = useAuthStore();
-  const pageLabel = pathLabels[pathname] ?? 'Portal';
+  const pageLabel = resolvePathLabel(pathname);
+
+  const isPatientDetailPage = /^\/patients\/[a-f0-9]{24}$/.test(pathname);
+  const breadcrumbs = isPatientDetailPage
+    ? [
+        { label: 'VitalPath', href: '/dashboard' },
+        { label: 'Pacientes', href: '/patients' },
+        { label: pageLabel },
+      ]
+    : [{ label: 'VitalPath', href: '/dashboard' }, { label: pageLabel }];
 
   const role = (user?.role ?? 'medico') as
     | 'medico'
@@ -45,10 +67,7 @@ export default function PortalLayout({
         />
         <div className="flex flex-col flex-1 overflow-hidden">
           <Topbar
-            breadcrumbs={[
-              { label: 'VitalPath', href: '/dashboard' },
-              { label: pageLabel },
-            ]}
+            breadcrumbs={breadcrumbs}
             user={{ name: user?.name ?? '', role }}
           />
           <main className="flex-1 overflow-y-auto bg-brand-neutral-50 p-6 min-h-[calc(100vh-4rem)]">

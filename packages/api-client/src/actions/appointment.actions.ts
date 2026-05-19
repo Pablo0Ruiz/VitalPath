@@ -60,3 +60,38 @@ export const getCitasMedico = async (): Promise<CitaPopulated[]> => {
     fecha: cita.fecha ? cita.fecha.split('T')[0] : '',
   }));
 };
+
+export const postScheduleForPatient = async (
+  payload: CreateCitaPayload & { paciente_ID: string },
+): Promise<Cita> => {
+  const { data } = await apiClient.post<Cita>(
+    '/api/appointment/worker',
+    payload,
+  );
+  return data;
+};
+
+export const patchCitaByWorker = async (
+  id: string,
+  payload: UpdateCitaPayload,
+): Promise<Cita> => {
+  const { data } = await apiClient.patch<Cita>(
+    `/api/appointment/${id}/worker`,
+    payload,
+  );
+  return data;
+};
+
+export const deleteCitaByWorker = async (id: string): Promise<void> => {
+  await apiClient.delete(`/api/appointment/${id}/worker`);
+};
+
+export const getCitasForCuidador = async (
+  pacienteId?: string,
+): Promise<CitaPopulated[]> => {
+  const url = pacienteId
+    ? `/api/appointment/cuidador?pacienteId=${pacienteId}`
+    : '/api/appointment/cuidador';
+  const { data } = await apiClient.get<CitaPopulated[]>(url);
+  return data.map(cita => ({ ...cita, fecha: cita.fecha.split('T')[0] }));
+};

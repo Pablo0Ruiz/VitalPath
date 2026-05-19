@@ -18,13 +18,13 @@ El módulo gestiona la subida segura de archivos hacia el Storage de Supabase (p
   - `cita_ID`: Mongo ObjectId de la cita atada.
 - **Respuesta Exitosa:** `201 Created`. Retorna confirmación de subida y metadatos del archivo en la nube.
 
-### 2. Actualizar Resumen Médico de un Resultado
+### 2. Actualizar Notas del Médico de un Resultado
 
 - **Método:** `PATCH`
-- **Ruta:** `/storage/resultado/:id/resumen`
+- **Ruta:** `/storage/resultado/:id/notas`
 - **Autorización:** Autenticado, requiere roles `TRABAJADOR_CENTRO` o `MEDICO`.
 - **Parámetro Ruta:** `id` del resultado.
-- **Cuerpo:** `{ "resumenMedico": "Texto descriptivo" }`
+- **Cuerpo:** `{ "notasMedico": "Texto descriptivo" }`
 - **Respuesta Exitosa:** `200 OK`. El médico o trabajador añade una explicación legible al estudio subido para que el paciente lo comprenda.
 
 ### 3. Obtener Mis Resultados (Paciente)

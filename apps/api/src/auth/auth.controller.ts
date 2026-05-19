@@ -23,10 +23,12 @@ import {
   LoginUserDto,
   RefreshMobileDto,
   RegisterDto,
+  RegisterPatientByWorkerDto,
 } from './dto';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { Auth } from './decorators/auth.decorator';
 import { GetUser } from './decorators/get-user.decorator';
+import { UserRoles } from './enum/user-role.enum';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -49,6 +51,22 @@ export class AuthController {
 
   private isMobile(req: Request): boolean {
     return req.header('x-client-platform') === 'mobile';
+  }
+
+  @Post('register-patient')
+  @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Register a patient from the worker portal (no session issued)',
+  })
+  @ApiResponse({ status: 201, description: 'Patient registered successfully' })
+  @ApiResponse({ status: 400, description: 'Validation error' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({ status: 403, description: 'Insufficient role' })
+  @ApiResponse({ status: 409, description: 'Email already in use' })
+  registerPatient(@Body() dto: RegisterPatientByWorkerDto) {
+    return this.authService.createPatientByWorker(dto);
   }
 
   @Post('register')

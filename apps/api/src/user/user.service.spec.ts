@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { UserService } from './user.service';
 import { User } from 'src/auth/entities/user.entity';
@@ -116,6 +117,55 @@ describe('UserService', () => {
       expect(result.profile).toBeNull();
       expect(patientModel.findOne).not.toHaveBeenCalled();
       expect(doctorModel.findOne).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── getPatientByIdForStaff ───────────────────────────────────────────────
+
+  describe('getPatientByIdForStaff', () => {
+    const patientId = new Types.ObjectId().toString();
+
+    it('throws NotFoundException when the user document is not found', async () => {
+      userModel.findById.mockResolvedValue(null);
+
+      await expect(service.getPatientByIdForStaff(patientId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('throws NotFoundException when the user exists but is not PACIENTE role', async () => {
+      const userDoc = {
+        _id: patientId,
+        role: UserRoles.MEDICO,
+        toObject: () => ({ _id: patientId, role: UserRoles.MEDICO }),
+      };
+      userModel.findById.mockResolvedValue(userDoc);
+
+      await expect(service.getPatientByIdForStaff(patientId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('returns user with patient profile when user is PACIENTE', async () => {
+      const userDoc = {
+        _id: patientId,
+        role: UserRoles.PACIENTE,
+        toObject: () => ({ _id: patientId, role: UserRoles.PACIENTE }),
+      };
+      const patientProfile = {
+        medications: [],
+        citas: [],
+        resultadosEstudio: [],
+      };
+
+      userModel.findById.mockResolvedValue(userDoc);
+      patientModel.findOne.mockReturnValue(makePopulatable(patientProfile));
+
+      const result = await service.getPatientByIdForStaff(patientId);
+
+      expect(result.profile).toBe(patientProfile);
+      expect(result._id).toBe(patientId);
+      expect(patientModel.findOne).toHaveBeenCalledWith({ user: patientId });
     });
   });
 });

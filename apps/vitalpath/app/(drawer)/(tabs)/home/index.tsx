@@ -12,6 +12,7 @@ import {
   CustomModal,
   SectionHeader,
   DailyCheckIn,
+  EmptyPacienteActivoState,
 } from '@/src/components/ui/molecules';
 import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
 import { useChatContextStore } from '@repo/store';
@@ -19,12 +20,16 @@ import { useAuthStore } from '@/src/stores/auth';
 import {
   useCitas,
   useDeleteMedication,
-  useMedicaments,
+  useMedicationsByPatient,
 } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
 import { extractDateKey } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
-import { useCompletedSet, useDisclosure } from '@/src/hooks';
+import {
+  useCompletedSet,
+  useDisclosure,
+  useActivePatientId,
+} from '@/src/hooks';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 import { VoiceAssistantModal } from '@/src/components/ui/organisms';
 
@@ -39,9 +44,14 @@ export default function DashboardScreen() {
   const createModal = useDisclosure();
   const editModal = useDisclosure<string>();
   const { completedIds, markCompleted } = useCompletedSet();
-  const { data: medicaments, isLoading } = useMedicaments();
+
+  const { patientId, needsSelection } = useActivePatientId();
+
+  const { data: medicaments, isLoading } = useMedicationsByPatient(
+    patientId ?? undefined,
+  );
   const { data: citas = [], isLoading: isLoadCitas } = useCitas(
-    user?._id ?? '',
+    patientId ?? '',
   );
   const { mutateAsync: deleteMedication } = useDeleteMedication();
 
@@ -104,75 +114,81 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      <ScrollView
-        style={s.scroll}
-        contentContainerStyle={s.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={s.section}>
-          <DailyCheckIn />
-
-          <SectionHeader
-            title="Próximas citas"
-            linkLabel="Ver todas"
-            onLinkPress={() => router.push(ROUTES.APPOINTMENTS)}
-            style={s.sectionHeader}
-          />
-          <View
-            style={[
-              s.card,
-              { backgroundColor: t.surfaceElevated, borderColor: t.border },
-            ]}
-          >
-            {isLoadCitas ? (
-              <LoadingScreen size="small" />
-            ) : (
-              <CustomList type="cita" data={upcomingCitas} />
-            )}
-          </View>
+      {needsSelection ? (
+        <View style={s.emptyStateWrapper}>
+          <EmptyPacienteActivoState />
         </View>
+      ) : (
+        <ScrollView
+          style={s.scroll}
+          contentContainerStyle={s.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={s.section}>
+            <DailyCheckIn />
 
-        <View style={s.section}>
-          <View style={s.medicationHeader}>
             <SectionHeader
-              title="Medicamentos de hoy"
-              linkLabel="Ver todos"
-              onLinkPress={() => router.push(ROUTES.MEDICATIONS)}
-              style={s.flex1}
+              title="Próximas citas"
+              linkLabel="Ver todas"
+              onLinkPress={() => router.push(ROUTES.APPOINTMENTS)}
+              style={s.sectionHeader}
             />
-            <Button
-              title="Agregar"
-              onPress={() => createModal.open()}
-              size="sm"
-              variant="primary"
-            />
-            <CustomModal
-              visible={createModal.isOpen}
-              onClose={createModal.close}
-            />
-          </View>
-
-          {isLoading ? (
-            <LoadingScreen size="small" />
-          ) : (
             <View
               style={[
                 s.card,
                 { backgroundColor: t.surfaceElevated, borderColor: t.border },
               ]}
             >
-              <CustomList
-                type="medication"
-                data={medicaments}
-                onDelete={handleDelete}
-                onEdit={id => editModal.open(id)}
-                onTake={markCompleted}
-                completedIds={completedIds}
+              {isLoadCitas ? (
+                <LoadingScreen size="small" />
+              ) : (
+                <CustomList type="cita" data={upcomingCitas} />
+              )}
+            </View>
+          </View>
+
+          <View style={s.section}>
+            <View style={s.medicationHeader}>
+              <SectionHeader
+                title="Medicamentos de hoy"
+                linkLabel="Ver todos"
+                onLinkPress={() => router.push(ROUTES.MEDICATIONS)}
+                style={s.flex1}
+              />
+              <Button
+                title="Agregar"
+                onPress={() => createModal.open()}
+                size="sm"
+                variant="primary"
+              />
+              <CustomModal
+                visible={createModal.isOpen}
+                onClose={createModal.close}
               />
             </View>
-          )}
-        </View>
-      </ScrollView>
+
+            {isLoading ? (
+              <LoadingScreen size="small" />
+            ) : (
+              <View
+                style={[
+                  s.card,
+                  { backgroundColor: t.surfaceElevated, borderColor: t.border },
+                ]}
+              >
+                <CustomList
+                  type="medication"
+                  data={medicaments}
+                  onDelete={handleDelete}
+                  onEdit={id => editModal.open(id)}
+                  onTake={markCompleted}
+                  completedIds={completedIds}
+                />
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      )}
 
       {isSeniorUI && (
         <Pressable
@@ -227,6 +243,7 @@ const s = StyleSheet.create({
   },
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 100 },
+  emptyStateWrapper: { flex: 1, justifyContent: 'center' },
   section: { paddingHorizontal: 20, paddingTop: 20 },
   sectionHeader: { marginTop: 12, marginBottom: 8 },
   card: {

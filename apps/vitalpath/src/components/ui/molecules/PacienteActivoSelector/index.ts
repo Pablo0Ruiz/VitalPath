@@ -1,0 +1,1 @@
+export { PacienteActivoSelector } from './PacienteActivoSelector';

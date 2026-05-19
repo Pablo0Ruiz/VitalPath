@@ -5,6 +5,7 @@ import type {
   UserCredentials,
   UserSession,
   RegisterCredentials,
+  RegisterCuidadorCredentials,
   InviteDoctorDto,
 } from '@repo/types';
 
@@ -51,6 +52,46 @@ export const postRegister = async (
     '/api/auth/register',
     payload,
   );
+  return data;
+};
+
+export interface RegisterPatientByWorkerPayload {
+  name: string;
+  lastName: string;
+  email: string;
+  password: string;
+  fechaNacimiento: string; // DD/MM/YYYY
+  genero: 'Masculino' | 'Femenino' | 'Otro';
+  centroSalud_ID?: string;
+}
+
+export interface CreatedPatientResponse {
+  _id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
+
+export const postRegisterPatientByWorker = async (
+  payload: RegisterPatientByWorkerPayload,
+): Promise<CreatedPatientResponse> => {
+  const { data } = await apiClient.post<CreatedPatientResponse>(
+    '/api/auth/register-patient',
+    payload,
+  );
+  return data;
+};
+
+export const postRegisterCuidador = async (
+  credentials: RegisterCuidadorCredentials,
+): Promise<UserCredentials> => {
+  const [day, month, year] = credentials.fechaNacimiento.split('/');
+  const formattedDate = `${month}/${day}/${year}`;
+  const { data } = await apiClient.post<UserCredentials>('/api/auth/register', {
+    ...credentials,
+    fechaNacimiento: formattedDate,
+  });
   return data;
 };
 

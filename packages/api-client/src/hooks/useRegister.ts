@@ -15,6 +15,7 @@ export const useRegister = (
     mutationFn: postRegister,
     onSuccess: async data => {
       await adapter.setToken(data.accessToken);
+      if (data.refreshToken) await adapter.setRefreshToken(data.refreshToken);
       callbacks.setSession(data.user);
       adapter.navigate(options.successRoute);
     },

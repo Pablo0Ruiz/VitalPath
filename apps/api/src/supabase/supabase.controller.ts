@@ -74,11 +74,11 @@ export class SupabaseController {
   }
 
   @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.MEDICO)
-  @Patch('resultado/:id/resumen')
+  @Patch('resultado/:id/notas')
   @ApiOperation({
-    summary: 'Attach or update the medical summary for a result',
+    summary: 'Attach or update the doctor notes for a result',
   })
-  @ApiResponse({ status: 200, description: 'Summary updated' })
+  @ApiResponse({ status: 200, description: 'Notes updated' })
   @ApiResponse({ status: 401, description: 'Missing or invalid token' })
   @ApiResponse({
     status: 403,
@@ -87,20 +87,20 @@ export class SupabaseController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['resumenMedico'],
+      required: ['notasMedico'],
       properties: {
-        resumenMedico: {
+        notasMedico: {
           type: 'string',
-          description: 'Texto del resumen medico generado',
+          description: 'Texto de las notas del médico',
         },
       },
     },
   })
-  async updateResumenMedico(
+  async updateNotasMedico(
     @Param('id') id: string,
-    @Body('resumenMedico') resumenMedico: string,
+    @Body('notasMedico') notasMedico: string,
   ) {
-    return this.supabaseService.updateResumenMedico(id, resumenMedico);
+    return this.supabaseService.updateNotasMedico(id, notasMedico);
   }
 
   @Auth(UserRoles.PACIENTE)
@@ -115,6 +115,22 @@ export class SupabaseController {
     description: 'Forbidden — requires paciente role',
   })
   async getMisResultados(@GetUser('_id') pacienteId: string) {
+    return this.supabaseService.getResultadosPaciente(pacienteId);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.MEDICO, UserRoles.ADMIN)
+  @Get('resultado/pacientes/:id')
+  @ApiOperation({
+    summary: 'Get all medical results for a specific patient (staff view)',
+  })
+  @ApiResponse({ status: 200, description: 'List of results for the patient' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Forbidden — requires trabajador_centro, medico, or admin role',
+  })
+  async getResultadosByPatient(@Param('id') pacienteId: string) {
     return this.supabaseService.getResultadosPaciente(pacienteId);
   }
 

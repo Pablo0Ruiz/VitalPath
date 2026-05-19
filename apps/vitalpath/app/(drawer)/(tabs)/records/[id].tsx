@@ -28,6 +28,8 @@ export default function StudyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: resultados } = useMedicalResultsPaciente();
   const { data: citas = [] } = useCitas(user?._id ?? '');
+  const { fetchPdfData, pdfCache } = usePdfData();
+  const [summaryVisible, setSummaryVisible] = useState(false);
 
   const study = useMemo(() => {
     const realStudy = resultados?.find(s => s._id === id);
@@ -54,8 +56,17 @@ export default function StudyDetailScreen() {
     return undefined;
   }, [resultados, citas, id]);
 
-  const { fetchPdfData, pdfCache } = usePdfData();
-  const [summaryVisible, setSummaryVisible] = useState(false);
+  if (!study) {
+    return (
+      <SafeAreaView style={[s.container, { backgroundColor: t.background }]}>
+        <View style={s.center}>
+          <TextField variant="caption" style={{ color: t.textSecondary }}>
+            Estudio no encontrado.
+          </TextField>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleVerPDF = async () => {
     const data = await fetchPdfData({ study });
@@ -71,18 +82,6 @@ export default function StudyDetailScreen() {
     await fetchPdfData({ study });
     setSummaryVisible(true);
   };
-
-  if (!study) {
-    return (
-      <SafeAreaView style={[s.container, { backgroundColor: t.background }]}>
-        <View style={s.center}>
-          <TextField variant="caption" style={{ color: t.textSecondary }}>
-            Estudio no encontrado.
-          </TextField>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   const showActions = RESULT_STATES.includes(
     study.cita_ID?.estado || 'completada',
@@ -163,7 +162,7 @@ export default function StudyDetailScreen() {
         isVisible={summaryVisible}
         onClose={() => setSummaryVisible(false)}
         resumenIA={pdfData?.resumen}
-        resumenMedico={study.resumenMedico}
+        notasMedico={study.notasMedico}
       />
     </SafeAreaView>
   );

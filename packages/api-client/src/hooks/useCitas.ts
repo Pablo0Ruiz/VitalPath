@@ -7,6 +7,10 @@ import {
   getCitasAdministrator,
   getCitasMedico,
   patchCitaEstadoWorker,
+  postScheduleForPatient,
+  patchCitaByWorker,
+  deleteCitaByWorker,
+  getCitasForCuidador,
 } from '../actions/appointment.actions';
 import type { CreateCitaPayload, UpdateCitaPayload } from '@repo/types';
 import { appointmentKeys } from '../queryKeys';
@@ -30,6 +34,21 @@ export const useCreateCita = () => {
     },
     onError: (error: unknown) => {
       console.error('[useCreateCita] Error al crear cita:', error);
+    },
+  });
+};
+
+export const useScheduleForPatient = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: CreateCitaPayload & { paciente_ID: string }) =>
+      postScheduleForPatient(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useScheduleForPatient] Error al agendar cita:', error);
     },
   });
 };
@@ -91,5 +110,41 @@ export const useAvanzarCitaEstado = () => {
     onError: (error: unknown) => {
       console.error('[useAvanzarCitaEstado] Error al avanzar estado:', error);
     },
+  });
+};
+
+export const useUpdateCitaByWorker = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateCitaPayload }) =>
+      patchCitaByWorker(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useUpdateCitaByWorker] Error al actualizar cita:', error);
+    },
+  });
+};
+
+export const useDeleteCitaByWorker = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteCitaByWorker(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    },
+    onError: (error: unknown) => {
+      console.error('[useDeleteCitaByWorker] Error al cancelar cita:', error);
+    },
+  });
+};
+
+export const useCitasForCuidador = (pacienteId: string | null) => {
+  return useQuery({
+    queryKey: appointmentKeys.cuidador(pacienteId),
+    queryFn: () => getCitasForCuidador(pacienteId ?? undefined),
+    enabled: !!pacienteId,
+    staleTime: 1000 * 60 * 5,
   });
 };

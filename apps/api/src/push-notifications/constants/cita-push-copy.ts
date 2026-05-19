@@ -1,8 +1,17 @@
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
+import { Appointment } from 'src/appointment/entities/appointment.entity';
 
-export const CITA_PUSH_COPY: Partial<
-  Record<CitaState, { title: string; body: string }>
-> = {
+export type PushCopyEntry = {
+  title: string;
+  body: string | ((cita: Appointment) => string);
+};
+
+export const CITA_PUSH_COPY: Partial<Record<CitaState, PushCopyEntry>> = {
+  [CitaState.AGENDADA]: {
+    title: 'Cita agendada',
+    body: (cita: Appointment) =>
+      `Cita programada para el ${cita.fecha} a las ${cita.hora}.`,
+  },
   [CitaState.ASISTIDA]: {
     title: 'Tu cita está en curso',
     body: 'El médico ya registró tu asistencia.',

@@ -2,11 +2,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getMedicament,
   getMedicaments,
+  getMedicationsByPatient,
   createMedication,
   updateMedication,
   deleteMedication,
 } from '../actions/medication.actions';
 import type {
+  Medication,
   CreateMedicationPayload,
   UpdateMedicationPayload,
 } from '@repo/types';
@@ -74,5 +76,14 @@ export const useDeleteMedication = () => {
         error,
       );
     },
+  });
+};
+
+export const useMedicationsByPatient = (id?: string) => {
+  return useQuery<Medication[]>({
+    queryKey: [...medicationKeys.all, 'patient', id],
+    queryFn: () => getMedicationsByPatient(id!),
+    enabled: !!id,
+    staleTime: 300_000,
   });
 };

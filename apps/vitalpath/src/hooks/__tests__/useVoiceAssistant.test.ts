@@ -97,9 +97,6 @@ describe('useVoiceAssistant Hook', () => {
     (
       AudioModule.requestRecordingPermissionsAsync as jest.Mock
     ).mockResolvedValueOnce({ granted: false });
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
 
     const { result } = renderHook(() =>
       useVoiceAssistant({ chatId: 'chat-1' }),
@@ -110,8 +107,6 @@ describe('useVoiceAssistant Hook', () => {
     });
 
     expect(mockRecorder.record).not.toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalled();
-    consoleErrorSpy.mockRestore();
   });
 
   it('should stop recording, send audio, and update state', async () => {

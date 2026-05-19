@@ -4,11 +4,11 @@ import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
 import { cn } from '@/lib/utils';
 import { inputVariants } from './Input.variants';
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: IconSvgElement;
   rightIcon?: IconSvgElement;
   error?: boolean;
-};
+}
 
 const Input = ({
   className,

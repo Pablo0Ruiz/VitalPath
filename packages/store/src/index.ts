@@ -1,13 +1,12 @@
 export * from './registerStore';
 export * from './chatContext.store';
 export * from './auth.store';
+export * from './activePaciente.store';
 export type { StorageAdapter } from './storage.adapter';
 
-// Default in-memory adapter for web/SSR contexts (no native storage required).
-// Web session state is rehydrated from the httpOnly cookie via useSession,
-// so persistent local storage is not needed.
 import type { StorageAdapter } from './storage.adapter';
 import { createAuthStore } from './auth.store';
+import { createActivePacienteStore } from './activePaciente.store';
 
 const _memStore: Record<string, string> = {};
 const inMemoryAdapter: StorageAdapter = {
@@ -21,3 +20,5 @@ const inMemoryAdapter: StorageAdapter = {
 };
 
 export const useAuthStore = createAuthStore(inMemoryAdapter);
+export const useActivePacienteStore =
+  createActivePacienteStore(inMemoryAdapter);

@@ -23,7 +23,7 @@ export const useChat = () => {
         {
           role: 'assistant',
           content:
-            '¡Hola! Soy tu asistente de VitalPath AI. ¿En qué puedo ayudarte hoy? Puedo ayudarte a gestionar tus citas, buscar médicos o centros de salud.',
+            '¡Hola! Soy tu asistente de VitalPath AI. ¿En qué puedo ayudarte hoy?',
         },
       ]);
       setIsLoading(false);

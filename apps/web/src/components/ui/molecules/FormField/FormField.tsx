@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import { cloneElement, isValidElement, useId } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { AlertCircleIcon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
@@ -25,16 +25,12 @@ const FormField = ({
 
   const describedBy = error ? errorId : hint ? hintId : undefined;
 
-  // TODO: degrades silently if multiple children are passed
-  const enhancedChild = React.isValidElement(children)
-    ? React.cloneElement(
-        children as React.ReactElement<Record<string, unknown>>,
-        {
-          id: (children.props as Record<string, unknown>).id ?? inputId,
-          'aria-describedby': describedBy,
-          'aria-invalid': error ? true : undefined,
-        },
-      )
+  const enhancedChild = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+        id: (children.props as Record<string, unknown>).id ?? inputId,
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : undefined,
+      })
     : children;
 
   return (

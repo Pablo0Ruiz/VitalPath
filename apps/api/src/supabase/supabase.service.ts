@@ -86,13 +86,13 @@ export class SupabaseService {
     return data;
   }
 
-  async updateResumenMedico(
+  async updateNotasMedico(
     id: string,
-    resumenMedico: string,
+    notasMedico: string,
   ): Promise<ResultadoEstudio> {
     const resultado = await this.resultadoEstudioModel.findByIdAndUpdate(
       id,
-      { resumenMedico },
+      { notasMedico },
       { returnDocument: 'after' },
     );
 

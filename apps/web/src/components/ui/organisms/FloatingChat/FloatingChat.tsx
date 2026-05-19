@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { SparklesIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -34,6 +34,21 @@ const FloatingChat = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const lastMessageContent = messages[messages.length - 1]?.content;
+
+  const toggleOpen = useCallback(() => {
+    const nextState = !isOpen;
+    setIsOpen(nextState);
+
+    if (!nextState) {
+      requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+
+    if (nextState && !hasOpened && messages.length === 0) {
+      setHasOpened(true);
+      addWelcomeMessage();
+    }
+  }, [isOpen, hasOpened, messages.length, addWelcomeMessage]);
+
   useEffect(() => {
     if (messages.length > 0) {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,21 +69,7 @@ const FloatingChat = () => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen]);
-
-  const toggleOpen = () => {
-    const nextState = !isOpen;
-    setIsOpen(nextState);
-
-    if (!nextState) {
-      requestAnimationFrame(() => triggerRef.current?.focus());
-    }
-
-    if (nextState && !hasOpened && messages.length === 0) {
-      setHasOpened(true);
-      addWelcomeMessage();
-    }
-  };
+  }, [isOpen, toggleOpen]);
 
   return (
     <>

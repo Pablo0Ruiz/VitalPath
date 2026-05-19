@@ -15,6 +15,7 @@ export const useLoginWithCode = (
     mutationFn: postLoginWithCode,
     onSuccess: async data => {
       await adapter.setToken(data.accessToken);
+      if (data.refreshToken) await adapter.setRefreshToken(data.refreshToken);
       callbacks.setSession(data.user);
       callbacks.afterSuccess(data.user);
     },
