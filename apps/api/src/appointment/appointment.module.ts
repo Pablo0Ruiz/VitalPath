@@ -13,6 +13,7 @@ import {
 import { Doctor, DoctorSchema } from '../user/entities/doctor.entity';
 import { Patient, PatientSchema } from '../user/entities/patient.entity';
 import { User, UserSchema } from '../auth/entities/user.entity';
+import { VinculacionModule } from '../vinculacion/vinculacion.module';
 
 @Module({
   controllers: [AppointmentController],
@@ -21,6 +22,7 @@ import { User, UserSchema } from '../auth/entities/user.entity';
     AuthModule,
     UserModule,
     PushNotificationsModule,
+    VinculacionModule,
     MongooseModule.forFeature([
       { name: Appointment.name, schema: AppointmentSchema },
       { name: Doctor.name, schema: DoctorSchema },

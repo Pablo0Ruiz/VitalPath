@@ -7,6 +7,7 @@ import type {
   UpdateAppointmentDto,
 } from 'src/appointment/dto';
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 
 const logger = new Logger('AppointmentTools');
 
@@ -73,6 +74,7 @@ export const buildAppointmentTools = (
         const result = await appointmentsService.getAppointmentById(
           userId,
           citaId,
+          UserRoles.PACIENTE,
         );
         return JSON.parse(JSON.stringify(result));
       },

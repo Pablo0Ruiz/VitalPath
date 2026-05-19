@@ -18,6 +18,7 @@ import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 
 @ApiTags('medications')
 @ApiBearerAuth('access-token')
@@ -48,6 +49,27 @@ export class MedicationsController {
   @ApiResponse({ status: 401, description: 'Missing or invalid token' })
   findAll(@GetUser('_id') userId: string) {
     return this.medicationsService.findAllMedications(userId);
+  }
+
+  @Auth()
+  @Get('patient/:id')
+  @ApiOperation({
+    summary: 'Get medications for a specific patient (staff or own)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of medications for the patient',
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — non-owner non-staff access',
+  })
+  findByPatient(
+    @Param('id') patientId: string,
+    @GetUser() user: { _id: string; role: UserRoles },
+  ) {
+    return this.medicationsService.findActiveByPatient(patientId, user);
   }
 
   @Auth()

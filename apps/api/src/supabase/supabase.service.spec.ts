@@ -219,16 +219,16 @@ describe('SupabaseService', () => {
     });
   });
 
-  // ─── updateResumenMedico ──────────────────────────────────────────────────
+  // ─── updateNotasMedico ────────────────────────────────────────────────────
 
-  describe('updateResumenMedico', () => {
+  describe('updateNotasMedico', () => {
     const resultadoId = new Types.ObjectId().toString();
 
     it('returns the updated ResultadoEstudio', async () => {
-      const updated = { _id: resultadoId, resumenMedico: 'Análisis normal' };
+      const updated = { _id: resultadoId, notasMedico: 'Análisis normal' };
       resultadoModel.findByIdAndUpdate.mockResolvedValue(updated);
 
-      const result = await service.updateResumenMedico(
+      const result = await service.updateNotasMedico(
         resultadoId,
         'Análisis normal',
       );
@@ -236,7 +236,7 @@ describe('SupabaseService', () => {
       expect(result).toBe(updated);
       expect(resultadoModel.findByIdAndUpdate).toHaveBeenCalledWith(
         resultadoId,
-        { resumenMedico: 'Análisis normal' },
+        { notasMedico: 'Análisis normal' },
         { returnDocument: 'after' },
       );
     });
@@ -244,9 +244,9 @@ describe('SupabaseService', () => {
     it('throws NotFoundException when resultado does not exist', async () => {
       resultadoModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(
-        service.updateResumenMedico(resultadoId, 'x'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.updateNotasMedico(resultadoId, 'x')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

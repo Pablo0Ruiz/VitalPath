@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,7 +30,12 @@ import { UserRoles } from 'src/auth/enum/user-role.enum';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  @Auth()
+  @Auth(
+    UserRoles.PACIENTE,
+    UserRoles.MEDICO,
+    UserRoles.TRABAJADOR_CENTRO,
+    UserRoles.ADMIN,
+  )
   @Post()
   @ApiOperation({
     summary: 'Create a new appointment for the authenticated patient',
@@ -91,13 +98,46 @@ export class AppointmentController {
     return this.appointmentService.getAppointmentsMedico(userId);
   }
 
-  @Auth()
+  @Auth(UserRoles.CUIDADOR_FAMILIAR)
+  @Get('cuidador')
+  @ApiOperation({
+    summary: "Get all appointments for the cuidador's linked patients",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of appointments for linked patients',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — CUIDADOR_FAMILIAR only',
+  })
+  findAllForCuidador(
+    @GetUser('_id') cuidadorId: string,
+    @Query('pacienteId') pacienteId?: string,
+  ) {
+    return this.appointmentService.getAppointmentsForCuidador(
+      cuidadorId,
+      pacienteId,
+    );
+  }
+
+  @Auth(
+    UserRoles.PACIENTE,
+    UserRoles.MEDICO,
+    UserRoles.TRABAJADOR_CENTRO,
+    UserRoles.ADMIN,
+    UserRoles.CUIDADOR_FAMILIAR,
+  )
   @Get(':id')
   @ApiOperation({ summary: 'Get a single appointment by ID' })
   @ApiResponse({ status: 200, description: 'Appointment details' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  findOne(@Param('id') id: string, @GetUser('_id') userId: string) {
-    return this.appointmentService.getAppointmentById(userId, id);
+  findOne(
+    @Param('id') id: string,
+    @GetUser('_id') userId: string,
+    @GetUser('role') role: UserRoles,
+  ) {
+    return this.appointmentService.getAppointmentById(userId, id, role);
   }
 
   @Auth(UserRoles.TRABAJADOR_CENTRO)
@@ -118,7 +158,12 @@ export class AppointmentController {
     );
   }
 
-  @Auth()
+  @Auth(
+    UserRoles.PACIENTE,
+    UserRoles.MEDICO,
+    UserRoles.TRABAJADOR_CENTRO,
+    UserRoles.ADMIN,
+  )
   @Patch(':id')
   @ApiOperation({ summary: 'Update appointment details' })
   @ApiResponse({ status: 200, description: 'Appointment updated' })
@@ -135,7 +180,12 @@ export class AppointmentController {
     );
   }
 
-  @Auth()
+  @Auth(
+    UserRoles.PACIENTE,
+    UserRoles.MEDICO,
+    UserRoles.TRABAJADOR_CENTRO,
+    UserRoles.ADMIN,
+  )
   @Delete(':id')
   @ApiOperation({ summary: 'Cancel an appointment' })
   @ApiResponse({ status: 200, description: 'Appointment cancelled' })
@@ -145,5 +195,22 @@ export class AppointmentController {
     @Param('id') id: string,
   ) {
     return this.appointmentService.cancelAppointment(userId, id);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO)
+  @Patch(':id/worker')
+  @ApiOperation({
+    summary: 'Update appointment as worker (no ownership check)',
+  })
+  updateByWorker(@Param('id') id: string, @Body() dto: UpdateAppointmentDto) {
+    return this.appointmentService.updateAppointmentByWorker(id, dto);
+  }
+
+  @Auth(UserRoles.TRABAJADOR_CENTRO)
+  @Delete(':id/worker')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Cancel (hard-delete) appointment as worker' })
+  async deleteByWorker(@Param('id') id: string): Promise<void> {
+    await this.appointmentService.deleteAppointmentByWorker(id);
   }
 }

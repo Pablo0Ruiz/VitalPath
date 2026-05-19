@@ -12,7 +12,9 @@ import { User } from 'src/auth/entities/user.entity';
 import { Doctor } from 'src/user/entities/doctor.entity';
 import { Patient } from 'src/user/entities/patient.entity';
 import { CitaState } from './dto/enum/cita-state.enum';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { PushNotificationsService } from 'src/push-notifications/push-notifications.service';
+import { VinculacionService } from 'src/vinculacion/vinculacion.service';
 
 // expo-server-sdk uses ESM — mock it so Jest (CJS transform) can parse appointment.service.ts
 jest.mock('expo-server-sdk', () => {
@@ -56,6 +58,12 @@ const makePushService = () => ({
   sendPushNotification: jest.fn().mockResolvedValue(undefined),
 });
 
+const makeVinculacionService = () => ({
+  getActivePacienteIdsForCuidador: jest.fn().mockResolvedValue([]),
+  getActiveTokensForPaciente: jest.fn().mockResolvedValue([]),
+  isCuidadorLinkedToPaciente: jest.fn().mockResolvedValue(false),
+});
+
 // ─── Mongoose chainable query mock ──────────────────────────────────────────
 // Supports both `await query.lean()` and `await query.lean().exec()`.
 // lean() returns a thenable so JavaScript's await mechanism resolves it,
@@ -93,6 +101,7 @@ describe('AppointmentService', () => {
   let patientModel: ReturnType<typeof makePatientModel>;
   let userModel: ReturnType<typeof makeUserModel>;
   let pushService: ReturnType<typeof makePushService>;
+  let vinculacionService: ReturnType<typeof makeVinculacionService>;
 
   beforeEach(async () => {
     citaModel = makeCitaModel();
@@ -100,6 +109,7 @@ describe('AppointmentService', () => {
     patientModel = makePatientModel();
     userModel = makeUserModel();
     pushService = makePushService();
+    vinculacionService = makeVinculacionService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -109,6 +119,7 @@ describe('AppointmentService', () => {
         { provide: getModelToken(Doctor.name), useValue: doctorModel },
         { provide: getModelToken(Patient.name), useValue: patientModel },
         { provide: PushNotificationsService, useValue: pushService },
+        { provide: VinculacionService, useValue: vinculacionService },
       ],
     }).compile();
 
@@ -191,7 +202,11 @@ describe('AppointmentService', () => {
   describe('getAppointmentById', () => {
     it('throws NotFoundException for a malformed ObjectId', async () => {
       await expect(
-        service.getAppointmentById(makeId().toString(), 'not-an-id'),
+        service.getAppointmentById(
+          makeId().toString(),
+          'not-an-id',
+          UserRoles.PACIENTE,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -199,7 +214,11 @@ describe('AppointmentService', () => {
       citaModel.findById.mockReturnValue(chainQuery(null));
 
       await expect(
-        service.getAppointmentById(makeId().toString(), makeId().toString()),
+        service.getAppointmentById(
+          makeId().toString(),
+          makeId().toString(),
+          UserRoles.PACIENTE,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -217,7 +236,11 @@ describe('AppointmentService', () => {
       );
 
       await expect(
-        service.getAppointmentById(requesterId.toString(), makeId().toString()),
+        service.getAppointmentById(
+          requesterId.toString(),
+          makeId().toString(),
+          UserRoles.PACIENTE,
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -240,6 +263,7 @@ describe('AppointmentService', () => {
       const result = await service.getAppointmentById(
         userId.toString(),
         makeId().toString(),
+        UserRoles.PACIENTE,
       );
 
       expect(result).toMatchObject({
@@ -333,13 +357,11 @@ describe('AppointmentService', () => {
       const pacienteId = makeId();
       const appt = {
         estado: from,
-        save: jest
-          .fn()
-          .mockResolvedValue({
-            _id: citaId,
-            paciente_ID: pacienteId,
-            estado: to,
-          }),
+        save: jest.fn().mockResolvedValue({
+          _id: citaId,
+          paciente_ID: pacienteId,
+          estado: to,
+        }),
       };
       citaModel.findById.mockResolvedValue(appt);
       // notifyStateChange: patient has no push token → push skipped

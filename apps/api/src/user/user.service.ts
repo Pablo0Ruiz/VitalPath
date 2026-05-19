@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/entities/user.entity';
@@ -44,6 +44,27 @@ export class UserService {
       { _id: userId },
       { $set: { expoPushToken: token } },
     );
+  }
+
+  async getPatientByIdForStaff(id: string) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) throw new NotFoundException('Paciente no encontrado');
+
+    if (user.role !== UserRoles.PACIENTE) {
+      throw new NotFoundException('El usuario no es un paciente');
+    }
+
+    const profile = await this.patientModel
+      .findOne({ user: id })
+      .populate('medications')
+      .populate('resultadosEstudio')
+      .populate('citas');
+
+    return {
+      ...user.toObject(),
+      profile,
+    };
   }
 
   async updateProfile(userId: string, updateUserDto: UpdateUserDto) {

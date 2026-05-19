@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SavePushTokenDto } from './dto/save-push-token.dto';
@@ -13,6 +14,12 @@ export class UserController {
   @Get('me')
   getMe(@GetUser('_id') userId: string) {
     return this.userService.getUserProfile(userId);
+  }
+
+  @Auth(UserRoles.MEDICO, UserRoles.TRABAJADOR_CENTRO, UserRoles.ADMIN)
+  @Get('patients/:id')
+  getPatientById(@Param('id') id: string) {
+    return this.userService.getPatientByIdForStaff(id);
   }
 
   @Auth()

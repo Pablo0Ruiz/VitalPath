@@ -1,0 +1,6 @@
+export enum TipoVinculo {
+  HIJO_A = 'HIJO_A',
+  ESPOSO_A = 'ESPOSO_A',
+  CUIDADOR_CONTRATADO = 'CUIDADOR_CONTRATADO',
+  OTRO = 'OTRO',
+}
