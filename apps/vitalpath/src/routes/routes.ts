@@ -20,12 +20,19 @@ export const ROUTES = {
   SENIOR_UI_SUGGESTION: '/(auth)/senior-ui-suggestion',
   PROFILE: '/profile',
   SETTINGS: '/settings',
+  CUIDADORES: '/(drawer)/cuidadores',
+  PACIENTES: '/(drawer)/pacientes',
+  VINCULAR: '/(drawer)/vincular',
+  REGISTER_CUIDADOR: '/(auth)/register-cuidador',
 } as const;
 
 export const DRAWER_SCREEN_NAMES = {
   TABS: '(tabs)',
   PROFILE: 'profile/index',
   SETTINGS: 'settings/index',
+  CUIDADORES: 'cuidadores/index',
+  PACIENTES: 'pacientes/index',
+  VINCULAR: 'vincular/index',
 } as const;
 
 export const AUTH_SCREEN_NAMES = {

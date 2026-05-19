@@ -11,18 +11,19 @@ import {
   SectionHeader,
   AppointmentCard,
   DoctorPickerSheet,
+  EmptyPacienteActivoState,
 } from '@/src/components/ui/molecules';
 import { CalendarWidget } from '@/src/components/ui/organisms';
 import { useCitas, useCancelCita } from '@repo/api-client';
-import { useAuthStore } from '@/src/stores/auth';
+
 import { extractDateKey } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
-import { useDisclosure } from '@/src/hooks';
+import { useDisclosure, useActivePatientId } from '@/src/hooks';
 
 export default function AppointmentsScreen() {
   const t = useTheme();
-  const { user } = useAuthStore();
+  const { patientId, needsSelection } = useActivePatientId();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const sheet = useDisclosure<Date>();
 
@@ -30,7 +31,7 @@ export default function AppointmentsScreen() {
     data: citas = [],
     isLoading,
     isRefetching,
-  } = useCitas(user?._id ?? '');
+  } = useCitas(patientId ?? '');
 
   const { mutate: cancelarCita, isPending: isCancelling } = useCancelCita();
 
@@ -64,6 +65,20 @@ export default function AppointmentsScreen() {
 
   if (isLoading && !isRefetching) {
     return <LoadingScreen size="small" />;
+  }
+
+  if (needsSelection) {
+    return (
+      <SafeAreaView
+        style={[s.container, { backgroundColor: t.background }]}
+        edges={['top']}
+      >
+        <ScreenHeader title="Citas" subtitle="Gestioná tus citas médicas" />
+        <View style={s.emptyStateWrapper}>
+          <EmptyPacienteActivoState />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -123,6 +138,7 @@ export default function AppointmentsScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1 },
+  emptyStateWrapper: { flex: 1, justifyContent: 'center' },
   listContent: { paddingBottom: 120 },
   calendarWrapper: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 20 },
   sectionHeaderWrapper: { paddingHorizontal: 20, marginBottom: 12 },

@@ -219,6 +219,19 @@ const Login = () => {
                 Registrate
               </TextField>
             </TextField>
+            <TextField
+              variant="caption"
+              style={[s.footerText, { color: t.textSecondary, marginTop: 8 }]}
+              onPress={() => router.push(ROUTES.REGISTER_CUIDADOR as never)}
+            >
+              ¿Sos cuidador familiar?{'  '}
+              <TextField
+                variant="caption"
+                style={[s.linkText, { color: t.primary600 }]}
+              >
+                Registrate acá
+              </TextField>
+            </TextField>
           </View>
         </View>
       </ScrollView>

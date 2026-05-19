@@ -1,0 +1,1 @@
+export { EmptyPacienteActivoState } from './EmptyPacienteActivoState';

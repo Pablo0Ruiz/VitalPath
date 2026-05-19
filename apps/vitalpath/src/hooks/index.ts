@@ -6,3 +6,7 @@ export type { DisclosureState } from './useDisclosure';
 export { useCompletedSet } from './useCompletedSet';
 export type { CompletedSetState } from './useCompletedSet';
 export { useVoiceAssistant } from './useVoiceAssistant';
+export { useActivePatientId } from './useActivePatientId';
+export type { ActivePatientIdResult } from './useActivePatientId';
+export { useSetActivePaciente } from './useSetActivePaciente';
+export { useActivePacienteRevalidator } from './useActivePacienteRevalidator';

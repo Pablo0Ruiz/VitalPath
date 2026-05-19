@@ -26,6 +26,10 @@ export default function AuthLayout() {
         name="senior-ui-suggestion/index"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="register-cuidador/index"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

@@ -17,11 +17,18 @@ import { useTheme } from '@/src/hooks/useTheme';
 export default function RecordsScreen() {
   const t = useTheme();
   const { user } = useAuthStore();
-  const { data: resultados, isLoading: isLoadResults } =
-    useMedicalResultsPaciente();
-  const { data: citas = [], isLoading: isLoadCitas } = useCitas(
-    user?._id ?? '',
-  );
+  const {
+    data: resultados,
+    isLoading: isLoadResults,
+    refetch,
+    isFetching: isFetchingResults,
+  } = useMedicalResultsPaciente();
+  const {
+    data: citas = [],
+    isLoading: isLoadCitas,
+    refetch: refetchCitas,
+    isFetching: isFetchingCitas,
+  } = useCitas(user?._id ?? '');
 
   const data = useMemo(() => {
     const list: IMedicalResults[] = [...(resultados || [])];
@@ -55,7 +62,10 @@ export default function RecordsScreen() {
     });
   }, [resultados, citas]);
 
-  const isLoading = isLoadResults || isLoadCitas;
+  const isInitialLoading =
+    (isLoadResults && !resultados) || (isLoadCitas && citas.length === 0);
+
+  const isRefreshing = isFetchingResults || isFetchingCitas;
 
   return (
     <SafeAreaView
@@ -67,20 +77,29 @@ export default function RecordsScreen() {
         subtitle="Seguimiento en tiempo real de tus resultados clínicos"
       />
 
-      {isLoading ? (
+      {isInitialLoading ? (
         <LoadingScreen size="large" />
-      ) : !data.length ? (
-        <EmptyState
-          icon="file-text"
-          title="Sin estudios"
-          subtitle="Aún no tienes estudios clínicos o análisis registrados en tu historial."
-        />
       ) : (
         <FlatList
           data={data}
           keyExtractor={(item: IMedicalResults) => item._id}
-          contentContainerStyle={s.listContent}
+          contentContainerStyle={[
+            s.listContent,
+            data.length === 0 && { flexGrow: 1 },
+          ]}
+          refreshing={isRefreshing}
+          onRefresh={() => {
+            refetch();
+            refetchCitas();
+          }}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <EmptyState
+              icon="file-text"
+              title="Sin estudios"
+              subtitle="Aún no tienes estudios clínicos o análisis registrados en tu historial."
+            />
+          }
           renderItem={({ item }: { item: IMedicalResults }) => (
             <StudyCard
               study={item}

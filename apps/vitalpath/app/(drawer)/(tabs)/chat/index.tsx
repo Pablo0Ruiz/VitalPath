@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
-import { Octicons, Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 
-import { Button, TextField } from '@/src/components/ui/atoms';
+import { TextField } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
-import { ChatComposer } from '@/src/components/ui/molecules';
+import { ChatComposer, ChatHeader } from '@/src/components/ui/molecules';
 import { ChatHistory } from '@/src/components/ui/organisms';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
@@ -35,9 +33,7 @@ const Chat = () => {
   const setChatId = useChatContextStore(state => state.setChatId);
   const clearChat = useChatContextStore(state => state.clearChat);
 
-  const { data: historyData, isLoading: loadingHistory } = useChatHistory(
-    view === 'active' ? chatId : '',
-  );
+  const { data: historyData } = useChatHistory(view === 'active' ? chatId : '');
 
   useEffect(() => {
     if (historyData && view === 'active') {
@@ -85,72 +81,17 @@ const Chat = () => {
   };
 
   const SUGGESTIONS = [
-    '¿Cómo leo mis análisis?',
-    'Próxima vacuna',
-    'Tips de sueño',
+    '¿Cómo puedo agendar una cita?',
+    '¿Cuáles son mis próximos exámenes?',
+    '¿Cuál es mi historial médico?',
   ];
-
-  const Header = () => (
-    <View
-      style={[
-        s.header,
-        { backgroundColor: t.background, justifyContent: 'center' },
-      ]}
-    >
-      <Pressable
-        onPress={onBack}
-        style={{
-          position: 'absolute',
-          left: 20,
-          zIndex: 20,
-        }}
-      >
-        <Ionicons name="arrow-back-outline" size={24} color={t.textPrimary} />
-      </Pressable>
-      {view === 'active' && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <LinearGradient
-            colors={[t.primary600, t.primary700]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[s.avatar, s.shadow]}
-          >
-            <Octicons name="dependabot" size={20} color="white" />
-          </LinearGradient>
-          <View>
-            <TextField
-              variant="body"
-              style={[s.title, { color: t.textPrimary }]}
-            >
-              VitalPath AI
-            </TextField>
-            <View style={s.statusRow}>
-              <View style={[s.onlineDot, { backgroundColor: t.success }]} />
-              <TextField
-                variant="caption"
-                style={[s.statusText, { color: t.textSecondary }]}
-              >
-                En línea
-              </TextField>
-            </View>
-          </View>
-        </View>
-      )}
-    </View>
-  );
 
   return (
     <SafeAreaView
       style={[s.container, { backgroundColor: t.background }]}
       edges={['top']}
     >
-      <Header />
+      <ChatHeader view={view} onBack={onBack} />
       {view === 'history' ? (
         <ChatHistory
           onSelectConversation={handleSelectConversation}

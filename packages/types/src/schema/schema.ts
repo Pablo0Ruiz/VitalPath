@@ -32,3 +32,19 @@ export const bookAppointmentSchema = z.object({
 });
 
 export type BookAppointmentFormData = z.infer<typeof bookAppointmentSchema>;
+
+export const TIPO_VALUES = [
+  'HIJO_A',
+  'ESPOSO_A',
+  'CUIDADOR_CONTRATADO',
+  'OTRO',
+] as const;
+
+export const vincularSchema = z.object({
+  codigo: z
+    .string()
+    .length(6, 'El código debe tener 6 dígitos')
+    .regex(/^\d{6}$/, 'Solo dígitos numéricos'),
+  tipo_vinculo: z.enum(TIPO_VALUES),
+});
+export type VincularFormValues = z.infer<typeof vincularSchema>;
