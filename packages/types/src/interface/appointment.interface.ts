@@ -69,3 +69,11 @@ export interface CitaPopulated extends Omit<
   centroSalud_ID: CitaCentroSaludPopulated;
   paciente_ID: CitaPacientePopulated;
 }
+
+export const CITA_ALLOWED_TRANSITIONS: Partial<Record<CitaEstado, CitaEstado>> =
+  {
+    [CitaEstadoEnum.AGENDADA]: CitaEstadoEnum.ASISTIDA,
+    [CitaEstadoEnum.ASISTIDA]: CitaEstadoEnum.EN_PROCESO,
+    [CitaEstadoEnum.EN_PROCESO]: CitaEstadoEnum.RESULTADOS_LISTOS,
+    [CitaEstadoEnum.RESULTADOS_LISTOS]: CitaEstadoEnum.COMPLETADA,
+  };

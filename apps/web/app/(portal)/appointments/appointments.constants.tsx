@@ -1,7 +1,11 @@
 import { Badge } from '@/components/ui/atoms/Badge';
 import { Button } from '@/components/ui/atoms/Button';
 import { type Column } from '@/components/ui/molecules/DataTable/DataTable';
-import { CitaEstadoEnum, type CitaPopulated } from '@repo/types';
+import {
+  CITA_ALLOWED_TRANSITIONS,
+  CitaEstadoEnum,
+  type CitaPopulated,
+} from '@repo/types';
 
 export const viewTabs = [{ value: 'list', label: 'Lista' }];
 
@@ -15,12 +19,18 @@ export const estadoConfig: Record<
   [CitaEstadoEnum.AGENDADA]: { label: 'Agendada', variant: 'info' },
   [CitaEstadoEnum.ASISTIDA]: { label: 'Asistida', variant: 'success' },
   [CitaEstadoEnum.EN_PROCESO]: { label: 'En proceso', variant: 'warning' },
+  [CitaEstadoEnum.RESULTADOS_LISTOS]: {
+    label: 'Resultados listos',
+    variant: 'info',
+  },
+  [CitaEstadoEnum.COMPLETADA]: { label: 'Completada', variant: 'success' },
   [CitaEstadoEnum.CANCELADA]: { label: 'Cancelada', variant: 'error' },
 };
 
 interface AppointmentColumnHandlers {
   onEdit: (c: CitaPopulated) => void;
   onCancel: (c: CitaPopulated) => void;
+  onAvanzar: (c: CitaPopulated) => void;
 }
 
 export function buildAppointmentColumns(
@@ -76,6 +86,16 @@ export function buildAppointmentColumns(
           >
             Cancelar
           </Button>
+          {CITA_ALLOWED_TRANSITIONS[row.estado] && (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => handlers.onAvanzar(row)}
+            >
+              Avanzar estado
+            </Button>
+          )}
         </div>
       ),
     },

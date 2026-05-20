@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 import { CitaState } from 'src/appointment/dto/enum/cita-state.enum';
+import { CITA_ALLOWED_TRANSITIONS, CitaEstado } from '@repo/types';
 import { User } from 'src/auth/entities/user.entity';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { Doctor } from '../user/entities/doctor.entity';
@@ -26,13 +27,6 @@ type LeanCita = Omit<Appointment, 'medico_ID' | 'centroSalud_ID'> & {
   _id: Types.ObjectId;
   medico_ID: LeanMedico;
   centroSalud_ID: LeanCentro;
-};
-
-const ALLOWED_TRANSITIONS: Partial<Record<CitaState, CitaState>> = {
-  [CitaState.AGENDADA]: CitaState.ASISTIDA,
-  [CitaState.ASISTIDA]: CitaState.EN_PROCESO,
-  [CitaState.EN_PROCESO]: CitaState.RESULTADOS_LISTOS,
-  [CitaState.RESULTADOS_LISTOS]: CitaState.COMPLETADA,
 };
 
 @Injectable()
@@ -333,8 +327,9 @@ export class AppointmentService {
     const appointment = await this.citaModel.findById(citaId);
     if (!appointment) throw new NotFoundException('La cita no existe');
 
-    const nextEstado = ALLOWED_TRANSITIONS[appointment.estado as CitaState];
-    if (!nextEstado || nextEstado !== estado) {
+    const nextEstado =
+      CITA_ALLOWED_TRANSITIONS[appointment.estado as CitaEstado];
+    if (!nextEstado || nextEstado !== (estado as CitaEstado)) {
       throw new BadRequestException(
         `Transición inválida: ${appointment.estado} → ${estado}`,
       );
