@@ -80,6 +80,9 @@ importers:
       '@nestjs/throttler':
         specifier: ^6.5.0
         version: 6.5.0(@nestjs/common@11.1.13)(@nestjs/core@11.1.13)(reflect-metadata@0.2.2)
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@supabase/supabase-js':
         specifier: ^2.100.1
         version: 2.100.1
@@ -616,6 +619,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.19.8)
 
 packages:
 
@@ -6542,7 +6548,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.21(@types/node@20.19.39)
+      vite: 5.4.21(@types/node@22.19.8)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6570,7 +6576,7 @@ packages:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 5.4.21(@types/node@20.19.39)
+      vite: 5.4.21(@types/node@22.19.8)
     dev: true
 
   /@vitest/pretty-format@2.1.9:

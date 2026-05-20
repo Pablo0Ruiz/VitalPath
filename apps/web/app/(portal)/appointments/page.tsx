@@ -6,9 +6,14 @@ import Modal from '@/components/ui/atoms/Modal/Modal';
 import { Button } from '@/components/ui/atoms/Button';
 import { BookAppointmentForm } from '@/components/ui/organisms/BookAppointmentForm';
 import { useCitasAdministrator } from '@repo/api-client';
-import type { CitaPopulated } from '@repo/types';
+import {
+  CITA_ALLOWED_TRANSITIONS,
+  type CitaEstado,
+  type CitaPopulated,
+} from '@repo/types';
 import { buildAppointmentColumns } from './appointments.constants';
 import CancelCitaConfirm from './CancelCitaConfirm';
+import AdvanceCitaConfirm from './AdvanceCitaConfirm';
 
 export default function AppointmentsPage() {
   const { data: citas, isLoading } = useCitasAdministrator();
@@ -18,10 +23,18 @@ export default function AppointmentsPage() {
   const [cancelingCita, setCancelingCita] = useState<CitaPopulated | null>(
     null,
   );
+  const [advancingCita, setAdvancingCita] = useState<CitaPopulated | null>(
+    null,
+  );
+
+  const nextEstado = advancingCita
+    ? CITA_ALLOWED_TRANSITIONS[advancingCita.estado as CitaEstado]
+    : undefined;
 
   const columns = buildAppointmentColumns({
     onEdit: c => setEditingCita(c),
     onCancel: c => setCancelingCita(c),
+    onAvanzar: c => setAdvancingCita(c),
   });
 
   return (
@@ -92,6 +105,21 @@ export default function AppointmentsPage() {
             cita={cancelingCita}
             onConfirmed={() => setCancelingCita(null)}
             onCancel={() => setCancelingCita(null)}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        isOpen={!!advancingCita && !!nextEstado}
+        onClose={() => setAdvancingCita(null)}
+        title="Avanzar estado"
+      >
+        {advancingCita && nextEstado && (
+          <AdvanceCitaConfirm
+            cita={advancingCita}
+            nextEstado={nextEstado}
+            onConfirmed={() => setAdvancingCita(null)}
+            onCancel={() => setAdvancingCita(null)}
           />
         )}
       </Modal>

@@ -3,10 +3,12 @@ import { AppDrawerContent } from '@/src/components/ui/organisms';
 import { useTheme } from '@/src/hooks/useTheme';
 import { DRAWER_SCREEN_NAMES } from '@/src/routes/routes';
 import { useActivePacienteRevalidator } from '@/src/hooks/useActivePacienteRevalidator';
+import { usePushNotifications } from '@/src/hooks/usePushNotifications';
 
 export default function DrawerLayout() {
   const t = useTheme();
   useActivePacienteRevalidator();
+  usePushNotifications();
   return (
     <Drawer
       drawerContent={props => <AppDrawerContent {...props} />}

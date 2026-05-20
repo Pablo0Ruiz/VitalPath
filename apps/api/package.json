@@ -54,7 +54,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@repo/types": "workspace:*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -102,7 +103,8 @@
     },
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
-      "^expo-server-sdk$": "<rootDir>/test-utils/mocks/expo-server-sdk.ts"
+      "^expo-server-sdk$": "<rootDir>/test-utils/mocks/expo-server-sdk.ts",
+      "^@repo/types$": "<rootDir>/../../../packages/types/src/index.ts"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

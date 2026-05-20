@@ -8,7 +8,11 @@ import { Badge } from '@/components/ui/atoms/Badge';
 import { Button } from '@/components/ui/atoms/Button';
 import { Card } from '@/components/ui/atoms/Card';
 
-import { CitaEstadoEnum, type CitaEstado } from '@repo/types';
+import {
+  CitaEstadoEnum,
+  CITA_ALLOWED_TRANSITIONS,
+  type CitaEstado,
+} from '@repo/types';
 import {
   useCitasAdministrator,
   useAvanzarCitaEstado,
@@ -41,14 +45,10 @@ const ESTADO_LABEL: Record<CitaEstado, string> = {
   cancelada: 'Cancelada',
 };
 
-const NEXT_ESTADO: Partial<Record<CitaEstado, CitaEstado>> = {
-  [CitaEstadoEnum.AGENDADA]: CitaEstadoEnum.ASISTIDA,
-  [CitaEstadoEnum.ASISTIDA]: CitaEstadoEnum.EN_PROCESO,
-};
-
 const ACTION_LABEL: Partial<Record<CitaEstado, string>> = {
   [CitaEstadoEnum.AGENDADA]: 'Check-in',
   [CitaEstadoEnum.ASISTIDA]: 'Muestra tomada',
+  [CitaEstadoEnum.RESULTADOS_LISTOS]: 'Completar',
 };
 
 const UploadCell = ({
@@ -133,7 +133,7 @@ const CheckInTable = () => {
           </thead>
           <tbody>
             {rows.map(row => {
-              const nextEstado = NEXT_ESTADO[row.estado];
+              const nextEstado = CITA_ALLOWED_TRANSITIONS[row.estado];
               const actionLabel = ACTION_LABEL[row.estado];
 
               return (

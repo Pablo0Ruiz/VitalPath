@@ -14,7 +14,7 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
-        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/gemini"
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai"
       },
       "android": {
         "buildType": "apk"
@@ -24,7 +24,7 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
-        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/gemini"
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai"
       }
     }
   },
