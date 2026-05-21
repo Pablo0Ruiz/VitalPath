@@ -83,9 +83,11 @@ export class SeedService {
     this.logger.log(`Centros de salud creados: ${centros.length}`);
 
     // 2. Crear Administrador
+    const { centroIndex: adminCentroIndex, ...adminSeedData } = adminSeed;
     const _adminUser = await this.userModel.create({
-      ...adminSeed,
+      ...adminSeedData,
       password: hashedPassword,
+      centroSalud_ID: centros[adminCentroIndex]._id,
     });
     this.logger.log('Usuario Administrador creado.');
 

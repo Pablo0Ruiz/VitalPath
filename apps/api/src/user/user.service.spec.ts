@@ -12,6 +12,7 @@ import { UserRoles } from 'src/auth/enum/user-role.enum';
 
 const makeUserModel = () => ({
   findById: jest.fn(),
+  find: jest.fn(),
 });
 
 const makePopulatable = (resolved: unknown) => ({
@@ -117,6 +118,95 @@ describe('UserService', () => {
       expect(result.profile).toBeNull();
       expect(patientModel.findOne).not.toHaveBeenCalled();
       expect(doctorModel.findOne).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── getCenterPatients ───────────────────────────────────────────────────
+
+  describe('getCenterPatients', () => {
+    const staffId = new Types.ObjectId().toString();
+    const centroId = new Types.ObjectId().toString();
+
+    it('resolves staff user doc and returns all PACIENTE users for that center', async () => {
+      const staffDoc = {
+        _id: staffId,
+        role: UserRoles.TRABAJADOR_CENTRO,
+        centroSalud_ID: centroId,
+        toObject: () => ({ _id: staffId }),
+      };
+      const patients = [
+        {
+          _id: new Types.ObjectId().toString(),
+          role: UserRoles.PACIENTE,
+          toObject: () => ({}),
+        },
+        {
+          _id: new Types.ObjectId().toString(),
+          role: UserRoles.PACIENTE,
+          toObject: () => ({}),
+        },
+      ];
+
+      userModel.findById.mockResolvedValue(staffDoc);
+      userModel.find.mockResolvedValue(patients);
+
+      const result = await service.getCenterPatients(staffId);
+
+      expect(userModel.findById).toHaveBeenCalledWith(staffId);
+      expect(userModel.find).toHaveBeenCalledWith({
+        centroSalud_ID: { $in: [centroId] },
+        role: UserRoles.PACIENTE,
+      });
+      expect(result).toHaveLength(2);
+    });
+
+    it('returns empty array when center has no patients', async () => {
+      const staffDoc = {
+        _id: staffId,
+        role: UserRoles.TRABAJADOR_CENTRO,
+        centroSalud_ID: centroId,
+        toObject: () => ({ _id: staffId }),
+      };
+
+      userModel.findById.mockResolvedValue(staffDoc);
+      userModel.find.mockResolvedValue([]);
+
+      const result = await service.getCenterPatients(staffId);
+
+      expect(result).toHaveLength(0);
+      expect(userModel.find).toHaveBeenCalledWith({
+        centroSalud_ID: { $in: [centroId] },
+        role: UserRoles.PACIENTE,
+      });
+    });
+
+    it('throws NotFoundException when staff user doc is not found', async () => {
+      userModel.findById.mockResolvedValue(null);
+
+      await expect(service.getCenterPatients(staffId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('handles null centroSalud_ID by filtering it out and returning empty array', async () => {
+      const staffDoc = {
+        _id: staffId,
+        role: UserRoles.TRABAJADOR_CENTRO,
+        centroSalud_ID: null,
+        toObject: () => ({ _id: staffId }),
+      };
+
+      userModel.findById.mockResolvedValue(staffDoc);
+      userModel.find.mockResolvedValue([]);
+
+      const result = await service.getCenterPatients(staffId);
+
+      // [null].filter(Boolean) = [] → $in: [] → no patients
+      expect(userModel.find).toHaveBeenCalledWith({
+        centroSalud_ID: { $in: [] },
+        role: UserRoles.PACIENTE,
+      });
+      expect(result).toHaveLength(0);
     });
   });
 

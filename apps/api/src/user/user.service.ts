@@ -6,6 +6,7 @@ import { Doctor } from './entities/doctor.entity';
 import { Patient } from './entities/patient.entity';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
+import type { IPatientProfile } from '@repo/types';
 
 @Injectable()
 export class UserService {
@@ -65,6 +66,21 @@ export class UserService {
       ...user.toObject(),
       profile,
     };
+  }
+
+  async getCenterPatients(staffUserId: string): Promise<IPatientProfile[]> {
+    const staffDoc = await this.userModel.findById(staffUserId);
+
+    if (!staffDoc) throw new NotFoundException('Staff user not found');
+
+    const centerIds = [staffDoc.centroSalud_ID].filter(Boolean);
+
+    const patients = await this.userModel.find({
+      centroSalud_ID: { $in: centerIds },
+      role: UserRoles.PACIENTE,
+    });
+
+    return patients.map(p => p.toObject() as unknown as IPatientProfile);
   }
 
   async updateProfile(userId: string, updateUserDto: UpdateUserDto) {
