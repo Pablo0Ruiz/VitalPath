@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { patchMe, getPatientById } from '../actions/user.actions';
+import {
+  patchMe,
+  getPatientById,
+  getCenterPatients,
+} from '../actions/user.actions';
 import type { UserSession, IPatientProfile } from '@repo/types';
 import { patientKeys } from '../queryKeys';
 
@@ -29,6 +33,14 @@ export const usePatientById = (id?: string) => {
     queryKey: patientKeys.detail(id ?? ''),
     queryFn: () => getPatientById(id!),
     enabled: !!id,
+    staleTime: 300_000,
+  });
+};
+
+export const useCenterPatients = () => {
+  return useQuery<IPatientProfile[]>({
+    queryKey: ['center-patients'],
+    queryFn: getCenterPatients,
     staleTime: 300_000,
   });
 };

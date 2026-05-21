@@ -1,9 +1,30 @@
+export type Role =
+  | 'paciente'
+  | 'cuidador_familiar'
+  | 'medico'
+  | 'trabajador_centro'
+  | 'admin';
+
+const VALID_ROLES: Role[] = [
+  'paciente',
+  'cuidador_familiar',
+  'medico',
+  'trabajador_centro',
+  'admin',
+];
+
+export function normalizeRole(raw?: string): Role | null {
+  if (!raw) return null;
+  const lower = raw.toLowerCase() as Role;
+  return VALID_ROLES.includes(lower) ? lower : null;
+}
+
 export interface UserSession {
   _id: string;
   name: string;
   lastName?: string;
   email: string;
-  role?: string;
+  role?: Role;
   medicaments?: string[];
   fechaNacimiento?: string;
   genero?: string;
@@ -39,7 +60,7 @@ export interface RegisterCuidadorCredentials {
   password: string;
   fechaNacimiento: string;
   genero: 'Masculino' | 'Femenino' | 'Otro';
-  role: 'CUIDADOR_FAMILIAR';
+  role: 'cuidador_familiar';
 }
 
 export interface RegisterCredentials {

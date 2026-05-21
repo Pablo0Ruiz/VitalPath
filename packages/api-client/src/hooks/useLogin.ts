@@ -4,6 +4,7 @@ import { postLogin } from '../actions/auth.actions';
 
 interface LoginCallbacks {
   setSession: (user: UserSession) => void;
+  onRoleError?: (title: string, message: string) => void;
 }
 
 export const useLogin = (
@@ -14,6 +15,13 @@ export const useLogin = (
   return useMutation({
     mutationFn: postLogin,
     onSuccess: async data => {
+      if (data.user.role === 'medico') {
+        callbacks.onRoleError?.(
+          'Error',
+          'Solo los pacientes pueden iniciar sesión en esta aplicación.',
+        );
+        return undefined;
+      }
       await adapter.setToken(data.accessToken);
       if (data.refreshToken) await adapter.setRefreshToken(data.refreshToken);
       callbacks.setSession(data.user);

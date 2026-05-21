@@ -1,17 +1,17 @@
+import type {
+  CreateMedicationPayload,
+  Medication,
+  UpdateMedicationPayload,
+} from '@repo/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  createMedication,
+  deleteMedication,
   getMedicament,
   getMedicaments,
   getMedicationsByPatient,
-  createMedication,
   updateMedication,
-  deleteMedication,
 } from '../actions/medication.actions';
-import type {
-  Medication,
-  CreateMedicationPayload,
-  UpdateMedicationPayload,
-} from '@repo/types';
 import { medicationKeys } from '../queryKeys';
 
 export const useMedicaments = () => {

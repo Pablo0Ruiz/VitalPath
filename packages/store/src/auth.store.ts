@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { UserSession } from '@repo/types';
+import { normalizeRole } from '@repo/types';
 import type { StorageAdapter } from './storage.adapter';
 
 export interface AuthState {
@@ -22,7 +23,11 @@ export const createAuthStore = (storage: StorageAdapter) =>
         isAuthenticated: false,
         isLoading: true,
         _hasHydrated: false,
-        setSession: user => set({ user, isAuthenticated: true }),
+        setSession: user =>
+          set({
+            user: { ...user, role: normalizeRole(user.role) ?? undefined },
+            isAuthenticated: true,
+          }),
         clearSession: () => set({ user: null, isAuthenticated: false }),
         setIsLoading: isLoading => set({ isLoading }),
         setHasHydrated: () => set({ _hasHydrated: true }),
