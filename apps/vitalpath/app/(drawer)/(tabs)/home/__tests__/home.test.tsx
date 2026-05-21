@@ -45,9 +45,17 @@ jest.mock('@repo/store', () => ({
     _selector({ chatId: 'chat-1' }),
 }));
 
+// ── Controlled citas data (mutable so individual tests can override) ────────
+let mockCitasData: Array<{
+  _id: string;
+  fecha: string;
+  hora: string;
+  estado: string;
+}> = [];
+
 // ── API client ──────────────────────────────────────────────────────────────
 jest.mock('@repo/api-client', () => ({
-  useCitas: () => ({ data: [], isLoading: false }),
+  useCitas: () => ({ data: mockCitasData, isLoading: false }),
   useMedicaments: () => ({ data: [], isLoading: false }),
   useMedicationsByPatient: () => ({ data: [], isLoading: false }),
   useDeleteMedication: () => ({ mutateAsync: jest.fn() }),
@@ -93,13 +101,19 @@ jest.mock('@/src/components/ui/organisms', () => {
   };
 });
 
-// ── DailyCheckIn (deep dependencies — stub) ─────────────────────────────────
+// ── CustomList spy — captures `data` prop so tests can assert on it ──────────
+let capturedCitaData: unknown[] | null = null;
+
 jest.mock('@/src/components/ui/molecules', () => {
   const { View, Text } = require('react-native');
   const React = require('react');
   return {
-    CustomList: ({ type }: { type: string }) =>
-      React.createElement(View, { testID: `custom-list-${type}` }),
+    CustomList: ({ type, data }: { type: string; data?: unknown[] }) => {
+      if (type === 'cita') {
+        capturedCitaData = data ?? null;
+      }
+      return React.createElement(View, { testID: `custom-list-${type}` });
+    },
     CustomModal: () => React.createElement(View, { testID: 'custom-modal' }),
     SectionHeader: ({
       title,
@@ -127,7 +141,31 @@ jest.mock('@/src/components/ui/molecules', () => {
 // After mocking molecules (which contains SectionHeader), the home screen should render
 import DashboardScreen from '../index';
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function makeCita(overrides: {
+  _id?: string;
+  fecha: string;
+  hora: string;
+  estado?: string;
+}) {
+  return {
+    _id: overrides._id ?? 'cita-1',
+    fecha: overrides.fecha,
+    hora: overrides.hora,
+    estado: overrides.estado ?? 'agendada',
+  };
+}
+
+// Fixed "now": 2025-06-15 at 10:00
+const FIXED_NOW = new Date(2025, 5, 15, 10, 0, 0); // month is 0-indexed
+
+// ── Existing tests ────────────────────────────────────────────────────────────
 describe('DashboardScreen — card shadow-wrapper + clip container split', () => {
+  beforeEach(() => {
+    mockCitasData = [];
+    capturedCitaData = null;
+  });
+
   it('citas card outer wrapper (card-shadow-citas) has elevation and no overflow', () => {
     const { getByTestId } = render(<DashboardScreen />);
     const shadowWrapper = getByTestId('card-shadow-citas');
@@ -188,5 +226,74 @@ describe('DashboardScreen — card shadow-wrapper + clip container split', () =>
   it('CustomList for type cita still mounts (card structure not broken)', () => {
     const { getByTestId } = render(<DashboardScreen />);
     expect(getByTestId('custom-list-cita')).toBeTruthy();
+  });
+});
+
+// ── New tests: upcomingCitas filter (R-OBS2-3, R-OBS2-4) ─────────────────────
+describe('DashboardScreen — upcomingCitas filter (R-OBS2-3 and R-OBS2-4)', () => {
+  beforeEach(() => {
+    mockCitasData = [];
+    capturedCitaData = null;
+    // Pin system time to FIXED_NOW so all new Date() calls are deterministic
+    jest.useFakeTimers();
+    jest.setSystemTime(FIXED_NOW);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('includes an agendada appointment with datetime strictly in the future', () => {
+    // 2025-06-16 at 09:00 — after FIXED_NOW (2025-06-15 10:00)
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-16', hora: '09:00', estado: 'agendada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(1);
+  });
+
+  it('excludes a cancelada appointment even if its datetime is in the future', () => {
+    // Future date but estado = cancelada
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-16', hora: '09:00', estado: 'cancelada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(0);
+  });
+
+  it('excludes a completada appointment even if its datetime is in the future', () => {
+    // Future date but estado = completada
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-16', hora: '09:00', estado: 'completada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(0);
+  });
+
+  it('excludes an agendada appointment whose datetime is in the past (overdue)', () => {
+    // 2025-06-14 09:00 — before FIXED_NOW (2025-06-15 10:00)
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-14', hora: '09:00', estado: 'agendada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(0);
+  });
+
+  it('includes a same-day agendada appointment whose hora is in the future', () => {
+    // Same day (2025-06-15) at 14:00 — after FIXED_NOW 10:00
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-15', hora: '14:00', estado: 'agendada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(1);
+  });
+
+  it('excludes a same-day agendada appointment whose hora is in the past (overdue)', () => {
+    // Same day (2025-06-15) at 08:00 — before FIXED_NOW 10:00
+    mockCitasData = [
+      makeCita({ fecha: '2025-06-15', hora: '08:00', estado: 'agendada' }),
+    ];
+    render(<DashboardScreen />);
+    expect(capturedCitaData).toHaveLength(0);
   });
 });
