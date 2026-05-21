@@ -10,7 +10,7 @@ import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
 import { FormField } from '@/src/components/ui/molecules';
 import { Step3FormValues, step3Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
-import { useRegister } from '@repo/api-client';
+import { useRegister, parseApiError } from '@repo/api-client';
 import { useAuthStore } from '@/src/stores/auth';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
 import { ROUTES } from '@/src/routes/routes';
@@ -65,8 +65,8 @@ const RegisterStep3 = () => {
       onSuccess: () => {
         reset();
       },
-      onError: () => {
-        Alert.alert('Error', 'No se pudo crear la cuenta. Intente nuevamente.');
+      onError: error => {
+        Alert.alert('Error', parseApiError(error).message);
       },
     });
   };
