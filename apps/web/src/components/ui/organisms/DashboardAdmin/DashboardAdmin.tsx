@@ -15,9 +15,9 @@ import { AlertPanel } from '@/components/ui/organisms/AlertPanel';
 import {
   computeDashboardAlerts,
   OVERLOAD_THRESHOLD,
-  formatLocalYMD,
 } from '@/components/ui/organisms/AlertPanel/computeDashboardAlerts';
 import { useStatsSummary, useCitasAdministrator } from '@repo/api-client';
+import { formatLocalYMD } from '../../../../utils/format';
 
 const DashboardAdmin = () => {
   const [search, setSearch] = useState('');

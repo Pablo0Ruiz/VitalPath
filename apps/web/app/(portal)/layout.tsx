@@ -10,6 +10,7 @@ import FloatingChat from '@/components/ui/organisms/FloatingChat';
 const pathLabels: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/patients': 'Pacientes',
+  '/center-patients': 'Pacientes del centro',
   '/appointments': 'Citas',
   '/register-patient': 'Registro paciente',
   '/schedule': 'Agendar',

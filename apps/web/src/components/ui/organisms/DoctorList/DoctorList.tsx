@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import { Card } from '@/components/ui/atoms/Card';
 import { Input } from '@/components/ui/atoms/Input';
@@ -106,9 +107,10 @@ const DoctorList = () => {
         </div>
         <div className="divide-y divide-brand-border">
           {filteredDoctors?.map(doctor => (
-            <div
+            <Link
               key={doctor._id}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors"
+              href={`/doctors/${doctor._id}`}
+              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors no-underline"
             >
               <Avatar
                 name={`${doctor.user.name} ${doctor.user.lastName}`}
@@ -134,7 +136,11 @@ const DoctorList = () => {
               </Badge>
               {doctor.user.isActive === false && (
                 <Button
-                  onClick={() => handleInviteDoctor(doctor._id)}
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleInviteDoctor(doctor._id);
+                  }}
                   disabled={invitedIds.includes(doctor._id)}
                   loading={isInviting && invitingId === doctor._id}
                 >
@@ -143,7 +149,7 @@ const DoctorList = () => {
                     : 'Enviar código de verificación'}
                 </Button>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </Card>

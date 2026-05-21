@@ -1,19 +1,8 @@
 import type { CitaPopulated } from '@repo/types';
 import type { DashboardAlert } from './types';
+import { formatLocalYMD, parseLocalDateTime } from '../../../../utils/format';
 
 export const OVERLOAD_THRESHOLD = 8;
-
-export function formatLocalYMD(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function parseLocalDateTime(fecha: string, hora: string): number | null {
-  const ms = new Date(`${fecha}T${hora}`).getTime();
-  return Number.isNaN(ms) ? null : ms;
-}
 
 export function computeDashboardAlerts(
   citas: CitaPopulated[],
