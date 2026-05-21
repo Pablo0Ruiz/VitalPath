@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { StyleSheet, View, ViewProps } from 'react-native';
+import { Pressable, StyleSheet, View, ViewProps } from 'react-native';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
+import { TextField } from '@/src/components/ui/atoms';
 import { useTheme } from '@/src/hooks/useTheme';
 
 export interface CalendarWidgetProps extends ViewProps {
@@ -43,8 +44,11 @@ export const CalendarWidget = ({
     if (onDateChange) {
       onDateChange(date);
     }
-    if (onDayPressSheet) {
-      onDayPressSheet(date);
+  };
+
+  const handleAddPress = () => {
+    if (onDayPressSheet && selectedDate) {
+      onDayPressSheet(selectedDate);
     }
   };
 
@@ -68,6 +72,17 @@ export const CalendarWidget = ({
         appointmentsMap={appointmentsMap}
         onDayPress={handleDayPress}
       />
+      {onDayPressSheet && (
+        <Pressable
+          testID="calendar-add-button"
+          style={[s.addButton, { backgroundColor: t.primary600 }]}
+          onPress={handleAddPress}
+        >
+          <TextField variant="body" style={s.addButtonText}>
+            + Agregar cita
+          </TextField>
+        </Pressable>
+      )}
     </View>
   );
 };
@@ -82,5 +97,16 @@ const s = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
+  },
+  addButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });

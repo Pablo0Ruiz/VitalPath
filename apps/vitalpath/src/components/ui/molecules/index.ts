@@ -27,3 +27,5 @@ export { EmptyPacienteActivoState } from './EmptyPacienteActivoState';
 export { PacienteActivoSelector } from './PacienteActivoSelector';
 export { PacienteRow } from './PacienteRow';
 export { CuidadorRow } from './CuidadorRow';
+export { EditCitaSheet } from './EditCitaSheet';
+export type { EditCitaSheetProps } from './EditCitaSheet';

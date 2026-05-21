@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-
+import Octicons from '@expo/vector-icons/Octicons';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { Divider, FormField } from '@/src/components/ui/molecules';
 import { useLogin, useLoginWithCode } from '@repo/api-client';
@@ -20,9 +20,11 @@ import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 import { isElderlyUser } from '@/src/utils/date';
+import { useState } from 'react';
 
 const Login = () => {
   const t = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
   const { setSession } = useAuthStore();
   const { hasSeenSuggestion } = useSeniorUIStore();
 
@@ -155,13 +157,26 @@ const Login = () => {
               <FormField
                 label="Contraseña"
                 placeholder="••••••••"
-                secureTextEntry
                 rightLabel="¿Olvidaste tu contraseña?"
                 onChangeText={onChange}
+                secureTextEntry={!showPassword}
                 onBlur={onBlur}
                 value={value}
                 rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
                 style={s.passwordField}
+                rightIcon={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Octicons
+                      name={showPassword ? 'eye' : 'eye-closed'}
+                      size={20}
+                      color={t.textSecondary}
+                    />
+                  </Button>
+                }
                 helperText={errors.password?.message}
               />
             )}

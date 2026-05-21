@@ -1,7 +1,7 @@
 import { StyleSheet, View, ViewProps } from 'react-native';
 import { Button, TextField } from '../../atoms';
 import { getEstadoConfig } from '@/src/constants/appointments';
-import { CitaEstado } from '@repo/types';
+import { CitaEstado, isCancelable } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
 
 export interface AppointmentStatusProps extends ViewProps {
@@ -19,7 +19,6 @@ const AppointmentStatus = ({
 }: AppointmentStatusProps) => {
   const t = useTheme();
   const config = getEstadoConfig(t)[status] ?? getEstadoConfig(t).agendada;
-  const isCancelada = status === 'cancelada';
 
   return (
     <View style={[s.container, style]} {...props}>
@@ -28,7 +27,7 @@ const AppointmentStatus = ({
           {config.label}
         </TextField>
       </View>
-      {!isCancelada && onCancel && (
+      {isCancelable(status) && onCancel && (
         <Button
           onPress={onCancel}
           disabled={isCancelling}

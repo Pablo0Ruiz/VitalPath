@@ -8,22 +8,30 @@ import { ScreenHeader } from '@/src/components/ui/atoms/ScreenHeader';
 import { SectionHeader } from '@/src/components/ui/molecules/SectionHeader';
 import { AppointmentCard } from '@/src/components/ui/molecules/AppointmentCard';
 import { DoctorPickerSheet } from '@/src/components/ui/molecules/DoctorPickerSheet';
+import { EditCitaSheet } from '@/src/components/ui/molecules/EditCitaSheet';
 import { EmptyPacienteActivoState } from '@/src/components/ui/molecules/EmptyPacienteActivoState';
 import { CalendarWidget } from '@/src/components/ui/organisms/CalendarWidget';
 import { CuidadorAppointmentsView } from '@/src/components/ui/molecules/CuidadorAppointmentsView/CuidadorAppointmentsView';
 import { useCitas, useCancelCita } from '@repo/api-client';
 
-import { extractDateKey } from '@/src/utils/date';
+import { extractDateKey, parseLocalDateTime } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useDisclosure, useActivePatientId } from '@/src/hooks';
 import { useRole } from '@/src/hooks/useRole';
+
+interface RescheduleData {
+  citaId: string;
+  fecha: string;
+  hora: string;
+}
 
 function PacienteAppointmentsView() {
   const t = useTheme();
   const { patientId, needsSelection } = useActivePatientId();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const sheet = useDisclosure<Date>();
+  const reschedule = useDisclosure<RescheduleData>();
 
   const {
     data: citas = [],
@@ -58,6 +66,17 @@ function PacienteAppointmentsView() {
           onPress: () => cancelarCita(citaId),
         },
       ],
+    );
+  };
+
+  const handleReschedule = (cita: CitaPopulated) => {
+    reschedule.open({ citaId: cita._id, fecha: cita.fecha, hora: cita.hora });
+  };
+
+  const isOverdue = (cita: CitaPopulated): boolean => {
+    return (
+      cita.estado === 'agendada' &&
+      parseLocalDateTime(cita.fecha, cita.hora) < new Date()
     );
   };
 
@@ -114,6 +133,8 @@ function PacienteAppointmentsView() {
               appointment={item}
               onCancel={handleCancelar}
               isCancelling={isCancelling}
+              isOverdue={isOverdue(item)}
+              onReschedule={() => handleReschedule(item)}
             />
           </View>
         )}
@@ -125,11 +146,23 @@ function PacienteAppointmentsView() {
           />
         }
       />
+
       <DoctorPickerSheet
         visible={sheet.isOpen}
         date={sheet.data}
         onClose={sheet.close}
       />
+
+      {reschedule.isOpen && reschedule.data && (
+        <EditCitaSheet
+          isOpen={reschedule.isOpen}
+          citaId={reschedule.data.citaId}
+          prefillFecha={reschedule.data.fecha}
+          prefillHora={reschedule.data.hora}
+          onClose={reschedule.close}
+          onSuccess={reschedule.close}
+        />
+      )}
     </SafeAreaView>
   );
 }
