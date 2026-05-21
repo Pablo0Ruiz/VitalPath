@@ -22,7 +22,7 @@ import {
   useMedicaments,
 } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
-import { extractDateKey } from '@/src/utils/date';
+import { parseLocalDateTime } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
 import {
   useCompletedSet,
@@ -53,9 +53,12 @@ export default function DashboardScreen() {
   const { mutateAsync: deleteMedication } = useDeleteMedication();
 
   const upcomingCitas = useMemo(() => {
-    const today = extractDateKey(new Date());
+    const now = new Date();
     return [...citas]
-      .filter(c => c.fecha >= today)
+      .filter(
+        c =>
+          c.estado === 'agendada' && parseLocalDateTime(c.fecha, c.hora) > now,
+      )
       .sort((a, b) => {
         const dateCompare = a.fecha.localeCompare(b.fecha);
         if (dateCompare !== 0) return dateCompare;

@@ -24,6 +24,12 @@ export const formatDateShort = (dateString: string): string => {
   return `${day}/${month}`;
 };
 
+export const parseLocalDateTime = (fecha: string, hora: string): Date => {
+  const [year, month, day] = fecha.split('-').map(Number);
+  const [hours, minutes] = hora.split(':').map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+};
+
 export const isElderlyUser = (
   fechaNacimiento: string | null | undefined,
 ): boolean => {

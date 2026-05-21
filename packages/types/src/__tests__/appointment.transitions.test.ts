@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { CITA_ALLOWED_TRANSITIONS, CitaEstadoEnum } from '../index';
+import {
+  CITA_ALLOWED_TRANSITIONS,
+  CitaEstadoEnum,
+  isCancelable,
+} from '../index';
 
 describe('CITA_ALLOWED_TRANSITIONS', () => {
   it('maps AGENDADA to ASISTIDA', () => {
@@ -33,5 +37,31 @@ describe('CITA_ALLOWED_TRANSITIONS', () => {
 
   it('has exactly 4 keys', () => {
     expect(Object.keys(CITA_ALLOWED_TRANSITIONS)).toHaveLength(4);
+  });
+});
+
+describe('isCancelable', () => {
+  it('returns true for agendada', () => {
+    expect(isCancelable(CitaEstadoEnum.AGENDADA)).toBe(true);
+  });
+
+  it('returns false for asistida', () => {
+    expect(isCancelable(CitaEstadoEnum.ASISTIDA)).toBe(false);
+  });
+
+  it('returns false for en_proceso', () => {
+    expect(isCancelable(CitaEstadoEnum.EN_PROCESO)).toBe(false);
+  });
+
+  it('returns false for resultados_listos', () => {
+    expect(isCancelable(CitaEstadoEnum.RESULTADOS_LISTOS)).toBe(false);
+  });
+
+  it('returns false for completada', () => {
+    expect(isCancelable(CitaEstadoEnum.COMPLETADA)).toBe(false);
+  });
+
+  it('returns false for cancelada', () => {
+    expect(isCancelable(CitaEstadoEnum.CANCELADA)).toBe(false);
   });
 });

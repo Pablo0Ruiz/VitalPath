@@ -77,3 +77,6 @@ export const CITA_ALLOWED_TRANSITIONS: Partial<Record<CitaEstado, CitaEstado>> =
     [CitaEstadoEnum.EN_PROCESO]: CitaEstadoEnum.RESULTADOS_LISTOS,
     [CitaEstadoEnum.RESULTADOS_LISTOS]: CitaEstadoEnum.COMPLETADA,
   };
+
+export const isCancelable = (estado: CitaEstado): boolean =>
+  estado === 'agendada';
