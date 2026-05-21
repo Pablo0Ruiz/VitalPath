@@ -2,26 +2,24 @@ import { useState, useMemo } from 'react';
 import { FlatList, View, Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-  EmptyState,
-  LoadingScreen,
-  ScreenHeader,
-} from '@/src/components/ui/atoms';
-import {
-  SectionHeader,
-  AppointmentCard,
-  DoctorPickerSheet,
-  EmptyPacienteActivoState,
-} from '@/src/components/ui/molecules';
-import { CalendarWidget } from '@/src/components/ui/organisms';
+import { EmptyState } from '@/src/components/ui/atoms/EmptyState';
+import { LoadingScreen } from '@/src/components/ui/atoms/LoadingScreen';
+import { ScreenHeader } from '@/src/components/ui/atoms/ScreenHeader';
+import { SectionHeader } from '@/src/components/ui/molecules/SectionHeader';
+import { AppointmentCard } from '@/src/components/ui/molecules/AppointmentCard';
+import { DoctorPickerSheet } from '@/src/components/ui/molecules/DoctorPickerSheet';
+import { EmptyPacienteActivoState } from '@/src/components/ui/molecules/EmptyPacienteActivoState';
+import { CalendarWidget } from '@/src/components/ui/organisms/CalendarWidget';
+import { CuidadorAppointmentsView } from '@/src/components/ui/molecules/CuidadorAppointmentsView/CuidadorAppointmentsView';
 import { useCitas, useCancelCita } from '@repo/api-client';
 
 import { extractDateKey } from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useDisclosure, useActivePatientId } from '@/src/hooks';
+import { useRole } from '@/src/hooks/useRole';
 
-export default function AppointmentsScreen() {
+function PacienteAppointmentsView() {
   const t = useTheme();
   const { patientId, needsSelection } = useActivePatientId();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -134,6 +132,13 @@ export default function AppointmentsScreen() {
       />
     </SafeAreaView>
   );
+}
+
+export default function AppointmentsScreen() {
+  const role = useRole();
+
+  if (role === 'cuidador_familiar') return <CuidadorAppointmentsView />;
+  return <PacienteAppointmentsView />;
 }
 
 const s = StyleSheet.create({

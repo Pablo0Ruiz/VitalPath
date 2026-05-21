@@ -47,7 +47,7 @@ describe('useActivePacienteRevalidator', () => {
   });
 
   it('does nothing when activePacienteId is null', () => {
-    mockAuthUser = { role: 'CUIDADOR_FAMILIAR' };
+    mockAuthUser = { role: 'cuidador_familiar' };
     mockActivePacienteId = null;
     mockMisPacientesIsSuccess = true;
     mockMisPacientesData = [
@@ -60,7 +60,7 @@ describe('useActivePacienteRevalidator', () => {
   });
 
   it('does nothing when isSuccess is false (data still loading)', () => {
-    mockAuthUser = { role: 'CUIDADOR_FAMILIAR' };
+    mockAuthUser = { role: 'cuidador_familiar' };
     mockActivePacienteId = 'p1';
     mockMisPacientesIsSuccess = false;
     mockMisPacientesData = [];
@@ -71,7 +71,7 @@ describe('useActivePacienteRevalidator', () => {
   });
 
   it('does nothing when activePacienteId is in the list with ACTIVO status', () => {
-    mockAuthUser = { role: 'CUIDADOR_FAMILIAR' };
+    mockAuthUser = { role: 'cuidador_familiar' };
     mockActivePacienteId = 'p1';
     mockMisPacientesIsSuccess = true;
     mockMisPacientesData = [
@@ -84,7 +84,7 @@ describe('useActivePacienteRevalidator', () => {
   });
 
   it('calls clearActivePaciente when activePacienteId is NOT in the list (link revoked)', () => {
-    mockAuthUser = { role: 'CUIDADOR_FAMILIAR' };
+    mockAuthUser = { role: 'cuidador_familiar' };
     mockActivePacienteId = 'p-revoked';
     mockMisPacientesIsSuccess = true;
     mockMisPacientesData = [
@@ -96,8 +96,8 @@ describe('useActivePacienteRevalidator', () => {
     expect(mockClearActivePaciente).toHaveBeenCalledTimes(1);
   });
 
-  it('does nothing when user is not CUIDADOR_FAMILIAR', () => {
-    mockAuthUser = { role: 'PACIENTE' };
+  it('does nothing when user is not cuidador_familiar', () => {
+    mockAuthUser = { role: 'paciente' };
     mockActivePacienteId = 'p1';
     mockMisPacientesIsSuccess = true;
     mockMisPacientesData = [];
@@ -108,7 +108,7 @@ describe('useActivePacienteRevalidator', () => {
   });
 
   it('calls clearActivePaciente when entry exists but has REVOCADO status', () => {
-    mockAuthUser = { role: 'CUIDADOR_FAMILIAR' };
+    mockAuthUser = { role: 'cuidador_familiar' };
     mockActivePacienteId = 'p-revoked';
     mockMisPacientesIsSuccess = true;
     mockMisPacientesData = [

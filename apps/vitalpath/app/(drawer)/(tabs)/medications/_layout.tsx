@@ -6,11 +6,7 @@ export default function MedicationsLayout() {
   const t = useTheme();
 
   const onBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/(drawer)/(tabs)/home');
-    }
+    router.replace('/(drawer)/(tabs)/home');
   };
 
   return (

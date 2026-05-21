@@ -1,7 +1,10 @@
-interface RouteConfig {
+import type { Role } from '@repo/types';
+
+export interface RouteConfig {
   title: string;
   icon: string;
   screenName: string;
+  allowedRoles?: Role[];
 }
 
 export const ROUTES = {
@@ -98,20 +101,24 @@ export const TAB_ROUTES: RouteConfig[] = [
     title: 'Records',
     icon: 'NoteIcon',
     screenName: TAB_SCREEN_NAMES.RECORDS,
+    allowedRoles: ['paciente'],
   },
   {
     title: 'Home',
     icon: 'Home01Icon',
     screenName: TAB_SCREEN_NAMES.HOME,
+    allowedRoles: ['paciente'],
   },
   {
     title: 'Chat',
     icon: 'BubbleChatIcon',
     screenName: TAB_SCREEN_NAMES.CHAT,
+    allowedRoles: ['paciente', 'cuidador_familiar'],
   },
   {
     title: 'Citas',
     icon: 'Calendar03Icon',
     screenName: TAB_SCREEN_NAMES.APPOINTMENTS,
+    allowedRoles: ['paciente', 'cuidador_familiar'],
   },
 ];

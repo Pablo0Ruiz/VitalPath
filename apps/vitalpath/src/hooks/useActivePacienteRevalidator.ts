@@ -13,7 +13,7 @@ export function useActivePacienteRevalidator(): void {
   const { data: pacientes = [], isSuccess } = useMisPacientes();
 
   useEffect(() => {
-    if (user?.role !== 'CUIDADOR_FAMILIAR') return;
+    if (user?.role !== 'cuidador_familiar') return;
     if (!activePacienteId) return;
     if (!isSuccess) return;
 

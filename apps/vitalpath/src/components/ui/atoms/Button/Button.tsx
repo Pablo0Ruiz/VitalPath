@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   PressableProps,
   StyleSheet,
@@ -50,6 +51,14 @@ const Button = ({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      android_ripple={
+        Platform.OS === 'android'
+          ? {
+              color: variant === 'ghost' ? t.primary100 : t.primary200,
+              borderless: false,
+            }
+          : undefined
+      }
       style={({ pressed }) => [
         s.base,
         getButtonSizeStyle(size, t),

@@ -10,3 +10,4 @@ export { useActivePatientId } from './useActivePatientId';
 export type { ActivePatientIdResult } from './useActivePatientId';
 export { useSetActivePaciente } from './useSetActivePaciente';
 export { useActivePacienteRevalidator } from './useActivePacienteRevalidator';
+export { useRole } from './useRole';

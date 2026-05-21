@@ -3,8 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
-import { DrawerActions } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 import { Button, HeaderHome, LoadingScreen } from '@/src/components/ui/atoms';
 import {
@@ -20,7 +19,7 @@ import { useAuthStore } from '@/src/stores/auth';
 import {
   useCitas,
   useDeleteMedication,
-  useMedicationsByPatient,
+  useMedicaments,
 } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
 import { extractDateKey } from '@/src/utils/date';
@@ -47,9 +46,7 @@ export default function DashboardScreen() {
 
   const { patientId, needsSelection } = useActivePatientId();
 
-  const { data: medicaments, isLoading } = useMedicationsByPatient(
-    patientId ?? undefined,
-  );
+  const { data: medicaments, isLoading } = useMedicaments();
   const { data: citas = [], isLoading: isLoadCitas } = useCitas(
     patientId ?? '',
   );
@@ -134,16 +131,19 @@ export default function DashboardScreen() {
               style={s.sectionHeader}
             />
             <View
-              style={[
-                s.card,
-                { backgroundColor: t.surfaceElevated, borderColor: t.border },
-              ]}
+              testID="card-shadow-citas"
+              style={[s.cardShadow, { backgroundColor: t.surfaceElevated }]}
             >
-              {isLoadCitas ? (
-                <LoadingScreen size="small" />
-              ) : (
-                <CustomList type="cita" data={upcomingCitas} />
-              )}
+              <View
+                testID="card-clip-citas"
+                style={[s.cardClip, { borderColor: t.border }]}
+              >
+                {isLoadCitas ? (
+                  <LoadingScreen size="small" />
+                ) : (
+                  <CustomList type="cita" data={upcomingCitas} />
+                )}
+              </View>
             </View>
           </View>
 
@@ -171,19 +171,22 @@ export default function DashboardScreen() {
               <LoadingScreen size="small" />
             ) : (
               <View
-                style={[
-                  s.card,
-                  { backgroundColor: t.surfaceElevated, borderColor: t.border },
-                ]}
+                testID="card-shadow-meds"
+                style={[s.cardShadow, { backgroundColor: t.surfaceElevated }]}
               >
-                <CustomList
-                  type="medication"
-                  data={medicaments}
-                  onDelete={handleDelete}
-                  onEdit={id => editModal.open(id)}
-                  onTake={markCompleted}
-                  completedIds={completedIds}
-                />
+                <View
+                  testID="card-clip-meds"
+                  style={[s.cardClip, { borderColor: t.border }]}
+                >
+                  <CustomList
+                    type="medication"
+                    data={medicaments}
+                    onDelete={handleDelete}
+                    onEdit={id => editModal.open(id)}
+                    onTake={markCompleted}
+                    completedIds={completedIds}
+                  />
+                </View>
               </View>
             )}
           </View>
@@ -246,15 +249,18 @@ const s = StyleSheet.create({
   emptyStateWrapper: { flex: 1, justifyContent: 'center' },
   section: { paddingHorizontal: 20, paddingTop: 20 },
   sectionHeader: { marginTop: 12, marginBottom: 8 },
-  card: {
+  cardShadow: {
     borderRadius: 24,
-    overflow: 'hidden',
-    borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
+  },
+  cardClip: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 1,
   },
   medicationHeader: {
     flexDirection: 'row',

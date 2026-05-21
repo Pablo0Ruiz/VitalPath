@@ -23,9 +23,9 @@ describe('useActivePatientId', () => {
     mockActivePacienteId = null;
   });
 
-  describe('when user is PACIENTE', () => {
+  describe('when user is paciente (lowercase)', () => {
     it('returns user._id as patientId', () => {
-      mockUser = { _id: 'user-123', role: 'PACIENTE' };
+      mockUser = { _id: 'user-123', role: 'paciente' };
 
       const { result } = renderHook(() => useActivePatientId());
 
@@ -35,7 +35,7 @@ describe('useActivePatientId', () => {
     });
 
     it('does not expose activePacienteId even if store has one', () => {
-      mockUser = { _id: 'user-456', role: 'PACIENTE' };
+      mockUser = { _id: 'user-456', role: 'paciente' };
       mockActivePacienteId = 'some-other-id';
 
       const { result } = renderHook(() => useActivePatientId());
@@ -44,9 +44,9 @@ describe('useActivePatientId', () => {
     });
   });
 
-  describe('when user is CUIDADOR_FAMILIAR', () => {
+  describe('when user is cuidador_familiar (lowercase)', () => {
     it('returns activePacienteId when set', () => {
-      mockUser = { _id: 'cuidador-1', role: 'CUIDADOR_FAMILIAR' };
+      mockUser = { _id: 'cuidador-1', role: 'cuidador_familiar' };
       mockActivePacienteId = 'paciente-999';
 
       const { result } = renderHook(() => useActivePatientId());
@@ -57,7 +57,7 @@ describe('useActivePatientId', () => {
     });
 
     it('returns null when no active patient selected', () => {
-      mockUser = { _id: 'cuidador-1', role: 'CUIDADOR_FAMILIAR' };
+      mockUser = { _id: 'cuidador-1', role: 'cuidador_familiar' };
       mockActivePacienteId = null;
 
       const { result } = renderHook(() => useActivePatientId());

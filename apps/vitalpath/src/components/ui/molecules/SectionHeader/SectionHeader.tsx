@@ -28,6 +28,7 @@ const SectionHeader = ({
           variant="ghost"
           size="sm"
           style={s.button}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <TextField
             variant="caption"
