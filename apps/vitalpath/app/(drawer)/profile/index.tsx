@@ -35,7 +35,12 @@ export default function ProfileScreen() {
     { label: 'Email', value: user?.email ?? '—' },
     { label: 'Rol', value: user?.role ?? '—' },
     ...(user?.fechaNacimiento
-      ? [{ label: 'Fecha de nacimiento', value: user.fechaNacimiento }]
+      ? [
+          {
+            label: 'Fecha de nacimiento',
+            value: user.fechaNacimiento.split('T')[0],
+          },
+        ]
       : []),
     ...(user?.genero ? [{ label: 'Género', value: user.genero }] : []),
   ];

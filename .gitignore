@@ -114,3 +114,4 @@ apps/api/.windsurf/*
 # Notifications
 google-services.json
 apps/vitalpath/.atl
+vitalpath.json

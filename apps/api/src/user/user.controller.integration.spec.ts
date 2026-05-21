@@ -20,6 +20,7 @@ const mockService = {
   getPatientByIdForStaff: jest.fn(),
   updateProfile: jest.fn(),
   saveExpoPushToken: jest.fn(),
+  getCenterPatients: jest.fn(),
 };
 
 // ─── Suite ────────────────────────────────────────────────────────────────────
@@ -119,6 +120,81 @@ describe('UserController (integration)', () => {
       await request(app.getHttpServer())
         .get(`/user/patients/${patientId}`)
         .expect(404);
+    });
+  });
+
+  // ─── GET /user/center-patients ────────────────────────────────────────────
+
+  describe('GET /user/center-patients', () => {
+    const staffId = new Types.ObjectId().toString();
+    const patients = [
+      { _id: new Types.ObjectId().toString(), name: 'Pac A', role: 'paciente' },
+      { _id: new Types.ObjectId().toString(), name: 'Pac B', role: 'paciente' },
+    ];
+
+    it('returns 200 and patient list for trabajador_centro', async () => {
+      activeUser = { _id: staffId, role: UserRoles.TRABAJADOR_CENTRO };
+      mockService.getCenterPatients.mockResolvedValue(patients);
+
+      const response = await request(app.getHttpServer())
+        .get('/user/center-patients')
+        .expect(200);
+
+      expect(response.body).toHaveLength(2);
+      expect(mockService.getCenterPatients).toHaveBeenCalledWith(staffId);
+    });
+
+    it('returns 200 and patient list for admin', async () => {
+      const adminId = new Types.ObjectId().toString();
+      activeUser = { _id: adminId, role: UserRoles.ADMIN };
+      mockService.getCenterPatients.mockResolvedValue(patients);
+
+      const response = await request(app.getHttpServer())
+        .get('/user/center-patients')
+        .expect(200);
+
+      expect(response.body).toHaveLength(2);
+      expect(mockService.getCenterPatients).toHaveBeenCalledWith(adminId);
+    });
+
+    it('returns 403 for medico role', async () => {
+      activeUser = {
+        _id: new Types.ObjectId().toString(),
+        role: UserRoles.MEDICO,
+      };
+
+      await request(app.getHttpServer())
+        .get('/user/center-patients')
+        .expect(403);
+    });
+
+    it('returns 403 for paciente role', async () => {
+      activeUser = {
+        _id: new Types.ObjectId().toString(),
+        role: UserRoles.PACIENTE,
+      };
+
+      await request(app.getHttpServer())
+        .get('/user/center-patients')
+        .expect(403);
+    });
+
+    it('does not use any centroSalud_ID from query params — server resolves from JWT', async () => {
+      activeUser = { _id: staffId, role: UserRoles.TRABAJADOR_CENTRO };
+      mockService.getCenterPatients.mockResolvedValue(patients);
+
+      // Even when a query param is supplied, the controller must ignore it
+      // and call getCenterPatients(userId) — not with any external center id
+      await request(app.getHttpServer())
+        .get('/user/center-patients?centroSalud_ID=fake-center-id')
+        .expect(200);
+
+      // Service is called only with the authenticated user id — no center param
+      expect(mockService.getCenterPatients).toHaveBeenCalledWith(staffId);
+      expect(mockService.getCenterPatients).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+      );
     });
   });
 });

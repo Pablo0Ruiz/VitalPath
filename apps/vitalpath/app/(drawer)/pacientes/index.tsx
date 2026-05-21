@@ -41,7 +41,7 @@ export default function PacientesScreen() {
               <Button
                 title="Vincular nuevo paciente"
                 variant="primary"
-                onPress={() => router.push(ROUTES.VINCULAR as never)}
+                onPress={() => router.push(ROUTES.VINCULAR)}
               />
             </View>
             <View style={[s.separator, { backgroundColor: t.border }]} />
@@ -58,7 +58,7 @@ export default function PacientesScreen() {
             subtitle="Pedile a tu familiar un código y vinculate"
             action={{
               label: 'Vincular ahora',
-              onPress: () => router.push(ROUTES.VINCULAR as never),
+              onPress: () => router.push(ROUTES.VINCULAR),
             }}
           />
         }

@@ -52,7 +52,7 @@ export default function RegisterCuidadorScreen() {
 
   const onSubmit = (data: RegisterCuidadorFormValues) => {
     register(
-      { ...data, role: 'CUIDADOR_FAMILIAR' },
+      { ...data, role: 'cuidador_familiar' as const },
       {
         onError: () =>
           Alert.alert(

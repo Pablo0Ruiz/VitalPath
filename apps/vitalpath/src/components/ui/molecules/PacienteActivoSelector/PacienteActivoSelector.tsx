@@ -17,7 +17,7 @@ export function PacienteActivoSelector(): JSX.Element | null {
   const setActivePaciente = useSetActivePaciente();
   const { data: vinculaciones = [], isLoading } = useMisPacientes();
 
-  if (user?.role !== 'CUIDADOR_FAMILIAR') return null;
+  if (user?.role !== 'cuidador_familiar') return null;
 
   const activePacientes = (vinculaciones as VinculacionConPaciente[]).filter(
     v => v.estado_vinculo === 'ACTIVO',

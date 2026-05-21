@@ -1,10 +1,8 @@
-import { useSetActivePaciente } from '@/src/hooks/useSetActivePaciente';
 import { useTheme } from '@/src/hooks/useTheme';
-import { ROUTES } from '@/src/routes/routes';
+
 import { TipoVinculo, VinculacionConPaciente } from '@repo/types';
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { Badge, Button, Card, TextField } from '../../atoms';
+import { Badge, Card, TextField } from '../../atoms';
 
 const TIPO_LABEL: Record<TipoVinculo, string> = {
   HIJO_A: 'Hijo/a',
@@ -15,14 +13,8 @@ const TIPO_LABEL: Record<TipoVinculo, string> = {
 
 const PacienteRow = ({ item }: { item: VinculacionConPaciente }) => {
   const t = useTheme();
-  const setActivePaciente = useSetActivePaciente();
   const nombre =
     `${item.paciente_id.name} ${item.paciente_id.lastName ?? ''}`.trim();
-
-  const handleVerComo = () => {
-    setActivePaciente({ id: item.paciente_id._id, nombre });
-    router.push(ROUTES.HOME);
-  };
 
   return (
     <View style={s.rowPadding}>
@@ -46,13 +38,6 @@ const PacienteRow = ({ item }: { item: VinculacionConPaciente }) => {
           </View>
           <View style={s.badgeCol}>
             <Badge label="Activo" variant="success" />
-            <Button
-              title="Ver como este paciente"
-              variant="secondary"
-              size="sm"
-              onPress={handleVerComo}
-              style={s.verComoBtn}
-            />
           </View>
         </View>
       </Card>

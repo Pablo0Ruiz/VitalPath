@@ -72,12 +72,7 @@ const Chat = () => {
       setView('history');
       return;
     }
-
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/(drawer)/(tabs)/home');
-    }
+    router.replace('/(drawer)/(tabs)/home');
   };
 
   const SUGGESTIONS = [

@@ -27,6 +27,42 @@ export const estadoConfig: Record<
   [CitaEstadoEnum.CANCELADA]: { label: 'Cancelada', variant: 'error' },
 };
 
+export function buildReadOnlyAppointmentColumns(): Column<CitaPopulated>[] {
+  return [
+    {
+      key: 'fecha',
+      label: 'Fecha',
+      render: (row: CitaPopulated) => row.fecha,
+    },
+    {
+      key: 'hora',
+      label: 'Hora',
+      render: (row: CitaPopulated) => row.hora ?? '',
+    },
+    {
+      key: 'paciente',
+      label: 'Paciente',
+      render: (row: CitaPopulated) =>
+        `${row.paciente_ID?.name || 'N/A'} ${row.paciente_ID?.lastName || ''}`.trim(),
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      render: (row: CitaPopulated) => {
+        const config = estadoConfig[row.estado] ?? {
+          label: String(row.estado),
+          variant: 'neutral' as const,
+        };
+        return (
+          <Badge variant={config.variant} size="sm">
+            {config.label}
+          </Badge>
+        );
+      },
+    },
+  ];
+}
+
 interface AppointmentColumnHandlers {
   onEdit: (c: CitaPopulated) => void;
   onCancel: (c: CitaPopulated) => void;

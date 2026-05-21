@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Loading, FileUploadIcon } from '@hugeicons/core-free-icons';
+import { formatLocalYMD } from '../../../../utils/format';
+import { isActiveCita } from '@/lib/citaStates';
 
 import { Badge } from '@/components/ui/atoms/Badge';
 import { Button } from '@/components/ui/atoms/Button';
@@ -92,6 +94,13 @@ const CheckInTable = () => {
   const { data: citas, isLoading } = useCitasAdministrator();
   const { mutate: avanzarEstado } = useAvanzarCitaEstado();
 
+  const rows = useMemo(() => {
+    const today = formatLocalYMD(new Date());
+    return (citas ?? []).filter(
+      c => c.fecha === today && isActiveCita(c.estado),
+    );
+  }, [citas]);
+
   if (isLoading) {
     return (
       <HugeiconsIcon
@@ -100,8 +109,6 @@ const CheckInTable = () => {
       />
     );
   }
-
-  const rows = citas || [];
 
   return (
     <Card padding="none" className="flex flex-col gap-0 overflow-hidden">
@@ -132,6 +139,16 @@ const CheckInTable = () => {
             </tr>
           </thead>
           <tbody>
+            {rows.length === 0 && (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-sm text-brand-text-secondary"
+                >
+                  No hay turnos para hoy
+                </td>
+              </tr>
+            )}
             {rows.map(row => {
               const nextEstado = CITA_ALLOWED_TRANSITIONS[row.estado];
               const actionLabel = ACTION_LABEL[row.estado];

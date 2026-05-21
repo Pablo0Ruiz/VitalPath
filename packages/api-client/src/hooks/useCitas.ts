@@ -92,7 +92,7 @@ export const useCitasAdministrator = () => {
 
 export const useCitasMedico = () => {
   return useQuery({
-    queryKey: appointmentKeys.list('all'),
+    queryKey: appointmentKeys.list('medico'),
     queryFn: getCitasMedico,
     staleTime: 0,
   });

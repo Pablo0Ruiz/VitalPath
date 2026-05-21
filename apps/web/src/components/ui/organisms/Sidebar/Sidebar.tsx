@@ -37,6 +37,12 @@ const navItems: NavItem[] = [
     roles: ['medico'],
   },
   {
+    label: 'Pacientes del centro',
+    href: '/center-patients',
+    icon: UserGroupIcon,
+    roles: ['admin', 'trabajador_centro'],
+  },
+  {
     label: 'Citas',
     href: '/appointments',
     icon: Calendar03Icon,
@@ -77,7 +83,7 @@ const navItems: NavItem[] = [
 const sections = [
   {
     title: 'CLÍNICO',
-    labels: ['Dashboard', 'Pacientes', 'Citas'],
+    labels: ['Dashboard', 'Pacientes', 'Pacientes del centro', 'Citas'],
   },
   {
     title: 'HERRAMIENTAS',

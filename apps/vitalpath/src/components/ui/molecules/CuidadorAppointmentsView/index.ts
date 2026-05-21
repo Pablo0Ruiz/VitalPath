@@ -1,0 +1,1 @@
+export { CuidadorAppointmentsView } from './CuidadorAppointmentsView';

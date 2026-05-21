@@ -1,4 +1,4 @@
-import { Href, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,7 +28,10 @@ const Login = () => {
 
   const { mutate: login, isPending } = useLogin(
     mobileTokenAdapter,
-    { setSession },
+    {
+      setSession,
+      onRoleError: (title, message) => Alert.alert(title, message),
+    },
     { successRoute: ROUTES.HOME },
   );
 
@@ -39,9 +42,9 @@ const Login = () => {
       afterSuccess: user => {
         const isElderly = isElderlyUser(user.fechaNacimiento);
         if (isElderly && !hasSeenSuggestion) {
-          router.replace(ROUTES.SENIOR_UI_SUGGESTION as Href);
+          router.replace(ROUTES.SENIOR_UI_SUGGESTION);
         } else {
-          router.replace(ROUTES.HOME as Href);
+          router.replace(ROUTES.HOME);
         }
       },
     },

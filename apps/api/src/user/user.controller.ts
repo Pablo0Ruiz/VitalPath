@@ -22,6 +22,12 @@ export class UserController {
     return this.userService.getPatientByIdForStaff(id);
   }
 
+  @Auth(UserRoles.ADMIN, UserRoles.TRABAJADOR_CENTRO)
+  @Get('center-patients')
+  getCenterPatients(@GetUser('_id') userId: string) {
+    return this.userService.getCenterPatients(userId);
+  }
+
   @Auth()
   @Patch('me')
   updateMe(

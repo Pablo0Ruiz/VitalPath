@@ -41,6 +41,7 @@ export const adminSeed = {
   genero: UserGenero.MASCULINO,
   telefono: '+34 600 000 000',
   isActive: true,
+  centroIndex: 0,
 };
 
 // ─── Cuidador Familiar ────────────────────────────────────────────────────────

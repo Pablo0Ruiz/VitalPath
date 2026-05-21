@@ -21,3 +21,10 @@ export const getPatientById = async (id: string): Promise<IPatientProfile> => {
   );
   return data;
 };
+
+export const getCenterPatients = async (): Promise<IPatientProfile[]> => {
+  const { data } = await apiClient.get<IPatientProfile[]>(
+    '/api/user/center-patients',
+  );
+  return data;
+};

@@ -50,7 +50,7 @@ export default function AppDrawerContent(props: DrawerContentComponentProps) {
 
       <View style={[s.separator, { backgroundColor: t.border }]} />
 
-      {user?.role === 'CUIDADOR_FAMILIAR' && (
+      {user?.role === 'cuidador_familiar' && (
         <>
           <PacienteActivoSelector />
           <View style={[s.separator, { backgroundColor: t.border }]} />
@@ -78,7 +78,7 @@ export default function AppDrawerContent(props: DrawerContentComponentProps) {
             </TextField>
           </Pressable>
         )}
-        {user?.role === 'CUIDADOR_FAMILIAR' && (
+        {user?.role === 'cuidador_familiar' && (
           <Pressable
             onPress={() => navigateAndClose(ROUTES.PACIENTES)}
             style={[s.navItem, { height: t.minTouchTarget }]}

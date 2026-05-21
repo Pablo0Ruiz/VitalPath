@@ -4,6 +4,7 @@ import { CitaEstadoEnum, type CitaPopulated } from '@repo/types';
 import {
   estadoConfig,
   buildAppointmentColumns,
+  buildReadOnlyAppointmentColumns,
 } from '../appointments.constants';
 
 const mockCita = (estado: string): CitaPopulated =>
@@ -43,6 +44,38 @@ describe('estadoConfig', () => {
     expect(entry).toBeDefined();
     expect(entry.label).toBe('Completada');
     expect(entry.variant).toBe('success');
+  });
+});
+
+describe('buildReadOnlyAppointmentColumns', () => {
+  it('returns exactly 4 columns', () => {
+    const cols = buildReadOnlyAppointmentColumns();
+    expect(cols).toHaveLength(4);
+  });
+
+  it('has keys: fecha, hora, paciente, estado (in that order)', () => {
+    const cols = buildReadOnlyAppointmentColumns();
+    const keys = cols.map(c => c.key);
+    expect(keys).toEqual(['fecha', 'hora', 'paciente', 'estado']);
+  });
+
+  it('has NO acciones column (by key)', () => {
+    const cols = buildReadOnlyAppointmentColumns();
+    expect(cols.find(c => c.key === 'acciones')).toBeUndefined();
+  });
+
+  it('has NO acciones column (by label)', () => {
+    const cols = buildReadOnlyAppointmentColumns();
+    expect(cols.find(c => c.label === 'Acciones')).toBeUndefined();
+  });
+
+  it('has labels: Fecha, Hora, Paciente, Estado', () => {
+    const cols = buildReadOnlyAppointmentColumns();
+    const labels = cols.map(c => c.label);
+    expect(labels).toContain('Fecha');
+    expect(labels).toContain('Hora');
+    expect(labels).toContain('Paciente');
+    expect(labels).toContain('Estado');
   });
 });
 

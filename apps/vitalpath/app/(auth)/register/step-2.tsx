@@ -36,13 +36,6 @@ const RegisterStep2 = () => {
 
   return (
     <View style={[s.container, { backgroundColor: t.background }]}>
-      <Button
-        onPress={() => router.back()}
-        style={[s.backButton, { backgroundColor: t.neutral100 }]}
-      >
-        <Octicons name="arrow-left" size={24} color={t.textPrimary} />
-      </Button>
-
       <ProgressBar progress={66} style={s.progressBar} />
 
       <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>

@@ -1,3 +1,4 @@
+import { normalizeRole } from '@repo/types';
 import { useAuthStore } from '@/src/stores/auth';
 import { useActivePacienteStore } from '@/src/stores/activePaciente';
 
@@ -11,7 +12,7 @@ export function useActivePatientId(): ActivePatientIdResult {
   const user = useAuthStore(s => s.user);
   const activePacienteId = useActivePacienteStore(s => s.activePacienteId);
 
-  const isCuidador = user?.role === 'CUIDADOR_FAMILIAR';
+  const isCuidador = normalizeRole(user?.role) === 'cuidador_familiar';
 
   if (isCuidador) {
     return {
