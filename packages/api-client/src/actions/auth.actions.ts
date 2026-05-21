@@ -42,7 +42,7 @@ export const postRegister = async (
   credentials: RegisterCredentials,
 ): Promise<UserCredentials> => {
   const [day, month, year] = credentials.fechaNacimiento.split('/');
-  const formattedDate = `${month}/${day}/${year}`;
+  const formattedDate = `${year}-${month}-${day}`;
 
   const payload = {
     ...credentials,
@@ -87,7 +87,7 @@ export const postRegisterCuidador = async (
   credentials: RegisterCuidadorCredentials,
 ): Promise<UserCredentials> => {
   const [day, month, year] = credentials.fechaNacimiento.split('/');
-  const formattedDate = `${month}/${day}/${year}`;
+  const formattedDate = `${year}-${month}-${day}`;
   const { data } = await apiClient.post<UserCredentials>('/api/auth/register', {
     ...credentials,
     fechaNacimiento: formattedDate,

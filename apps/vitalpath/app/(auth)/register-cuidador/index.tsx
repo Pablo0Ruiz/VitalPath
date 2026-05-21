@@ -19,7 +19,7 @@ import {
   RegisterCuidadorFormValues,
   registerCuidadorSchema,
 } from '@repo/types';
-import { useRegisterCuidador } from '@repo/api-client';
+import { useRegisterCuidador, parseApiError } from '@repo/api-client';
 import { formatDateInput } from '@/src/utils/formatDateInput';
 import { GENDER } from '@/src/constants/gender';
 
@@ -54,11 +54,7 @@ export default function RegisterCuidadorScreen() {
     register(
       { ...data, role: 'cuidador_familiar' as const },
       {
-        onError: () =>
-          Alert.alert(
-            'Error',
-            'No se pudo crear la cuenta. Verificá los datos e intentá de nuevo.',
-          ),
+        onError: error => Alert.alert('Error', parseApiError(error).message),
       },
     );
   };
