@@ -8,6 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -42,6 +43,7 @@ export class CreateUserDto {
   role: string;
 
   @ApiProperty({ example: '1990-06-15', type: String, format: 'date' })
+  @Type(() => Date)
   @IsDate()
   fechaNacimiento: Date;
 
