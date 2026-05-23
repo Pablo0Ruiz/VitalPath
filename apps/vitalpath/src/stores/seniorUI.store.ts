@@ -34,7 +34,6 @@ export const useSeniorUIStore = create<SeniorUIState>()(
         if (user) {
           set({
             isSeniorUI: !!user.seniorMode,
-            hasSeenSuggestion: true,
           });
         }
       },

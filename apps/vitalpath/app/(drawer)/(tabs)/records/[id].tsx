@@ -71,8 +71,9 @@ export default function StudyDetailScreen() {
   const handleVerPDF = async () => {
     const data = await fetchPdfData({ study });
     if (!data) return;
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(data.publicUrl)}&embedded=true`;
     try {
-      await WebBrowser.openBrowserAsync(data.publicUrl);
+      await WebBrowser.openBrowserAsync(viewerUrl);
     } catch {
       await Linking.openURL(data.publicUrl);
     }

@@ -88,6 +88,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
+    paddingHorizontal: 0,
   },
   selected: {
     borderWidth: 1,

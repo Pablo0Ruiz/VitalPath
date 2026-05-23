@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { View, AppState, AppStateStatus, useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import * as SplashScreen from 'expo-splash-screen';
@@ -21,6 +22,15 @@ import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 
 setupApiInterceptors();
 
+if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+    enabled: !__DEV__,
+    tracesSampleRate: 0,
+    sendDefaultPii: false,
+  });
+}
+
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
@@ -29,6 +39,25 @@ function AuthInitializer() {
   const { user, setSession, clearSession, setIsLoading, _hasHydrated } =
     useAuthStore();
   const { syncWithUser, reset: resetSeniorUI } = useSeniorUIStore();
+
+  useEffect(() => {
+    if (_hasHydrated) return;
+
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      useAuthStore.getState().setHasHydrated();
+    });
+
+    const timeout = setTimeout(() => {
+      if (!useAuthStore.getState()._hasHydrated) {
+        useAuthStore.getState().setHasHydrated();
+      }
+    }, 3000);
+
+    return () => {
+      unsub();
+      clearTimeout(timeout);
+    };
+  }, [_hasHydrated]);
 
   useSession(
     mobileTokenAdapter,
@@ -39,8 +68,10 @@ function AuthInitializer() {
   useEffect(() => {
     if (user) {
       syncWithUser(user);
+      Sentry.setUser({ id: user._id, role: user.role });
     } else {
       resetSeniorUI();
+      Sentry.setUser(null);
     }
   }, [user, syncWithUser, resetSeniorUI]);
 
@@ -97,4 +128,4 @@ function RootLayout() {
   );
 }
 
-export default RootLayout;
+export default Sentry.wrap(RootLayout);

@@ -3,6 +3,7 @@ import { ConversationCard } from '../../molecules/ConversationCard';
 import { TextField, Button } from '../../atoms';
 import { useConversations } from '@repo/api-client';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ChatHistoryProps {
   onSelectConversation: (chatId: string) => void;
@@ -12,6 +13,7 @@ interface ChatHistoryProps {
 const ChatHistory = ({ onSelectConversation, onNewChat }: ChatHistoryProps) => {
   const { data: conversations, isLoading, refetch } = useConversations();
   const t = useTheme();
+  const insets = useSafeAreaInsets();
 
   if (isLoading) {
     return (
@@ -59,7 +61,10 @@ const ChatHistory = ({ onSelectConversation, onNewChat }: ChatHistoryProps) => {
         )}
       />
 
-      <View style={s.footer}>
+      <View
+        testID="chat-footer"
+        style={[s.footer, { bottom: 20 + insets.bottom }]}
+      >
         <Button
           title="Nueva Consulta"
           variant="primary"

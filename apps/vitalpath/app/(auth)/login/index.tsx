@@ -1,5 +1,13 @@
 import { router } from 'expo-router';
-import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -91,168 +99,173 @@ const Login = () => {
 
   return (
     <SafeAreaView style={[s.container, { backgroundColor: t.background }]}>
-      <ScrollView
+      <KeyboardAvoidingView
         style={s.flex1}
-        contentContainerStyle={s.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={s.heroSection}>
-          <View style={[s.logoWrapper, { backgroundColor: t.primary600 }]}>
-            <Image
-              source={require('@/assets/images/new-logo.png')}
-              style={s.logo}
-              resizeMode="contain"
+        <ScrollView
+          style={s.flex1}
+          contentContainerStyle={s.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={s.heroSection}>
+            <View style={[s.logoWrapper, { backgroundColor: t.primary600 }]}>
+              <Image
+                source={require('@/assets/images/new-logo.png')}
+                style={s.logo}
+                resizeMode="contain"
+              />
+            </View>
+            <TextField
+              variant="title"
+              style={[s.heroTitle, { color: t.textPrimary }]}
+            >
+              VitalPath
+            </TextField>
+            <TextField
+              variant="caption"
+              style={[s.heroSubtitle, { color: t.textSecondary }]}
+            >
+              Tu salud, guiada con inteligencia
+            </TextField>
+          </View>
+
+          <View style={s.formSection}>
+            <TextField
+              variant="body"
+              style={[s.formTitle, { color: t.textPrimary }]}
+            >
+              Iniciar sesión
+            </TextField>
+            <TextField
+              variant="caption"
+              style={[s.formSubtitle, { color: t.textSecondary }]}
+            >
+              Accedé a tus métricas de salud personalizadas
+            </TextField>
+
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  label="Correo electrónico"
+                  placeholder="nombre@ejemplo.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  helperText={errors.email?.message}
+                />
+              )}
             />
-          </View>
-          <TextField
-            variant="title"
-            style={[s.heroTitle, { color: t.textPrimary }]}
-          >
-            VitalPath
-          </TextField>
-          <TextField
-            variant="caption"
-            style={[s.heroSubtitle, { color: t.textSecondary }]}
-          >
-            Tu salud, guiada con inteligencia
-          </TextField>
-        </View>
 
-        <View style={s.formSection}>
-          <TextField
-            variant="body"
-            style={[s.formTitle, { color: t.textPrimary }]}
-          >
-            Iniciar sesión
-          </TextField>
-          <TextField
-            variant="caption"
-            style={[s.formSubtitle, { color: t.textSecondary }]}
-          >
-            Accedé a tus métricas de salud personalizadas
-          </TextField>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  label="Contraseña"
+                  placeholder="••••••••"
+                  rightLabel="¿Olvidaste tu contraseña?"
+                  onChangeText={onChange}
+                  secureTextEntry={!showPassword}
+                  onBlur={onBlur}
+                  value={value}
+                  rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
+                  style={s.passwordField}
+                  rightIcon={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onPress={() => setShowPassword(!showPassword)}
+                    >
+                      <Octicons
+                        name={showPassword ? 'eye' : 'eye-closed'}
+                        size={20}
+                        color={t.textSecondary}
+                      />
+                    </Button>
+                  }
+                  helperText={errors.password?.message}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormField
-                label="Correo electrónico"
-                placeholder="nombre@ejemplo.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                helperText={errors.email?.message}
-              />
-            )}
-          />
+            <Button
+              title="Iniciar sesión"
+              variant="primary"
+              style={s.loginButton}
+              onPress={handleSubmit(onSubmit)}
+              loading={isSubmitting || isPending}
+              disabled={isSubmitting || isPending}
+            />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormField
-                label="Contraseña"
-                placeholder="••••••••"
-                rightLabel="¿Olvidaste tu contraseña?"
-                onChangeText={onChange}
-                secureTextEntry={!showPassword}
-                onBlur={onBlur}
-                value={value}
-                rightLabelOnPress={() => router.push(ROUTES.RECOVER_PASSWORD)}
-                style={s.passwordField}
-                rightIcon={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Octicons
-                      name={showPassword ? 'eye' : 'eye-closed'}
-                      size={20}
-                      color={t.textSecondary}
-                    />
-                  </Button>
-                }
-                helperText={errors.password?.message}
-              />
-            )}
-          />
+            <Divider text="o ingresá tu código de acceso" style={s.divider} />
 
-          <Button
-            title="Iniciar sesión"
-            variant="primary"
-            style={s.loginButton}
-            onPress={handleSubmit(onSubmit)}
-            loading={isSubmitting || isPending}
-            disabled={isSubmitting || isPending}
-          />
+            <Controller
+              control={codeControl}
+              name="codigo"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormField
+                  label="Código de acceso senior"
+                  placeholder="000000"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  style={s.codeField}
+                  inputStyle={s.codeInput}
+                  helperText={codeErrors.codigo?.message}
+                />
+              )}
+            />
 
-          <Divider text="o ingresá tu código de acceso" style={s.divider} />
+            <Button
+              title={isPendingCode ? 'Ingresando...' : 'Ingresar con código'}
+              variant="outline"
+              style={s.codeButton}
+              onPress={handleCodeSubmit(onCodeSubmit)}
+              loading={isPendingCode}
+              disabled={isPendingCode}
+            />
 
-          <Controller
-            control={codeControl}
-            name="codigo"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormField
-                label="Código de acceso senior"
-                placeholder="000000"
-                value={value}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                keyboardType="numeric"
-                maxLength={6}
-                autoCorrect={false}
-                autoCapitalize="none"
-                style={s.codeField}
-                inputStyle={s.codeInput}
-                helperText={codeErrors.codigo?.message}
-              />
-            )}
-          />
-
-          <Button
-            title={isPendingCode ? 'Ingresando...' : 'Ingresar con código'}
-            variant="outline"
-            style={s.codeButton}
-            onPress={handleCodeSubmit(onCodeSubmit)}
-            loading={isPendingCode}
-            disabled={isPendingCode}
-          />
-
-          <View style={s.footer}>
-            <TextField
-              variant="caption"
-              style={[s.footerText, { color: t.textSecondary }]}
-              onPress={() => router.push(ROUTES.REGISTER)}
-            >
-              ¿No tenés cuenta?{'  '}
+            <View style={s.footer}>
               <TextField
                 variant="caption"
-                style={[s.linkText, { color: t.primary600 }]}
+                style={[s.footerText, { color: t.textSecondary }]}
+                onPress={() => router.push(ROUTES.REGISTER)}
               >
-                Registrate
+                ¿No tenés cuenta?{'  '}
+                <TextField
+                  variant="caption"
+                  style={[s.linkText, { color: t.primary600 }]}
+                >
+                  Registrate
+                </TextField>
               </TextField>
-            </TextField>
-            <TextField
-              variant="caption"
-              style={[s.footerText, { color: t.textSecondary, marginTop: 8 }]}
-              onPress={() => router.push(ROUTES.REGISTER_CUIDADOR as never)}
-            >
-              ¿Sos cuidador familiar?{'  '}
               <TextField
                 variant="caption"
-                style={[s.linkText, { color: t.primary600 }]}
+                style={[s.footerText, { color: t.textSecondary, marginTop: 8 }]}
+                onPress={() => router.push(ROUTES.REGISTER_CUIDADOR as never)}
               >
-                Registrate acá
+                ¿Sos cuidador familiar?{'  '}
+                <TextField
+                  variant="caption"
+                  style={[s.linkText, { color: t.primary600 }]}
+                >
+                  Registrate acá
+                </TextField>
               </TextField>
-            </TextField>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

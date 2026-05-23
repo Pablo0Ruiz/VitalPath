@@ -34,6 +34,13 @@
       "favicon": "./assets/images/new-logo.png"
     },
     "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "vitalpath",
+          "project": "vitalpath"
+        }
+      ],
       "expo-notifications",
       "expo-router",
       [

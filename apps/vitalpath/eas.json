@@ -14,7 +14,8 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
-        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai"
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://489ceb59f216488acbcbc0218d1482e3@o4511436084740096.ingest.de.sentry.io/4511436087033936"
       },
       "android": {
         "buildType": "apk"
@@ -24,7 +25,8 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://vitalpath-api.onrender.com",
-        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai"
+        "EXPO_PUBLIC_API_URL_GEMINI": "https://vitalpath-api.onrender.com/api/ai",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://489ceb59f216488acbcbc0218d1482e3@o4511436084740096.ingest.de.sentry.io/4511436087033936"
       }
     }
   },
