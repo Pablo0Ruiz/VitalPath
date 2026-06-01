@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 
 import { router } from 'expo-router';
 import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
-import { FormField } from '@/src/components/ui/molecules';
+import { Button, ProgressBar } from '@/src/components/ui/atoms';
+import { AuthHeader, FormField } from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms';
 import { Step3FormValues, step3Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
 import { useRegister, parseApiError } from '@repo/api-client';
@@ -72,25 +73,10 @@ const RegisterStep3 = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.background }]}>
-      <Button
-        onPress={() => router.back()}
-        style={[s.backButton, { backgroundColor: t.neutral100 }]}
-      >
-        <Octicons name="arrow-left" size={24} color={t.textPrimary} />
-      </Button>
-
+    <AuthLayout
+      heroContent={<AuthHeader title="Credenciales" subtitle="(Paso 3 de 3)" />}
+    >
       <ProgressBar progress={100} style={s.progressBar} />
-
-      <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>
-        Credenciales
-      </TextField>
-      <TextField
-        variant="caption"
-        style={[s.subtitle, { color: t.textSecondary }]}
-      >
-        (Paso 3 de 3)
-      </TextField>
 
       <Controller
         control={control}
@@ -149,36 +135,17 @@ const RegisterStep3 = () => {
       />
 
       <Button
-        title={isPending ? 'Creando cuenta...' : 'Finalizar Registro'}
+        title={isPending ? 'Creando cuenta...' : 'Finalizar registro'}
         onPress={handleSubmit(onSubmit)}
         variant="primary"
         disabled={isPending}
       />
-    </View>
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 64 },
-  backButton: {
-    position: 'absolute',
-    top: 64,
-    left: 24,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
   progressBar: { marginBottom: 40, maxWidth: 200, alignSelf: 'center' },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32 },
   passwordField: { marginBottom: 32 },
 });
 

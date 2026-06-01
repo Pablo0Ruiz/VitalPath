@@ -1,6 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import TextField from '@/src/components/ui/atoms/TextField/TextField';
+import { StyleSheet } from 'react-native';
+import { Button, TextField } from '@/src/components/ui/atoms';
 import { useTheme } from '@/src/hooks/useTheme';
 
 export interface AuthFooterLinkProps {
@@ -17,10 +16,11 @@ export const AuthFooterLink = ({
   const t = useTheme();
 
   return (
-    <TouchableOpacity
+    <Button
+      variant="ghost"
       accessibilityRole="link"
       onPress={onPress}
-      style={[s.root, { minHeight: t.minTouchTarget }]}
+      style={s.root}
     >
       <TextField
         variant="caption"
@@ -38,16 +38,14 @@ export const AuthFooterLink = ({
       >
         {linkText}
       </TextField>
-    </TouchableOpacity>
+    </Button>
   );
 };
 
 const s = StyleSheet.create({
   root: {
     alignSelf: 'center',
-    paddingVertical: 8,
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 4,
   },
 });

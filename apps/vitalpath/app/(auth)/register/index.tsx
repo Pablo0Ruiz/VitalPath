@@ -1,16 +1,17 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
 import { router } from 'expo-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
+import { Button, ProgressBar, SocialButton } from '@/src/components/ui/atoms';
 import {
-  Button,
-  ProgressBar,
-  SocialButton,
-  TextField,
-} from '@/src/components/ui/atoms';
-import { AuthHeader, Divider, FormField } from '@/src/components/ui/molecules';
+  AuthFooterLink,
+  AuthHeader,
+  Divider,
+  FormField,
+} from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms';
 import { Step1FormValues, step1Schema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import { useRegisterStore } from '@repo/store';
@@ -38,98 +39,77 @@ const RegisterStep1 = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.background }]}>
-      <ScrollView
-        style={s.flex1}
-        contentContainerStyle={s.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <ProgressBar progress={33} style={s.progressBar} />
+    <AuthLayout
+      heroContent={<AuthHeader title="Crear cuenta" subtitle="(Paso 1 de 3)" />}
+    >
+      <ProgressBar progress={33} style={s.progressBar} />
 
-        <AuthHeader
-          title="Crear cuenta"
-          subtitle="Comienza a monitorear tu salud (1/3)"
-        />
+      <Controller
+        control={control}
+        name="name"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormField
+            label="Nombre completo"
+            placeholder="Juan Pérez"
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            autoCapitalize="words"
+            autoCorrect={false}
+            leftIcon={
+              <Octicons name="person" size={20} color={t.textSecondary} />
+            }
+            helperText={errors.name?.message}
+          />
+        )}
+      />
 
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Nombre completo"
-              placeholder="Juan Pérez"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              autoCapitalize="words"
-              autoCorrect={false}
-              leftIcon={
-                <Octicons name="person" size={20} color={t.textSecondary} />
-              }
-              helperText={errors.name?.message}
-            />
-          )}
-        />
+      <Controller
+        control={control}
+        name="lastName"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormField
+            label="Apellido"
+            placeholder="Perez"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            autoCapitalize="words"
+            autoCorrect={false}
+            leftIcon={
+              <Octicons name="person" size={20} color={t.textSecondary} />
+            }
+            helperText={errors.lastName?.message}
+            style={s.lastNameField}
+          />
+        )}
+      />
 
-        <Controller
-          control={control}
-          name="lastName"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Apellido"
-              placeholder="Perez"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              autoCapitalize="words"
-              autoCorrect={false}
-              leftIcon={
-                <Octicons name="person" size={20} color={t.textSecondary} />
-              }
-              helperText={errors.lastName?.message}
-              style={s.lastNameField}
-            />
-          )}
-        />
+      <Button
+        title="Siguiente"
+        onPress={handleSubmit(onSubmit)}
+        variant="primary"
+        style={s.button}
+      />
 
-        <Button
-          title="Siguiente"
-          onPress={handleSubmit(onSubmit)}
-          variant="primary"
-          style={s.button}
-        />
+      <Divider text="O regístrate con" style={s.divider} />
 
-        <Divider text="O regístrate con" style={s.divider} />
+      <View style={s.socialRow}>
+        <SocialButton label="G" />
+        <SocialButton label="A" />
+        <SocialButton label="F" />
+      </View>
 
-        <View style={s.socialRow}>
-          <SocialButton label="G" />
-          <SocialButton label="A" />
-          <SocialButton label="F" />
-        </View>
-
-        <TextField
-          variant="caption"
-          style={[s.footerText, { color: t.textSecondary }]}
-          onPress={() => router.replace(ROUTES.LOGIN)}
-        >
-          ¿Ya tienes una cuenta?{' '}
-          <TextField
-            variant="caption"
-            style={[s.linkText, { color: t.primary600 }]}
-          >
-            Iniciar sesión
-          </TextField>
-        </TextField>
-      </ScrollView>
-    </View>
+      <AuthFooterLink
+        text="¿Ya tenés cuenta?"
+        linkText="Iniciar sesión"
+        onPress={() => router.replace(ROUTES.LOGIN)}
+      />
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
-  flex1: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
   progressBar: { marginBottom: 24, maxWidth: 200, alignSelf: 'center' },
   lastNameField: { marginBottom: 32 },
   button: { marginBottom: 24 },
@@ -140,8 +120,6 @@ const s = StyleSheet.create({
     gap: 12,
     marginBottom: 28,
   },
-  footerText: { fontSize: 14, alignSelf: 'center' },
-  linkText: { fontWeight: '700' },
 });
 
 export default RegisterStep1;
