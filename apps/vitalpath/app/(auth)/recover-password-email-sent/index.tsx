@@ -1,10 +1,11 @@
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 
 import { router, useLocalSearchParams } from 'expo-router';
-import { Octicons } from '@expo/vector-icons';
+import Octicons from '@expo/vector-icons/Octicons';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader } from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms';
 import { useRecoverPassword } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';
@@ -33,60 +34,59 @@ const RecoverPasswordEmailSent = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.background }]}>
-      <ScrollView
-        style={s.flex1}
-        contentContainerStyle={s.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+    <AuthLayout
+      heroContent={
         <AuthHeader
           title="¡Correo enviado!"
-          subtitle={`Hemos enviado las instrucciones para restablecer tu contraseña a ${email}`}
-        />
-
-        <View style={s.iconWrapper}>
-          <Octicons name="check-circle-fill" size={60} color={t.success} />
-        </View>
-
-        <TextField
-          variant="caption"
-          style={[s.description, { color: t.textSecondary }]}
-        >
-          Revisa tu bandeja de entrada y sigue las instrucciones para crear una
-          nueva contraseña.
-        </TextField>
-
-        <Button
-          title="Volver al inicio de sesión"
-          onPress={handleGoBack}
-          variant="primary"
-          style={s.primaryButton}
-        />
-
-        <Button
-          title={
-            isPending ? 'Enviando...' : '¿No recibiste el correo? Reenviar'
+          subtitle={
+            email
+              ? `Hemos enviado las instrucciones para restablecer tu contraseña a ${email}`
+              : 'Revisá tu bandeja de entrada'
           }
-          onPress={handleResendEmail}
-          variant="outline"
-          disabled={isPending}
         />
-      </ScrollView>
-    </View>
+      }
+    >
+      <Octicons
+        name="check-circle-fill"
+        size={60}
+        color={t.success}
+        style={s.icon}
+      />
+
+      <TextField
+        variant="caption"
+        style={[
+          s.description,
+          { color: t.textSecondary, fontSize: t.fontSizeCaption },
+        ]}
+      >
+        Revisá tu bandeja de entrada y seguí las instrucciones para crear una
+        nueva contraseña.
+      </TextField>
+
+      <Button
+        title="Volver al inicio de sesión"
+        onPress={handleGoBack}
+        variant="primary"
+        style={s.primaryButton}
+      />
+
+      <Button
+        title={isPending ? 'Enviando...' : '¿No recibiste el correo? Reenviar'}
+        onPress={handleResendEmail}
+        variant="outline"
+        disabled={isPending}
+      />
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
-  flex1: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
-  iconWrapper: { alignItems: 'center', marginBottom: 32 },
+  icon: { alignSelf: 'center', marginBottom: 24 },
   description: {
-    fontSize: 14,
     textAlign: 'center',
     marginBottom: 40,
     paddingHorizontal: 16,
-    lineHeight: 20,
   },
   primaryButton: { marginBottom: 16 },
 });
