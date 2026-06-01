@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Octicons from '@expo/vector-icons/Octicons';
 
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 import { useTheme } from '@/src/hooks/useTheme';
-import { Button } from '@/src/components/ui/atoms';
+import { Button, TextField } from '@/src/components/ui/atoms';
+import { AuthHeader } from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms';
 import { ROUTES } from '@/src/routes/routes';
 import { useUpdateUser } from '@repo/api-client';
 import { useAuthStore } from '@/src/stores/auth';
@@ -38,6 +40,7 @@ const SeniorUISuggestionScreen = () => {
     try {
       await updateUser({ seniorMode: true });
     } catch (error) {
+      console.error(error);
     } finally {
       setIsSeniorUI(true);
       setHasSeenSuggestion();
@@ -49,6 +52,7 @@ const SeniorUISuggestionScreen = () => {
     try {
       await updateUser({ seniorMode: false });
     } catch (error) {
+      console.error(error);
     } finally {
       setHasSeenSuggestion();
       router.replace(ROUTES.HOME);
@@ -56,69 +60,55 @@ const SeniorUISuggestionScreen = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.surface }]}>
+    <AuthLayout
+      heroContent={
+        <AuthHeader title="Modo Senior" subtitle="Diseñado para vos" />
+      }
+      noCard={true}
+    >
       <View style={s.content}>
-        <Ionicons name="heart-circle" size={96} color={t.primary600} />
+        <Octicons name="heart" size={96} color={t.primary600} style={s.icon} />
 
-        <Text
-          style={[
-            s.title,
-            {
-              color: t.textPrimary,
-              fontSize: t.fontSizeTitle,
-              lineHeight: t.fontSizeTitle * 1.2,
-            },
-          ]}
-        >
+        <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>
           Tenemos algo especial para vos
-        </Text>
+        </TextField>
 
-        <Text
-          style={[
-            s.body,
-            {
-              color: t.textSecondary,
-              fontSize: t.fontSizeBody,
-              lineHeight: t.fontSizeBody * 1.5,
-            },
-          ]}
-        >
+        <TextField variant="body" style={[s.body, { color: t.textSecondary }]}>
           El Modo Senior activa letras más grandes, botones de fácil toque y
           mejor contraste en toda la app.
-        </Text>
+        </TextField>
 
         <Button
           title="Activar Modo Senior"
           onPress={handleActivate}
           variant="primary"
-          style={s.primaryButton}
+          style={[s.button, { minHeight: t.minTouchTarget }]}
         />
 
         <Button
           title="No por ahora"
           onPress={handleDecline}
           variant="outline"
-          style={s.secondaryButton}
+          style={[s.button, { minHeight: t.minTouchTarget }]}
         />
       </View>
-    </View>
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
   },
-  content: {
-    alignItems: 'center',
-    gap: 0,
+  icon: {
+    marginBottom: 24,
   },
   title: {
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: 32,
     marginBottom: 16,
   },
   body: {
@@ -126,14 +116,9 @@ const s = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 40,
   },
-  primaryButton: {
+  button: {
     width: '100%',
-    minHeight: 56,
     marginBottom: 16,
-  },
-  secondaryButton: {
-    width: '100%',
-    minHeight: 56,
   },
 });
 
