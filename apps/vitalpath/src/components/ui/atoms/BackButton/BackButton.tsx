@@ -15,9 +15,10 @@ export interface BackButtonProps extends Omit<
 > {
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  color?: string;
 }
 
-const BackButton = ({ onPress, style, ...props }: BackButtonProps) => {
+const BackButton = ({ onPress, style, color, ...props }: BackButtonProps) => {
   const t = useTheme();
 
   return (
@@ -36,7 +37,7 @@ const BackButton = ({ onPress, style, ...props }: BackButtonProps) => {
       ]}
       {...props}
     >
-      <Ionicons name="chevron-back" size={20} color={t.textPrimary} />
+      <Ionicons name="chevron-back" size={20} color={color ?? t.textPrimary} />
     </Pressable>
   );
 };
