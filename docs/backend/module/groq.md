@@ -44,3 +44,30 @@ Este módulo se integra con el servicio externo de IA generativa (Groq). Provee 
 - **Autorización:** Autenticado (`@Auth()`)
 - **Parámetro Ruta:** `chatId`.
 - **Respuesta Exitosa:** `200 OK`. Lista ordenada de mensajes mapeados a `{ role: 'user' | 'model', parts: "text" }`.
+
+## Sistema de herramientas (Tool-Use)
+
+El `GroqModule` se integra con `GroqToolsModule` para proveer capacidades de IA diferenciadas según el rol del usuario autenticado.
+
+### Cómo funciona
+
+`GroqToolsService.getToolsFor(userId, role)` retorna un `ToolSet` específico para el usuario. Cada función `execute` dentro del ToolSet cierra sobre el `userId` del usuario autenticado, de modo que la IA **no puede actuar fuera del scope del usuario** (principio de mínimo privilegio).
+
+### ToolSets por rol
+
+| Rol                 | Herramientas disponibles                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `PACIENTE`          | `appointment-tools`, `patient-data-tools`, `medicos-tools` — consulta sus propias citas, medicamentos y médicos |
+| `MEDICO`            | `doctor-tools`, `medicos-tools` — accede a la lista de pacientes y puede escribir notas clínicas                |
+| `TRABAJADOR_CENTRO` | `worker-tools` — herramientas de agendamiento y administración                                                  |
+| Rol desconocido     | ToolSet vacío (fallback seguro, la IA no recibe herramientas)                                                   |
+
+### Ejemplo de uso interno
+
+```typescript
+// En GroqService, al procesar un chat-stream:
+const toolSet = await groqToolsService.getToolsFor(userId, user.role);
+// toolSet.tools es el array de herramientas que se pasa al modelo de Groq
+```
+
+El rol se extrae del JWT del usuario autenticado. Si el rol no coincide con ninguno de los casos conocidos, se retorna un ToolSet vacío en lugar de lanzar un error, garantizando que el endpoint de chat nunca falla por un rol inesperado.

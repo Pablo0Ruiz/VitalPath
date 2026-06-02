@@ -43,25 +43,28 @@ interface Cita {
   updatedAt: string;
 }
 
-type CitaEstado =
-  | 'asistida'
-  | 'en_proceso'
-  | 'cancelada'
-  | 'pendiente'
-  | 'programada';
+enum CitaEstado {
+  AGENDADA = 'agendada',
+  ASISTIDA = 'asistida',
+  EN_PROCESO = 'en_proceso',
+  RESULTADOS_LISTOS = 'resultados_listos',
+  COMPLETADA = 'completada',
+  CANCELADA = 'cancelada',
+}
 ```
 
 ---
 
 ## Semántica de estados
 
-| Estado       | Color            | Descripción                   |
-| ------------ | ---------------- | ----------------------------- |
-| `programada` | Azul             | Cita confirmada, fecha futura |
-| `en_proceso` | Amarillo/naranja | Cita en curso en este momento |
-| `asistida`   | Verde            | Cita completada               |
-| `cancelada`  | Rojo             | Cita cancelada                |
-| `pendiente`  | Gris             | Cita por confirmar            |
+| Estado              | Color            | Descripción                                                          |
+| ------------------- | ---------------- | -------------------------------------------------------------------- |
+| `agendada`          | Azul             | Cita confirmada y pendiente de realizarse                            |
+| `en_proceso`        | Amarillo/naranja | Cita en curso en este momento                                        |
+| `asistida`          | Verde claro      | Paciente asistió; aún no hay resultados cargados                     |
+| `resultados_listos` | Verde            | Estudios cargados; el paciente puede revisarlos                      |
+| `completada`        | Verde oscuro     | Ciclo completo: cita realizada, resultados revisados por el paciente |
+| `cancelada`         | Rojo             | Cita cancelada                                                       |
 
 ---
 
@@ -70,13 +73,78 @@ type CitaEstado =
 ### Obtener citas del paciente
 
 ```
-GET /citas?paciente_id={user._id}
+GET /appointment
 Headers: Authorization: Bearer {accessToken}
 
 Response 200: Cita[]
 ```
 
 El componente filtra y ordena los resultados localmente para las diferentes vistas (próximas, historial).
+
+### Obtener citas del cuidador (CUIDADOR_FAMILIAR)
+
+```
+GET /appointment/cuidador
+GET /appointment/cuidador?pacienteId={id}   ← filtro opcional por paciente
+Headers: Authorization: Bearer {accessToken}
+
+Response 200: Cita[]
+```
+
+Devuelve las citas de todos los pacientes vinculados al cuidador. Con el parámetro `pacienteId` se filtra por un paciente específico.
+
+### Crear cita (MEDICO)
+
+```
+POST /appointment
+Headers: Authorization: Bearer {accessToken}
+Body: { paciente_ID, medico_ID, fecha, hora }
+
+Response 201: Cita
+```
+
+### Crear cita — sin restricción de ownership (TRABAJADOR_CENTRO / ADMIN)
+
+```
+POST /appointment/worker
+Headers: Authorization: Bearer {accessToken}
+Body: { paciente_ID, medico_ID, fecha, hora }
+
+Response 201: Cita
+```
+
+El worker puede crear citas para cualquier paciente, sin restricción de ownership.
+
+### Actualizar cita (MEDICO)
+
+```
+PATCH /appointment/:id
+Headers: Authorization: Bearer {accessToken}
+Body: { estado?, fecha?, hora? }
+
+Response 200: Cita actualizada
+```
+
+### Actualizar cita — sin restricción de ownership (TRABAJADOR_CENTRO / ADMIN)
+
+```
+PATCH /appointment/:id/worker
+Headers: Authorization: Bearer {accessToken}
+Body: { estado?, fecha?, hora? }
+
+Response 200: Cita actualizada
+```
+
+### Eliminar cita (TRABAJADOR_CENTRO / ADMIN)
+
+```
+DELETE /appointment/:id/worker
+Headers: Authorization: Bearer {accessToken}
+
+Response 204: No Content
+```
+
+Eliminación definitiva (hard delete). Solo disponible para workers/admins; no hay restricción de ownership.
 
 ---
 
@@ -86,22 +154,23 @@ El componente filtra y ordena los resultados localmente para las diferentes vist
 1. Usuario abre la tab Citas
 2. useCitas() carga todas las citas del usuario
 3. Por defecto se muestra la tab "Próximas"
-   → Se filtran citas con fecha >= hoy, estado != 'cancelada'
+   → Se filtran citas con estado === 'agendada'
    → Se ordenan por fecha ascendente
 4. Usuario toca la tab "Historial"
-   → Se muestran citas pasadas (asistidas, canceladas)
+   → Se muestran citas pasadas (asistidas, completadas, canceladas, resultados_listos)
 5. Usuario navega en el CalendarWidget
    → Las citas del día seleccionado se resaltan
 6. Usuario toca una cita → AppointmentCard se expande
    → Muestra fecha, hora, médico, estado
-   → Si tiene resultado médico (estado: 'asistida'): enlace a Records
+   → Si estado === 'resultados_listos' o 'completada': enlace a Records
 ```
 
 ---
 
 ## Datos del usuario que se usan
 
-| Dato           | Uso                                          |
-| -------------- | -------------------------------------------- |
-| `user._id`     | Parámetro `paciente_id` en la query de citas |
-| `token.access` | Autenticar petición                          |
+| Dato           | Uso                                                |
+| -------------- | -------------------------------------------------- |
+| `user._id`     | Contexto para el fetch de citas                    |
+| `token.access` | Autenticar petición                                |
+| `user.role`    | Determina qué endpoints y vistas están disponibles |

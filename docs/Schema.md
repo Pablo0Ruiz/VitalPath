@@ -89,6 +89,11 @@ Datos que debe tener este schema :
 
 - name
 - description
+- frequencyHours: `4 | 6 | 8 | 12 | 24` (horas entre dosis)
+- durationDays?: number (null = tratamiento indefinido)
+- dosesTaken: number (contador de dosis registradas)
+- notificationIds: string[] (IDs de las notificaciones push programadas)
+- startTime?: string (hora de inicio del ciclo de dosis, ej. "08:00")
 
 **_ Relacion de medicamentos con varias entidades _**
 

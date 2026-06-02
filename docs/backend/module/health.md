@@ -20,3 +20,31 @@ Endpoint de validación de vida ("liveness probe"), extremadamente útil en ento
   "timestamp": "2026-05-14T00:00:00.000Z"
 }
 ```
+
+### 2. Version Check
+
+- **Método:** `GET`
+- **Ruta:** `/api/health/version-check`
+- **Autorización:** Ninguna (Público).
+- **Rate Limiting:** Omitido via `@SkipThrottle()` a nivel de clase.
+- **Query Params:** `?version={semver}` (requerido) — versión semver enviada por la app móvil (ej. `?version=1.2.0`).
+- **Comportamiento:** Compara la versión recibida contra la variable de entorno `MIN_APP_VERSION` usando semver. Si la versión es mayor o igual al mínimo, responde `ok`; si es menor, responde `blocked`.
+- **Respuesta Exitosa:** `200 OK`
+
+```json
+{
+  "status": "ok",
+  "minVersion": "1.0.0"
+}
+```
+
+O cuando la app está bloqueada:
+
+```json
+{
+  "status": "blocked",
+  "minVersion": "1.2.0"
+}
+```
+
+- **Uso:** La app móvil llama a este endpoint en el arranque. El componente `VersionGate` lee la respuesta y, si `status === 'blocked'`, bloquea la interfaz e impide el acceso hasta que el usuario actualice la app.

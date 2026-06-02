@@ -18,12 +18,20 @@ Permitir la visualización, búsqueda, edición y alta de los registros médicos
 
 ## Llamadas a la API
 
-- **Listado:** `GET /patients?page=1&search=...`
-- **Detalle:** `GET /patients/:id`
-- **Registro:** `POST /patients` (Cuerpo: `{ nombre, fechaNacimiento, ... }`)
-- **Actualización:** `PATCH /patients/:id`
+> **Nota:** No existe un controlador `/patients` en el backend. Las rutas de gestión de pacientes están distribuidas entre varios módulos.
+
+| Acción                                 | Endpoint real                              | Roles requeridos                       |
+| -------------------------------------- | ------------------------------------------ | -------------------------------------- |
+| Registrar nuevo paciente               | `POST /api/auth/register-patient`          | `ADMIN`, `TRABAJADOR_CENTRO`           |
+| Ver detalle de un paciente             | `GET /api/user/patients/:id`               | `MEDICO`, `TRABAJADOR_CENTRO`, `ADMIN` |
+| Listar pacientes del centro            | `GET /api/user/center-patients`            | `ADMIN`, `TRABAJADOR_CENTRO`           |
+| Ver resultados médicos de un paciente  | `GET /api/storage/resultado/pacientes/:id` | Autenticado con acceso al paciente     |
+| Ver pacientes de un médico (vía citas) | `GET /api/appointment/allCitasMedico`      | `MEDICO`                               |
+
+La página `/patients` en el frontend usa `useCitasMedico()` para derivar la lista de pacientes únicos a partir de las citas del médico autenticado, deduplicando por `paciente_ID._id`.
 
 ## Flujos Típicos
 
-- **Búsqueda rápida:** El usuario administrativo utiliza la barra de búsqueda en `/patients` tecleando parte del nombre o apellido del paciente, y presiona enter. El componente realiza peticiones de búsqueda y muestra la tabla de resultados actualizados dinámicamente.
-- **Registro asistido:** Un nuevo paciente llega a la clínica; se usa `/register-patient`. El sistema valida paso a paso. Al completar, se le redirige al `/patients/[id]` del recién creado para programarle una cita inmediata.
+- **Listado de pacientes (médico):** Al ingresar a `/patients`, el componente `PatientList` llama a `GET /api/appointment/allCitasMedico`, obtiene las citas del médico y deduplica los pacientes por ID. Se puede filtrar por nombre y por estado de la cita.
+- **Registro asistido:** Un nuevo paciente llega a la clínica. El personal administrativo usa `/register-patient`, que llama a `POST /api/auth/register-patient`. Al completar, se redirige a `/patients/[id]` del paciente recién creado.
+- **Detalle del paciente:** Desde la lista, se navega a `/patients/[id]`. El componente llama a `GET /api/user/patients/:id` para obtener el perfil y a `GET /api/storage/resultado/pacientes/:id` para los estudios médicos.

@@ -15,7 +15,7 @@ La app sigue una arquitectura en capas donde cada capa tiene una responsabilidad
 │        Hooks personalizados + React Query             │
 ├──────────────────────────────────────────────────────┤
 │                  Capa de Estado Global                │
-│           Zustand stores (auth, seniorUI)             │
+│      Zustand stores (auth, seniorUI, activePaciente)  │
 ├──────────────────────────────────────────────────────┤
 │                  Capa de Infraestructura              │
 │     @repo/api-client (Axios) + Adapters (SecureStore) │
@@ -44,6 +44,7 @@ Root Stack (_layout.tsx)
 ├── (auth)/              ← Stack público (sin sesión)
 │   ├── login/
 │   ├── register/        ← Multi-paso: index → step-2 → step-3
+│   ├── register-cuidador/
 │   ├── recover-password/
 │   ├── recover-password-email-sent/
 │   └── senior-ui-suggestion/
@@ -104,23 +105,33 @@ Regla: ningún componente de UI importa directamente desde `@repo/api-client`. L
 
 ### `src/stores/` — Estado global (Zustand)
 
-| Store               | Propósito                                              |
-| ------------------- | ------------------------------------------------------ |
-| `auth.ts`           | Sesión del usuario (user, isLoading, hydrated)         |
-| `seniorUI.store.ts` | Modo de accesibilidad senior (persiste en SecureStore) |
+| Store               | Propósito                                                                                                                                                  |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth.ts`           | Sesión del usuario (user, isLoading, hydrated)                                                                                                             |
+| `seniorUI.store.ts` | Modo de accesibilidad senior (persiste en SecureStore)                                                                                                     |
+| `activePaciente.ts` | Paciente activo seleccionado cuando el rol es `CUIDADOR_FAMILIAR`. Usado por `useActivePatientId()`, `EmptyPacienteActivoState` y `PacienteActivoSelector` |
 
 El store de chat y mensajes vive en `@repo/store` para ser compartido con otras plataformas.
 
 ### `src/hooks/` — Hooks personalizados
 
-| Hook                     | Propósito                                                    |
-| ------------------------ | ------------------------------------------------------------ |
-| `useTheme()`             | Lee el tema actual (light/dark/senior) y devuelve los tokens |
-| `useDisclosure()`        | Control de estado abierto/cerrado para modales               |
-| `useVoiceAssistant()`    | Grabación de audio y síntesis de voz                         |
-| `usePushNotifications()` | Registro de token de notificaciones push                     |
-| `usePdfData()`           | Descarga y preparación de resultados médicos en PDF          |
-| `useCompletedSet()`      | Estado de medicamentos marcados como tomados                 |
+| Hook                        | Propósito                                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `useTheme()`                | Lee el tema actual (light/dark/senior) y devuelve los tokens                                                                        |
+| `useDisclosure()`           | Control de estado abierto/cerrado para modales                                                                                      |
+| `useVoiceAssistant()`       | Grabación de audio y síntesis de voz                                                                                                |
+| `usePushNotifications()`    | Registro de token de notificaciones push                                                                                            |
+| `usePdfData()`              | Descarga y preparación de resultados médicos en PDF                                                                                 |
+| `useTakeMedication()`       | `PATCH /medications/:id/take` — registra una dosis tomada en el servidor                                                            |
+| `useMedicationsByPatient()` | `GET /medications/patient/:id` — medicamentos de un paciente específico                                                             |
+| `useVersionCheck()`         | `GET /health/version-check` — llamado al arrancar la app por `VersionGate`                                                          |
+| `useActivePatientId()`      | Lee el store `activePaciente` y devuelve el ID del paciente en contexto de cuidador                                                 |
+| `useRole()`                 | Devuelve el rol actual del usuario desde el auth store                                                                              |
+| `useVinculacion()`          | Flujo de vinculación de cuidador: `useGenerarCodigo`, `useVincular`, `useRevocarVinculacion`, `useMisPacientes`, `useMisCuidadores` |
+| `useMoodCheckIn()`          | Endpoint de mood tracking                                                                                                           |
+| `useRegisterCuidador()`     | Registro de cuidador familiar                                                                                                       |
+| `useStatsSummary()`         | `GET /stats/summary`                                                                                                                |
+| `useAuditLogs()`            | `GET /audit-logs` (solo rol ADMIN)                                                                                                  |
 
 ### `src/adapters/` — Adapters de infraestructura
 
@@ -168,13 +179,19 @@ Los hooks se definen en `@repo/api-client` y se usan directamente en las pantall
 | Hook                        | Método   | Endpoint                            |
 | --------------------------- | -------- | ----------------------------------- |
 | `useLogin`                  | `POST`   | `/auth/login`                       |
-| `useLoginWithCode`          | `POST`   | `/auth/login-code`                  |
-| `useCitas`                  | `GET`    | `/citas?paciente_id={id}`           |
-| `useMedicaments`            | `GET`    | `/medicamentos`                     |
-| `useDeleteMedication`       | `DELETE` | `/medicamentos/{id}`                |
+| `useLoginWithCode`          | `POST`   | `/auth/login/code/:codigo`          |
+| `useRegisterCuidador`       | `POST`   | `/auth/register-cuidador`           |
+| `useCitas`                  | `GET`    | `/appointment`                      |
+| `useMedicaments`            | `GET`    | `/medications`                      |
+| `useTakeMedication`         | `PATCH`  | `/medications/:id/take`             |
+| `useMedicationsByPatient`   | `GET`    | `/medications/patient/:id`          |
+| `useDeleteMedication`       | `DELETE` | `/medications/:id`                  |
 | `useMedicalResultsPaciente` | `GET`    | `/medical-results?paciente_id={id}` |
-| `useChatHistory`            | `GET`    | `/chat/history?chatId={id}`         |
-| `useVoiceChat`              | `POST`   | `/chat/voice`                       |
+| `useChatHistory`            | `GET`    | `/ai/chat-history/:chatId`          |
+| `useVoiceChat`              | `POST`   | `/ai/voice-chat`                    |
+| `useVersionCheck`           | `GET`    | `/health/version-check`             |
+| `useStatsSummary`           | `GET`    | `/stats/summary`                    |
+| `useAuditLogs`              | `GET`    | `/audit-logs`                       |
 | `savePushToken`             | `POST`   | `/notifications/register-token`     |
 
 ### Manejo de errores de red
@@ -220,6 +237,22 @@ interface SeniorUIState {
 ```
 
 Persiste en SecureStore. `syncWithUser` activa automáticamente el modo senior si `user.fechaNacimiento` indica que el usuario tiene ≥ 65 años.
+
+### Active Paciente Store (`src/stores/activePaciente.ts`)
+
+Mantiene el paciente actualmente seleccionado cuando el usuario tiene rol `CUIDADOR_FAMILIAR`. `useActivePatientId()` lee este store y provee el ID del paciente como contexto para todos los fetches de datos. Si el store está vacío, la pantalla Home renderiza `EmptyPacienteActivoState`.
+
+---
+
+## Organisms relevantes
+
+| Organism            | Responsabilidad                                                                                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ChatHistory`       | Listado de conversaciones previas con el asistente IA                                                                                                      |
+| `CalendarWidget`    | Vista de calendario para navegar entre citas                                                                                                               |
+| `AppDrawerContent`  | Contenido del drawer lateral (perfil, settings, logout)                                                                                                    |
+| `VersionGate`       | Wrappea toda la app en `_layout.tsx`. Llama a `useVersionCheck()` al arrancar. Si `status === 'blocked'`, renderiza `ForceUpdateScreen` en lugar de la app |
+| `ForceUpdateScreen` | Pantalla bloqueante de pantalla completa que se muestra cuando la versión de la app está por debajo del mínimo requerido por el backend                    |
 
 ---
 
