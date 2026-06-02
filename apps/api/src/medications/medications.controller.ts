@@ -101,6 +101,23 @@ export class MedicationsController {
   }
 
   @Auth()
+  @Patch(':id/take')
+  @ApiOperation({ summary: 'Record a medication dose taken' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dose recorded. Returns { medication, completed }.',
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — medication not owned by user',
+  })
+  @ApiResponse({ status: 404, description: 'Medication not found' })
+  takeMedication(@Param('id') id: string, @GetUser('_id') userId: string) {
+    return this.medicationsService.takeMedication(userId, id);
+  }
+
+  @Auth()
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a medication' })
   @ApiResponse({ status: 200, description: 'Medication deleted' })

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
+import { AppointmentNotificationService } from './appointment-notification.service';
 import { AppointmentController } from './appointment.controller';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
@@ -17,7 +18,7 @@ import { VinculacionModule } from '../vinculacion/vinculacion.module';
 
 @Module({
   controllers: [AppointmentController],
-  providers: [AppointmentService],
+  providers: [AppointmentService, AppointmentNotificationService],
   imports: [
     AuthModule,
     UserModule,

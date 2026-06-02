@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { ModelMessage } from 'ai';
+import { sanitizeMessageForAiSdk } from './helpers/sanitize-message.helper';
 import axios from 'axios';
 import type { Response } from 'express';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
@@ -108,50 +109,9 @@ export class GroqService {
     const conversation = await this.conversationModel.findOne({ chatId });
     if (!conversation) return [];
 
-    return (conversation.messages as Record<string, unknown>[]).map(msg => {
-      const role = msg.role as string;
-      const sanitized: Record<string, unknown> = { role };
-
-      if (Array.isArray(msg.content)) {
-        sanitized.content = (msg.content as Record<string, unknown>[]).map(
-          part => {
-            const newPart = { ...part };
-
-            if (newPart.providerOptions === null)
-              delete newPart.providerOptions;
-
-            if (newPart.type === 'tool-result') {
-              newPart.result = newPart.result ?? newPart.output ?? {};
-              if (newPart.output === null) delete newPart.output;
-            }
-
-            if (newPart.type === 'tool-call') {
-              newPart.args = newPart.args ?? newPart.input ?? {};
-              if (newPart.input === null) delete newPart.input;
-              if (newPart.providerExecuted === null)
-                delete newPart.providerExecuted;
-
-              if (newPart.args === null) newPart.args = {};
-            }
-
-            return newPart;
-          },
-        );
-      } else {
-        sanitized.content = msg.content || '';
-      }
-
-      if (msg.toolCalls && Array.isArray(msg.toolCalls)) {
-        sanitized.toolCalls = msg.toolCalls.map(
-          (tc: Record<string, unknown>) => ({
-            ...tc,
-            args: tc.args ?? (tc.input as object) ?? {},
-          }),
-        );
-      }
-
-      return sanitized as unknown as ModelMessage;
-    });
+    return (conversation.messages as Record<string, unknown>[]).map(
+      sanitizeMessageForAiSdk,
+    );
   }
 
   async saveChatHistory(

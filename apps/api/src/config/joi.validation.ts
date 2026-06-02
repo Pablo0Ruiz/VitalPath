@@ -12,4 +12,8 @@ export const JoiValidationSchema = Joi.object({
   SUPABASE_URL: Joi.string().required(),
   SUPABASE_SERVICE_ROLE_KEY: Joi.string().required(),
   GROQ_API_KEY: Joi.string().required(),
+  MIN_APP_VERSION: Joi.string()
+    .pattern(/^\d+\.\d+\.\d+$/)
+    .optional()
+    .default('1.0.0'),
 });

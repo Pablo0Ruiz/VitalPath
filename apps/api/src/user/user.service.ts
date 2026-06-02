@@ -19,7 +19,7 @@ export class UserService {
   async getUserProfile(userId: string) {
     const user = await this.userModel.findById(userId);
 
-    if (!user) throw new Error('Error al obtener el perfil');
+    if (!user) throw new NotFoundException('Perfil no encontrado');
 
     let profile = null;
     if (user.role === UserRoles.PACIENTE) {
@@ -88,7 +88,7 @@ export class UserService {
       returnDocument: 'after',
     });
 
-    if (!user) throw new Error('Usuario no encontrado');
+    if (!user) throw new NotFoundException('Usuario no encontrado');
 
     return user.toObject();
   }

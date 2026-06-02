@@ -19,6 +19,12 @@ interface MedDoc {
   _id: Types.ObjectId;
   name: string;
   description?: string;
+  startTime?: string;
+  frequencyHours?: number;
+  durationDays?: number;
+  dosesTaken?: number;
+  notificationIds?: string[];
+  save?: jest.Mock;
 }
 
 interface ProfileResult {
@@ -238,6 +244,212 @@ describe('MedicationsService', () => {
       const result = await service.findActiveByPatient(patientId, staffCaller);
 
       expect(result).toEqual([]);
+    });
+  });
+
+  // ─── takeMedication ───────────────────────────────────────────────────────
+
+  describe('takeMedication', () => {
+    it('returns completed:true and deletes when durationDays is null (indefinite)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Ibuprofeno',
+        durationDays: undefined,
+        frequencyHours: 24,
+        dosesTaken: 0,
+        notificationIds: [],
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(true);
+      expect(result.medication).toBeUndefined();
+      expect(medicationModel.findByIdAndDelete).toHaveBeenCalledWith(
+        medId.toString(),
+      );
+      expect(patientModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { user: userId },
+        { $pull: { medications: medId.toString() } },
+      );
+    });
+
+    it('increments dosesTaken and returns completed:false when mid-course (frequencyHours=8)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // durationDays=5, frequencyHours=8 → totalDoses = 5 * 24/8 = 15
+      const saveMock = jest.fn().mockResolvedValue(undefined);
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Amoxicilina',
+        durationDays: 5,
+        frequencyHours: 8,
+        dosesTaken: 7,
+        notificationIds: [],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(false);
+      expect(result.medication).toBeDefined();
+      expect(medication.dosesTaken).toBe(8);
+      expect(saveMock).toHaveBeenCalled();
+      expect(medicationModel.findByIdAndDelete).not.toHaveBeenCalled();
+    });
+
+    it('deletes and returns completed:true when last dose is taken (frequencyHours=8, dosesTaken=14)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // totalDoses = 5 * 24/8 = 15; dosesTaken=14 → after increment → 15 >= 15 → delete
+      const saveMock = jest.fn();
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Amoxicilina',
+        durationDays: 5,
+        frequencyHours: 8,
+        dosesTaken: 14,
+        notificationIds: ['n3'],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(true);
+      expect(result.medication).toBeUndefined();
+      expect(medicationModel.findByIdAndDelete).toHaveBeenCalledWith(
+        medId.toString(),
+      );
+    });
+
+    it('throws NotFoundException when medication is not found in DB', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(null);
+
+      await expect(
+        service.takeMedication(userId, medId.toString()),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws ForbiddenException when medication does not belong to the user', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // profile has a different medication id
+      userService.getUserProfile.mockResolvedValue(makeProfile([makeId()]));
+
+      await expect(
+        service.takeMedication(userId, medId.toString()),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('increments dosesTaken and returns completed:false when mid-course (frequencyHours=6)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // durationDays=2, frequencyHours=6 → totalDoses = 2 * 24/6 = 8
+      const saveMock = jest.fn().mockResolvedValue(undefined);
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Paracetamol',
+        durationDays: 2,
+        frequencyHours: 6,
+        dosesTaken: 3,
+        notificationIds: [],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(false);
+      expect(medication.dosesTaken).toBe(4);
+      expect(saveMock).toHaveBeenCalled();
+    });
+
+    it('deletes and returns completed:true when last dose is taken (frequencyHours=12)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // durationDays=3, frequencyHours=12 → totalDoses = 3 * 24/12 = 6; dosesTaken=5
+      const saveMock = jest.fn();
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Dexametasona',
+        durationDays: 3,
+        frequencyHours: 12,
+        dosesTaken: 5,
+        notificationIds: [],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(true);
+      expect(medicationModel.findByIdAndDelete).toHaveBeenCalledWith(
+        medId.toString(),
+      );
+    });
+
+    it('deletes and returns completed:true when last dose is taken (frequencyHours=24)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // durationDays=7, frequencyHours=24 → totalDoses = 7; dosesTaken=6
+      const saveMock = jest.fn();
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Metformina',
+        durationDays: 7,
+        frequencyHours: 24,
+        dosesTaken: 6,
+        notificationIds: [],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(true);
+      expect(medicationModel.findByIdAndDelete).toHaveBeenCalledWith(
+        medId.toString(),
+      );
+    });
+
+    it('deletes and returns completed:true when last dose is taken (frequencyHours=4)', async () => {
+      const medId = makeId();
+      const userId = makeId().toString();
+      // durationDays=1, frequencyHours=4 → totalDoses = 6; dosesTaken=5
+      const saveMock = jest.fn();
+      const medication: MedDoc = {
+        _id: medId,
+        name: 'Ibuprofeno 200mg',
+        durationDays: 1,
+        frequencyHours: 4,
+        dosesTaken: 5,
+        notificationIds: [],
+        save: saveMock,
+      };
+      userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
+      medicationModel.findById.mockResolvedValue(medication);
+      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
+
+      const result = await service.takeMedication(userId, medId.toString());
+
+      expect(result.completed).toBe(true);
     });
   });
 
