@@ -51,3 +51,9 @@ export const auditKeys = {
   list: (q?: import('@repo/types').AuditLogQuery) =>
     [...auditKeys.all, 'list', q ?? {}] as const,
 };
+
+export const healthKeys = {
+  all: ['health'] as const,
+  versionCheck: (version: string) =>
+    [...healthKeys.all, 'version-check', version] as const,
+};

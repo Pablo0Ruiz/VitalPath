@@ -65,4 +65,7 @@
   --color-brand-text-secondary: var(--brand-text-secondary);
   --color-brand-text-inverse: var(--brand-text-inverse);
   --color-brand-border: var(--brand-border);
+  --color-brand-surface-elevated: var(--brand-surface-elevated);
+  --color-brand-accent-ai: var(--brand-accent-ai);
+  --color-brand-glass-border: var(--brand-glass-border);
 }

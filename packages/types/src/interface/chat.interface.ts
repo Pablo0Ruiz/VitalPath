@@ -1,7 +1,7 @@
 export interface IMessage {
   id: string;
   createdAt: Date;
-  sender: 'user' | 'gemini';
+  sender: 'user' | 'ai';
   type: 'text' | 'image' | 'audio';
 }
 

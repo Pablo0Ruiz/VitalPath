@@ -1,4 +1,5 @@
 export * from './client';
+export * from './refresh';
 export * from './refresh-interceptor';
 export * from './actions/auth.actions';
 export * from './actions/medication.actions';
@@ -10,6 +11,9 @@ export * from './actions/ai.actions';
 export * from './actions/stats.actions';
 export * from './actions/vinculacion.actions';
 export * from './actions/audit.actions';
+export * from './actions/health.actions';
+
 export * from './hooks';
 export * from './queryKeys';
-export * from './utils/parseApiError';
+export { parseApiError } from './utils/parseApiError';
+export * from './error-handler';

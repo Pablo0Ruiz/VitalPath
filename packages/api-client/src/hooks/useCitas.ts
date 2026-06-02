@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { handleApiError } from '../error-handler';
 import {
   getCitas,
   postCita,
@@ -33,7 +34,7 @@ export const useCreateCita = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useCreateCita] Error al crear cita:', error);
+      handleApiError(error);
     },
   });
 };
@@ -48,7 +49,7 @@ export const useScheduleForPatient = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useScheduleForPatient] Error al agendar cita:', error);
+      handleApiError(error);
     },
   });
 };
@@ -63,7 +64,7 @@ export const useUpdateCita = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useUpdateCita] Error al actualizar cita:', error);
+      handleApiError(error);
     },
   });
 };
@@ -77,7 +78,7 @@ export const useCancelCita = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useCancelCita] Error al cancelar cita:', error);
+      handleApiError(error);
     },
   });
 };
@@ -108,7 +109,7 @@ export const useAvanzarCitaEstado = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useAvanzarCitaEstado] Error al avanzar estado:', error);
+      handleApiError(error);
     },
   });
 };
@@ -122,7 +123,7 @@ export const useUpdateCitaByWorker = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useUpdateCitaByWorker] Error al actualizar cita:', error);
+      handleApiError(error);
     },
   });
 };
@@ -135,7 +136,7 @@ export const useDeleteCitaByWorker = () => {
       queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useDeleteCitaByWorker] Error al cancelar cita:', error);
+      handleApiError(error);
     },
   });
 };

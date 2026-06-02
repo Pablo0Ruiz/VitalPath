@@ -18,3 +18,4 @@ export * from './useStatsSummary';
 export * from './useVinculacion';
 export * from './useRegisterCuidador';
 export * from './useAuditLogs';
+export * from './useVersionCheck';
