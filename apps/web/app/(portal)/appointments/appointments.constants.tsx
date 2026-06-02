@@ -116,7 +116,7 @@ export function buildAppointmentColumns(
           </Button>
           <Button
             type="button"
-            variant="danger"
+            variant="destructive"
             size="sm"
             onClick={() => handlers.onCancel(row)}
           >
