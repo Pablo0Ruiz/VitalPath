@@ -173,10 +173,12 @@ const CheckInTable = () => {
                     {row.paciente_ID.name} {row.paciente_ID.lastName}
                   </td>
                   <td className="px-4 py-3 text-brand-text-secondary">
-                    {row.medico_ID.name} {row.medico_ID.lastName}
+                    {row.medico_ID
+                      ? `${row.medico_ID.name} ${row.medico_ID.lastName}`
+                      : '—'}
                   </td>
                   <td className="px-4 py-3 text-brand-text-secondary">
-                    {row.medico_ID.especialidad}
+                    {row.medico_ID?.especialidad ?? '—'}
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant={ESTADO_BADGE[row.estado]} size="sm">

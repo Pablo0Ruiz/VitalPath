@@ -197,7 +197,7 @@ export class AppointmentController {
     return this.appointmentService.cancelAppointment(userId, id);
   }
 
-  @Auth(UserRoles.TRABAJADOR_CENTRO)
+  @Auth(UserRoles.TRABAJADOR_CENTRO, UserRoles.ADMIN)
   @Patch(':id/worker')
   @ApiOperation({
     summary: 'Update appointment as worker (no ownership check)',

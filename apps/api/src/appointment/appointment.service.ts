@@ -133,7 +133,6 @@ export class AppointmentService {
       .sort({ fecha: 1, hora: 1 })
       .lean()
       .exec();
-
     return this.enrichWithEspecialidad(citas as unknown as LeanCita[]);
   }
 
@@ -232,7 +231,9 @@ export class AppointmentService {
   private async enrichWithEspecialidad(citas: LeanCita[]) {
     if (!citas.length) return citas;
 
-    const medicoIds = citas.map(c => c.medico_ID._id);
+    const medicoIds = citas
+      .filter(c => c.medico_ID != null)
+      .map(c => c.medico_ID._id);
     const doctors = await this.doctorModel
       .find({ user: { $in: medicoIds } })
       .select('user especialidad')
@@ -244,10 +245,12 @@ export class AppointmentService {
 
     return citas.map(cita => ({
       ...cita,
-      medico_ID: {
-        ...cita.medico_ID,
-        especialidad: specialtyMap.get(cita.medico_ID._id.toString()) ?? '',
-      },
+      medico_ID: cita.medico_ID
+        ? {
+            ...cita.medico_ID,
+            especialidad: specialtyMap.get(cita.medico_ID._id.toString()) ?? '',
+          }
+        : null,
     }));
   }
 

@@ -52,8 +52,8 @@ const BookAppointmentForm = ({
     defaultValues:
       mode === 'edit' && initialCita
         ? {
-            paciente_ID: initialCita.paciente_ID._id,
-            medico_ID: initialCita.medico_ID._id,
+            paciente_ID: initialCita.paciente_ID?._id,
+            medico_ID: initialCita.medico_ID?._id,
             fecha: initialCita.fecha,
             hora: initialCita.hora,
           }
@@ -69,13 +69,13 @@ const BookAppointmentForm = ({
     name: 'fecha',
   });
 
-  const selectedDoctor = doctors?.find(d => d._id === watchedMedicoId);
+  const selectedDoctor = doctors?.find(d => d.user._id === watchedMedicoId);
 
   const patientOptions = usePatientOptions(citas);
 
   const doctorOptions =
     doctors?.map(d => ({
-      value: d._id,
+      value: d.user._id,
       label: `${d.user.name} ${d.user.lastName} — ${d.especialidad}`,
     })) ?? [];
 
