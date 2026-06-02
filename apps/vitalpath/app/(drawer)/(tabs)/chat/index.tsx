@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, StyleSheet, View, Pressable, ScrollView } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 
-import { TextField } from '@/src/components/ui/atoms';
+import { TextField, ThinkingIndicator } from '@/src/components/ui/atoms';
 import { ChatMessages } from '@/src/components/ui/molecules/ChatMessages/ChatMessages';
 import { ChatComposer, ChatHeader } from '@/src/components/ui/molecules';
-import { ChatHistory } from '@/src/components/ui/organisms';
+import { ChatHistory, ScreenLayout } from '@/src/components/ui/organisms';
 import { useChatContextStore } from '@repo/store';
 import { getChatStream } from '@/src/core/actions/chat-stream.actions';
-import { appointmentKeys, useChatHistory } from '@repo/api-client';
+import {
+  appointmentKeys,
+  useChatHistory,
+  SessionExpiredError,
+} from '@repo/api-client';
 import { useTheme } from '@/src/hooks/useTheme';
 
 type Attachment = {
@@ -24,11 +27,12 @@ const Chat = () => {
   const t = useTheme();
   const queryClient = useQueryClient();
   const [view, setView] = useState<'history' | 'active'>('history');
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const messages = useChatContextStore(state => state.messages);
   const addMessage = useChatContextStore(state => state.addMessage);
   const setMessages = useChatContextStore(state => state.setMessages);
-  const geminiWriting = useChatContextStore(state => state.geminiWriting);
+  const aiWriting = useChatContextStore(state => state.aiWriting);
   const chatId = useChatContextStore(state => state.chatId);
   const setChatId = useChatContextStore(state => state.setChatId);
   const clearChat = useChatContextStore(state => state.clearChat);
@@ -40,7 +44,7 @@ const Chat = () => {
       const mappedMessages = historyData.map((m, i) => ({
         id: `${chatId}-${i}`,
         text: m.parts,
-        sender: m.role === 'model' ? ('gemini' as const) : ('user' as const),
+        sender: m.role === 'model' ? ('ai' as const) : ('user' as const),
         createdAt: new Date(),
         type: 'text' as const,
       }));
@@ -52,9 +56,22 @@ const Chat = () => {
     prompt: string,
     attachments: Attachment[],
   ) => {
-    await addMessage(prompt, attachments, getChatStream);
-    queryClient.invalidateQueries({ queryKey: ['conversations'] });
-    queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    try {
+      await addMessage(prompt, attachments, getChatStream);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
+    } catch (error) {
+      if (error instanceof SessionExpiredError) {
+        setSessionExpired(true);
+        Alert.alert(
+          'Session expired',
+          'Your session has expired. Please log in again.',
+          [{ text: 'OK', onPress: () => router.replace('/login') }],
+        );
+        return;
+      }
+      throw error;
+    }
   };
 
   const handleSelectConversation = (id: string) => {
@@ -82,9 +99,10 @@ const Chat = () => {
   ];
 
   return (
-    <SafeAreaView
-      style={[s.container, { backgroundColor: t.background }]}
-      edges={['top']}
+    <ScreenLayout
+      showHero={false}
+      scrollable={false}
+      contentStyle={{ paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }}
     >
       <ChatHeader view={view} onBack={onBack} />
       {view === 'history' ? (
@@ -95,8 +113,9 @@ const Chat = () => {
       ) : (
         <>
           <View style={s.chatContent}>
-            <ChatMessages messages={messages} isGeminiWriting={geminiWriting} />
-            {messages.length <= 1 && !geminiWriting && (
+            <ChatMessages messages={messages} isGeminiWriting={false} />
+            {aiWriting && <ThinkingIndicator />}
+            {messages.length <= 1 && !aiWriting && (
               <View style={s.suggestionsWrapper}>
                 <ScrollView
                   horizontal
@@ -130,38 +149,11 @@ const Chat = () => {
           <ChatComposer chatId={chatId} onSendMessage={handleSendMessage} />
         </>
       )}
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 16,
-    zIndex: 10,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  title: { fontWeight: '700', fontSize: 16, textAlign: 'left' },
-  statusRow: { flexDirection: 'row', alignItems: 'center' },
-  onlineDot: { width: 6, height: 6, borderRadius: 3, marginRight: 4 },
-  statusText: { fontSize: 12, textAlign: 'left' },
   chatContent: { flex: 1 },
   suggestionsWrapper: { position: 'absolute', bottom: 8, width: '100%' },
   suggestionsScroll: { paddingHorizontal: 20, gap: 10 },

@@ -1,29 +1,29 @@
 const light = {
   // ── Surfaces ─────────────────────────────────────────────────
-  background: '#F6F4F9',
-  surface: '#FDFCFF',
+  background: '#F5F7FC',
+  surface: '#FFFFFF',
   surfaceElevated: '#FFFFFF',
-  surfaceDark: '#2C123E',
+  surfaceDark: '#1e2f8a',
 
   // ── Text ─────────────────────────────────────────────────────
-  textPrimary: '#1C1030',
-  textSecondary: '#5C5670',
+  textPrimary: '#111827',
+  textSecondary: '#6B7280',
   textInverse: '#FFFFFF',
 
   // ── Border ───────────────────────────────────────────────────
-  border: '#E5DEED',
+  border: '#E4E7EF',
 
   // ── Online presence ──────────────────────────────────────────
   online: '#22C55E',
 
-  // ── Brand Primary: Royal Plum ────────────────────────────────
-  primary50: '#F5F0FB',
-  primary100: '#EBE1F7',
-  primary200: '#D7C3EF',
-  primary500: '#8B5DC8',
-  primary600: '#4B2067',
-  primary700: '#3A1852',
-  primary900: '#1E0C2B',
+  // ── Brand Primary: Indigo Blue ───────────────────────────────
+  primary50: '#eef1fe',
+  primary100: '#dde3fd',
+  primary200: '#bbc7fb',
+  primary500: '#6480f8',
+  primary600: '#4f6ef7',
+  primary700: '#3a57e0',
+  primary900: '#1e2f8a',
 
   // ── Brand Secondary: Teal ────────────────────────────────────
   secondary50: '#F0FDFA',
@@ -33,6 +33,9 @@ const light = {
   secondary600: '#0D9488',
   secondary700: '#0F766E',
   secondary900: '#134E4A',
+
+  // ── Accent AI: Purple ────────────────────────────────────────
+  accentAi: '#9B5DE5',
 
   // ── Neutral: Zinc ────────────────────────────────────────────
   neutral50: '#FAFAFA',
@@ -48,12 +51,13 @@ const light = {
   neutral950: '#09090B',
 
   // ── State ────────────────────────────────────────────────────
-  error: '#FF4D6A',
-  errorLight: '#FFE4EA',
-  errorDark: '#CC0033',
-  success: '#00C896',
-  successLight: '#CCFBF0',
-  successDark: '#006649',
+  error: '#EF4444',
+  errorLight: '#FEE2E2',
+  errorDark: '#991B1B',
+  success: '#10B981',
+  successLight: '#D1FAE5',
+  successDark: '#065F46',
+  successText: '#065F46',
   warning: '#F59E0B',
   warningLight: '#FEF3C7',
   warningDark: '#92400E',
@@ -62,50 +66,66 @@ const light = {
   infoDark: '#1E40AF',
   white: '#FFFFFF',
   black: '#000000',
-  fontSizeTitle: 28,
-  fontSizeBody: 14,
-  fontSizeCaption: 12,
+
+  // ── Glass ────────────────────────────────────────────────────
+  glassBorder: 'rgba(79, 110, 247, 0.20)',
+
+  // ── Typography scale ─────────────────────────────────────────
+  fontSizeDisplay: 32,
+  fontSizeTitle: 24,
+  fontSizeBody: 15,
+  fontSizeCaption: 13,
   fontSizeLabel: 11,
+
+  // ── Radii ────────────────────────────────────────────────────
+  radiusCard: 16,
+  radiusHero: 20,
+  radiusSheet: 24,
+
+  // ── Touch ────────────────────────────────────────────────────
   minTouchTarget: 44,
 } as const;
 
 const dark = {
   // ── Surfaces ─────────────────────────────────────────────────
-  background: '#0C0A14',
-  surface: '#1A1526',
-  surfaceElevated: '#261E38',
-  surfaceDark: '#0C0A14',
+  background: '#13141F',
+  surface: '#1C1E2E',
+  surfaceElevated: '#252841',
+  surfaceDark: '#0D0E18',
 
   // ── Text ─────────────────────────────────────────────────────
-  textPrimary: '#F0ECF8',
-  textSecondary: '#9B97A8',
-  textInverse: '#1C1030',
+  textPrimary: '#EEF0F8',
+  textSecondary: '#8B90A8',
+  textInverse: '#13141F',
 
   // ── Border ───────────────────────────────────────────────────
-  border: '#3A2E50',
+  border: '#2F3347',
 
   // ── Online presence ──────────────────────────────────────────
   online: '#22C55E',
 
-  // ── Brand Primary: Champagne Gold ────────────────────────────
-  primary50: '#FEF9EC',
-  primary100: '#FDF3D3',
-  primary200: '#FBE7A7',
-  primary500: '#E8BB45',
-  primary600: '#D4A843',
-  primary700: '#AA8435',
-  primary900: '#57411A',
+  // ── Brand Primary: Indigo Blue (lighter in dark) ─────────────
+  primary50: '#eef1fe',
+  primary100: '#dde3fd',
+  primary200: '#bbc7fb',
+  primary500: '#7b8ffa',
+  primary600: '#7b8ffa',
+  primary700: '#9aaafb',
+  primary900: '#dde3fd',
 
-  // ── Brand Secondary: Cyan ────────────────────────────────────
-  secondary50: '#ECFEFF',
-  secondary100: '#CFFAFE',
-  secondary200: '#A5F3FC',
-  secondary500: '#06B6D4',
-  secondary600: '#0891B2',
-  secondary700: '#0E7490',
-  secondary900: '#164E63',
+  // ── Brand Secondary: Teal ────────────────────────────────────
+  secondary50: '#F0FDFA',
+  secondary100: '#CCFBF1',
+  secondary200: '#99F6E4',
+  secondary500: '#2DD4BF',
+  secondary600: '#14B8A6',
+  secondary700: '#0D9488',
+  secondary900: '#134E4A',
 
-  // ── Neutral: Zinc (same scale, dark context) ─────────────────
+  // ── Accent AI: Purple ────────────────────────────────────────
+  accentAi: '#B87AF8',
+
+  // ── Neutral: Zinc (same scale) ───────────────────────────────
   neutral50: '#FAFAFA',
   neutral100: '#F4F4F5',
   neutral200: '#E4E4E7',
@@ -119,12 +139,13 @@ const dark = {
   neutral950: '#09090B',
 
   // ── State ────────────────────────────────────────────────────
-  error: '#FF6B85',
+  error: '#F87171',
   errorLight: '#450a0a',
   errorDark: '#ef4444',
-  success: '#1AD9A8',
+  success: '#34D399',
   successLight: '#064e3b',
   successDark: '#10b981',
+  successText: '#34D399',
   warning: '#FBBF24',
   warningLight: '#451a03',
   warningDark: '#f59e0b',
@@ -133,21 +154,35 @@ const dark = {
   infoDark: '#3b82f6',
   white: '#FFFFFF',
   black: '#000000',
-  fontSizeTitle: 28,
-  fontSizeBody: 14,
-  fontSizeCaption: 12,
+
+  // ── Glass ────────────────────────────────────────────────────
+  glassBorder: 'rgba(123, 143, 250, 0.22)',
+
+  // ── Typography scale ─────────────────────────────────────────
+  fontSizeDisplay: 32,
+  fontSizeTitle: 24,
+  fontSizeBody: 15,
+  fontSizeCaption: 13,
   fontSizeLabel: 11,
+
+  // ── Radii ────────────────────────────────────────────────────
+  radiusCard: 16,
+  radiusHero: 20,
+  radiusSheet: 24,
+
+  // ── Touch ────────────────────────────────────────────────────
   minTouchTarget: 44,
 } as const;
 
 export const seniorTokens = {
-  fontSizeTitle: 40,
+  fontSizeDisplay: 44,
+  fontSizeTitle: 32,
   fontSizeBody: 20,
   fontSizeCaption: 17,
   fontSizeLabel: 16,
   minTouchTarget: 56,
-  textSecondary: '#3D3858',
-  border: '#B8AFCC',
+  textSecondary: '#4B5563',
+  border: '#9CA3AF',
 } as const;
 
 export type SeniorTokenOverrides = typeof seniorTokens;

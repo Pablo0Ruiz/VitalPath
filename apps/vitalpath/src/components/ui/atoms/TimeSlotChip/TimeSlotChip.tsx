@@ -44,10 +44,11 @@ export const TimeSlotChip = ({
 const s = StyleSheet.create({
   base: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 9999,
-    marginRight: 8,
     borderWidth: 1,
+    minWidth: 72,
+    alignItems: 'center',
   },
   text: { fontSize: 14, fontWeight: '500' },
 });

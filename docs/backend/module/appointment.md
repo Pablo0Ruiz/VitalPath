@@ -66,3 +66,36 @@ El módulo de citas ("appointments") gestiona todo el ciclo de vida de una visit
 - **Ruta:** `/appointment/:id`
 - **Autorización:** Autenticado.
 - **Respuesta Exitosa:** `200 OK`. Marca la cita como cancelada o la elimina de forma lógica de la agenda del médico y paciente.
+
+### 9. Obtener Citas del Cuidador
+
+- **Método:** `GET`
+- **Ruta:** `/appointment/cuidador`
+- **Autorización:** Autenticado, requiere rol `CUIDADOR_FAMILIAR`.
+- **Query Params:** `?pacienteId={id}` (opcional) — filtra las citas por un paciente vinculado específico.
+- **Respuesta Exitosa:** `200 OK`. Retorna las citas de todos los pacientes vinculados al cuidador autenticado. Si se pasa `pacienteId`, filtra por ese paciente.
+
+### 10. Crear Cita como Trabajador
+
+- **Método:** `POST`
+- **Ruta:** `/appointment/worker`
+- **Autorización:** Autenticado, requiere rol `TRABAJADOR_CENTRO` o `ADMIN`.
+- **Cuerpo:** `CreateAppointmentWorkerDto` (incluye `pacienteId` explícito; sin restricción de titularidad).
+- **Respuesta Exitosa:** `201 Created` con el ID de la cita.
+
+### 11. Actualizar Cita como Trabajador
+
+- **Método:** `PATCH`
+- **Ruta:** `/appointment/:id/worker`
+- **Autorización:** Autenticado, requiere rol `TRABAJADOR_CENTRO` o `ADMIN`.
+- **Parámetros de Ruta:** `id` (ID de la cita).
+- **Cuerpo:** `UpdateAppointmentDto` (campos opcionales).
+- **Respuesta Exitosa:** `200 OK`. Actualiza cualquier cita sin verificar titularidad del paciente.
+
+### 12. Eliminar Cita como Trabajador
+
+- **Método:** `DELETE`
+- **Ruta:** `/appointment/:id/worker`
+- **Autorización:** Autenticado, requiere rol `TRABAJADOR_CENTRO` o `ADMIN`.
+- **Parámetros de Ruta:** `id` (ID de la cita).
+- **Respuesta Exitosa:** `204 No Content`. Eliminación física (hard-delete) de la cita, sin restricción de titularidad.

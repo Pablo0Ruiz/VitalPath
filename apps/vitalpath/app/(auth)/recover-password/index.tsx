@@ -1,5 +1,10 @@
-import { Button, TextField } from '@/src/components/ui/atoms';
-import { AuthHeader, FormField } from '@/src/components/ui/molecules';
+import { Button } from '@/src/components/ui/atoms';
+import {
+  AuthFooterLink,
+  AuthHeader,
+  FormField,
+} from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms/AuthLayout';
 import { useRecoverPassword } from '@repo/api-client';
 import { RecoverPasswordFormValues, recoverPasswordSchema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
@@ -7,7 +12,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/hooks/useTheme';
 
 const RecoverPassword = () => {
@@ -46,75 +51,56 @@ const RecoverPassword = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.background }]}>
-      <ScrollView
-        style={s.flex1}
-        contentContainerStyle={s.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+    <AuthLayout
+      heroContent={
         <AuthHeader
           title="Recuperar contraseña"
-          subtitle="Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña"
+          subtitle="Ingresá tu correo y te enviamos un enlace para restablecer tu contraseña"
         />
+      }
+    >
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <FormField
+            label="Correo electrónico"
+            placeholder="nombre@ejemplo.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            leftIcon={
+              <Octicons name="mail" size={20} color={t.textSecondary} />
+            }
+            style={s.emailField}
+            helperText={errors.email?.message}
+          />
+        )}
+      />
 
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <FormField
-              label="Correo electrónico"
-              placeholder="nombre@ejemplo.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={value}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              leftIcon={
-                <Octicons name="mail" size={20} color={t.textSecondary} />
-              }
-              style={s.emailField}
-              helperText={errors.email?.message}
-            />
-          )}
-        />
+      <Button
+        title={isPending ? 'Enviando...' : 'Enviar instrucciones'}
+        onPress={handleSubmit(handleResetPassword)}
+        variant="primary"
+        disabled={isPending}
+        style={s.submitButton}
+      />
 
-        <Button
-          title={isPending ? 'Enviando...' : 'Enviar instrucciones'}
-          onPress={handleSubmit(handleResetPassword)}
-          variant="primary"
-          disabled={isPending}
-          style={s.submitButton}
-        />
-
-        <TextField
-          variant="caption"
-          style={[s.footerText, { color: t.textSecondary }]}
-          onPress={handleGoBack}
-        >
-          ¿Recordaste tu contraseña?{' '}
-          <TextField
-            variant="caption"
-            style={[s.linkText, { color: t.primary600 }]}
-          >
-            Iniciar sesión
-          </TextField>
-        </TextField>
-      </ScrollView>
-    </View>
+      <AuthFooterLink
+        text="¿Recordaste tu contraseña?"
+        linkText="Iniciar sesión"
+        onPress={handleGoBack}
+      />
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
-  flex1: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 48 },
-  backWrapper: { marginBottom: 16 },
-  backButton: { alignSelf: 'flex-start' },
   emailField: { marginBottom: 24 },
   submitButton: { marginBottom: 24 },
-  footerText: { fontSize: 14, textAlign: 'center' },
-  linkText: { fontWeight: '700' },
 });
 
 export default RecoverPassword;

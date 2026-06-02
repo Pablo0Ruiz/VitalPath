@@ -63,7 +63,10 @@ const Button = ({
         s.base,
         getButtonSizeStyle(size, t),
         buttonContainerStyle(variant, t),
-        { opacity: pressed || loading ? 0.75 : 1 },
+        {
+          opacity: loading ? 0.6 : 1,
+          transform: [{ scale: pressed ? 0.97 : 1 }],
+        },
         style,
       ]}
       {...props}

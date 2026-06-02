@@ -85,14 +85,8 @@ const sections = [
     title: 'CLÍNICO',
     labels: ['Dashboard', 'Pacientes', 'Pacientes del centro', 'Citas'],
   },
-  {
-    title: 'HERRAMIENTAS',
-    labels: ['Registro paciente', 'Agendar'],
-  },
-  {
-    title: 'GESTIÓN',
-    labels: ['Médicos', 'Reportes', 'Auditoría'],
-  },
+  { title: 'HERRAMIENTAS', labels: ['Registro paciente', 'Agendar'] },
+  { title: 'GESTIÓN', labels: ['Médicos', 'Reportes', 'Auditoría'] },
 ];
 
 const roleLabelMap: Record<Role, string> = {
@@ -109,59 +103,55 @@ type SidebarProps = {
 
 const Sidebar = ({ role, currentPath, user }: SidebarProps) => {
   const filtered = navItems.filter(item => item.roles.includes(role));
-
   const initials = (
     (user.name[0] ?? '') + (user.lastName?.[0] ?? '')
   ).toUpperCase();
-
   const roleLabel = user.role ? roleLabelMap[user.role] : roleLabelMap[role];
 
   return (
-    <aside className="w-64 bg-brand-background border-r border-brand-border h-screen sticky top-0 flex flex-col">
-      <div className="px-5 py-5 border-b border-brand-border flex items-center gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-brand-primary-600 flex items-center justify-center">
-            <HugeiconsIcon icon={InboxIcon} size={14} className="text-white" />
-          </div>
-          <span className="text-base font-bold text-brand-text-primary tracking-tight">
-            VitalPath
-          </span>
+    <aside className="w-64 h-screen sticky top-0 flex flex-col bg-[#0D1B3E] border-r border-white/8">
+      <div className="px-5 py-5 border-b border-white/10 flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-xl bg-linear-to-br from-brand-primary-400 to-brand-accent-ai flex items-center justify-center shadow-lg">
+          <HugeiconsIcon icon={InboxIcon} size={15} className="text-white" />
         </div>
-        <span className="text-xs font-medium bg-brand-primary-100 text-brand-primary-700 px-2 py-0.5 rounded-full">
+        <span className="text-base font-bold text-white tracking-tight">
+          VitalPath
+        </span>
+        <span className="text-[10px] font-semibold bg-white/10 text-white/70 px-2 py-0.5 rounded-full border border-white/10">
           Portal
         </span>
       </div>
 
-      <div className="px-4 py-3 border-b border-brand-border flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-brand-primary-100 text-brand-primary-700 flex items-center justify-center text-sm font-semibold shrink-0">
+      <div className="px-4 py-3.5 border-b border-white/10 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-linear-to-br from-brand-primary-400 to-brand-accent-ai text-white flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white/20">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-brand-text-primary truncate">
+          <p className="text-sm font-semibold text-white truncate">
             {user.name}
             {user.lastName ? ` ${user.lastName}` : ''}
           </p>
-          <p className="text-xs text-brand-text-secondary capitalize">
-            {roleLabel}
-          </p>
+          <p className="text-xs text-white/50 capitalize">{roleLabel}</p>
         </div>
       </div>
 
+      {/* Nav */}
       <nav
         aria-label="Navegación principal"
-        className="flex-1 overflow-y-auto px-3 py-2 flex flex-col"
+        className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-0.5"
       >
-        {sections.map(section => {
+        {sections.map((section, idx) => {
           const sectionItems = filtered.filter(item =>
             section.labels.includes(item.label),
           );
           if (sectionItems.length === 0) return null;
           return (
             <div key={section.title}>
-              <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-wider text-brand-neutral-400 uppercase">
+              {idx > 0 && <div className="h-px bg-white/8 mx-1 my-2" />}
+              <p className="px-3 pt-3 pb-1.5 text-[10px] font-semibold tracking-widest text-white/35 uppercase">
                 {section.title}
               </p>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 {sectionItems.map(item => (
                   <SidebarItem
                     key={item.href}
@@ -180,9 +170,12 @@ const Sidebar = ({ role, currentPath, user }: SidebarProps) => {
         })}
       </nav>
 
-      <div className="px-4 py-3 border-t border-brand-border flex items-center justify-between">
-        <span className="text-xs text-brand-neutral-400">v0.1.0</span>
-        <a href="#" className="text-xs text-brand-primary-600 hover:underline">
+      <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between">
+        <span className="text-[11px] text-white/30">v0.1.0</span>
+        <a
+          href="#"
+          className="text-[11px] text-white/40 hover:text-white/70 transition-colors"
+        >
           Ayuda
         </a>
       </div>

@@ -8,3 +8,4 @@ export * from './stats.interface';
 export * from './vinculacion.interface';
 export * from './patient-profile.interface';
 export * from './audit-log.interface';
+export * from './user.utils';

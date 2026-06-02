@@ -1,6 +1,7 @@
 import type {
   CreateMedicationPayload,
   Medication,
+  TakeMedicationResponse,
   UpdateMedicationPayload,
 } from '@repo/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,9 +11,11 @@ import {
   getMedicament,
   getMedicaments,
   getMedicationsByPatient,
+  takeMedication,
   updateMedication,
 } from '../actions/medication.actions';
 import { medicationKeys } from '../queryKeys';
+import { handleApiError } from '../error-handler';
 
 export const useMedicaments = () => {
   return useQuery({
@@ -40,7 +43,7 @@ export const useCreateMedication = () => {
       queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
-      console.error('[useCreateMedication] Error al crear medicamento:', error);
+      handleApiError(error);
     },
   });
 };
@@ -54,10 +57,7 @@ export const useUpdateMedication = () => {
       queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
-      console.error(
-        '[useUpdateMedication] Error al actualizar medicamento:',
-        error,
-      );
+      handleApiError(error);
     },
   });
 };
@@ -71,10 +71,21 @@ export const useDeleteMedication = () => {
       queryClient.invalidateQueries({ queryKey: medicationKeys.all });
     },
     onError: (error: unknown) => {
-      console.error(
-        '[useDeleteMedication] Error al eliminar medicamento:',
-        error,
-      );
+      handleApiError(error);
+    },
+  });
+};
+
+export const useTakeMedication = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<TakeMedicationResponse, Error, string>({
+    mutationFn: (id: string) => takeMedication(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all });
+    },
+    onError: (error: unknown) => {
+      handleApiError(error);
     },
   });
 };

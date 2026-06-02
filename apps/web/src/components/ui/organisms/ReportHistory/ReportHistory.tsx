@@ -48,15 +48,20 @@ const ReportHistory = () => {
 
   return (
     <>
-      <Card padding="md" className="flex flex-col gap-4">
-        <h3 className="text-sm font-semibold text-brand-text-primary">
-          Historial de estudios
-        </h3>
-        <div className="flex flex-col gap-3">
+      <Card padding="none" className="relative overflow-hidden flex flex-col">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-accent-ai to-brand-primary-500" />
+        <div className="px-5 pt-6 pb-4 border-b border-brand-border">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-text-secondary">
+              Historial de estudios
+            </h3>
+          </div>
+        </div>
+        <div className="p-4 flex flex-col gap-2.5">
           {medicalResults?.map((study: IMedicalResults) => (
             <div
               key={study._id}
-              className="flex items-center justify-between gap-3 p-3 bg-brand-neutral-50 rounded-xl border border-brand-border"
+              className="flex items-center justify-between gap-3 px-4 py-3 bg-brand-background/60 rounded-xl border border-brand-border/60 hover:bg-brand-primary-50/20 transition-colors"
             >
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span className="text-sm font-medium text-brand-text-primary truncate">

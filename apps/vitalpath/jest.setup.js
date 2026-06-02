@@ -1,4 +1,3 @@
-// Mock Expo constants and modules that often break tests
 jest.mock('expo', () => ({
   registerRootComponent: jest.fn(),
   Constants: {},
@@ -10,6 +9,12 @@ jest.mock('expo-font', () => ({
 }));
 
 jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    canGoBack: jest.fn().mockReturnValue(true),
+  },
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
@@ -20,8 +25,14 @@ jest.mock('expo-router', () => ({
   Link: 'Link',
 }));
 
-// Mock Reanimated — use the full mock to avoid native module initialization
 jest.mock('react-native-reanimated', () => {
+  const makeFadeIn = () => ({
+    delay: () => ({
+      springify: () => ({
+        damping: () => ({}),
+      }),
+    }),
+  });
   return {
     default: {
       View: require('react-native').View,
@@ -29,6 +40,7 @@ jest.mock('react-native-reanimated', () => {
       Image: require('react-native').Image,
       ScrollView: require('react-native').ScrollView,
       FlatList: require('react-native').FlatList,
+      createAnimatedComponent: component => component,
     },
     useSharedValue: init => ({ value: init }),
     useAnimatedStyle: fn => fn(),
@@ -50,15 +62,17 @@ jest.mock('react-native-reanimated', () => {
       out: jest.fn(),
       inOut: jest.fn(),
     },
-    FadeIn: {},
+    FadeIn: makeFadeIn(),
     FadeOut: {},
+    FadeInDown: makeFadeIn(),
+    FadeInUp: makeFadeIn(),
     SlideInDown: {},
     SlideOutDown: {},
     createAnimatedComponent: component => component,
+    useReducedMotion: () => false,
   };
 });
 
-// Mock Safe Area Context
 jest.mock('react-native-safe-area-context', () => {
   const inset = { top: 0, right: 0, bottom: 0, left: 0 };
   return {
@@ -71,12 +85,10 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-// Mock expo-linear-gradient (used by GradientHero atom)
 jest.mock('expo-linear-gradient', () => ({
   LinearGradient: jest.fn().mockImplementation(({ children }) => children),
 }));
 
-// Mock expo-image-picker (used by CustomInputBox)
 jest.mock('expo-image-picker', () => ({
   requestMediaLibraryPermissionsAsync: jest
     .fn()
@@ -85,7 +97,6 @@ jest.mock('expo-image-picker', () => ({
   MediaTypeOptions: { All: 'All', Videos: 'Videos', Images: 'Images' },
 }));
 
-// Mock expo-audio (used by useVoiceAssistant → ChatComposer)
 jest.mock('expo-audio', () => ({
   useAudioRecorder: jest.fn(() => ({
     startRecording: jest.fn(),
@@ -100,14 +111,12 @@ jest.mock('expo-audio', () => ({
   setAudioModeAsync: jest.fn(),
 }));
 
-// Mock expo-speech
 jest.mock('expo-speech', () => ({
   speak: jest.fn(),
   stop: jest.fn(),
   isSpeakingAsync: jest.fn().mockResolvedValue(false),
 }));
 
-// Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
   notificationAsync: jest.fn(),
@@ -120,7 +129,6 @@ jest.mock('expo-haptics', () => ({
   },
 }));
 
-// Mock react-native-gesture-handler
 jest.mock('react-native-gesture-handler', () => {
   const {
     View,
@@ -149,7 +157,6 @@ jest.mock('react-native-gesture-handler', () => {
   };
 });
 
-// Mock expo-modules-core to avoid native module errors
 jest.mock('expo-modules-core', () => ({
   EventEmitter: class EventEmitter {
     addListener() {

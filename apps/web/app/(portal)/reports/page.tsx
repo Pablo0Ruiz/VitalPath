@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/atoms/Skeleton';
 import { StatCard } from '@/components/ui/molecules/StatCard';
 import { DataTable } from '@/components/ui/molecules/DataTable';
 import { EmptyState } from '@/components/ui/molecules/EmptyState';
+import { Card } from '@/components/ui/atoms/Card';
 
 type AppointmentRow = { estado: string; count: number };
 
@@ -40,8 +41,17 @@ export default function ReportsPage() {
     : [];
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-brand-text-primary">Reportes</h1>
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center justify-between mb-1">
+        <div>
+          <h2 className="text-xl font-bold text-brand-text-primary tracking-tight">
+            Estadísticas del centro
+          </h2>
+          <p className="text-sm text-brand-text-secondary mt-0.5">
+            Resumen general de actividad
+          </p>
+        </div>
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -72,10 +82,13 @@ export default function ReportsPage() {
         </div>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold text-brand-text-primary">
-          Citas por estado
-        </h2>
+      <Card padding="none" className="relative overflow-hidden flex flex-col">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-secondary-500 to-brand-primary-500" />
+        <div className="px-5 pt-6 pb-4 border-b border-brand-border">
+          <span className="text-xs font-semibold uppercase tracking-wider text-brand-text-secondary">
+            Citas por estado
+          </span>
+        </div>
         <DataTable
           columns={STATE_COLUMNS}
           data={rows}
@@ -83,7 +96,7 @@ export default function ReportsPage() {
           ariaLabel="Citas por estado"
           getRowKey={row => row.estado}
         />
-      </section>
+      </Card>
     </div>
   );
 }

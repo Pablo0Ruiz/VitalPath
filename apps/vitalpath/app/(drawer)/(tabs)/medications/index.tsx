@@ -10,32 +10,49 @@ import {
 } from '@/src/components/ui/atoms';
 import {
   SectionHeader,
-  CustomModal,
   Divider,
   MedicationRow,
 } from '@/src/components/ui/molecules';
-import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
-import { useMedicaments, useDeleteMedication } from '@repo/api-client';
+import { MedicationFormModal } from '@/src/components/ui/molecules/MedicationFormModal';
+import {
+  useMedicaments,
+  useDeleteMedication,
+  useTakeMedication,
+} from '@repo/api-client';
 import { Medication } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
-import { useCompletedSet, useDisclosure } from '@/src/hooks';
+import { useDisclosure } from '@/src/hooks';
+import { cancelNotifications } from '@/src/utils/medicationNotifications';
 
 export default function MedicationsScreen() {
   const t = useTheme();
   const { data: medicaments, isLoading } = useMedicaments();
   const { mutateAsync: deleteMedication } = useDeleteMedication();
+  const { mutateAsync: takeMedication } = useTakeMedication();
   const createModal = useDisclosure();
-  const editModal = useDisclosure<string>();
-  const { completedIds, markCompleted } = useCompletedSet();
   const [selectedMedicationId, setSelectedMedicationId] = useState<
     string | null
   >(null);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, notificationIds: string[] = []) => {
     try {
+      if (notificationIds.length > 0) {
+        await cancelNotifications(notificationIds);
+      }
       await deleteMedication(id);
     } catch (error) {
       console.error('Error al eliminar:', error);
+    }
+  };
+
+  const handleTake = async (item: Medication) => {
+    try {
+      const result = await takeMedication(item._id);
+      if (result.completed && item.notificationIds?.length) {
+        await cancelNotifications(item.notificationIds);
+      }
+    } catch (error) {
+      console.error('Error al registrar dosis:', error);
     }
   };
 
@@ -79,10 +96,12 @@ export default function MedicationsScreen() {
             <MedicationRow
               name={item.name}
               description={item.description}
-              onDeletePress={() => handleDelete(item._id)}
-              onTakePress={() => markCompleted(item._id)}
+              onDeletePress={() =>
+                handleDelete(item._id, item.notificationIds ?? [])
+              }
+              onTakePress={() => handleTake(item)}
               onEditPress={() => setSelectedMedicationId(item._id)}
-              isDone={completedIds.includes(item._id)}
+              isDone={(item.dosesTaken ?? 0) > 0}
             />
           </View>
         )}
@@ -95,13 +114,18 @@ export default function MedicationsScreen() {
         }
       />
 
-      <CustomModal visible={createModal.isOpen} onClose={createModal.close} />
+      <MedicationFormModal
+        mode="create"
+        visible={createModal.isOpen}
+        onClose={createModal.close}
+      />
 
       {selectedMedicationId && (
-        <CustomUpdateModal
+        <MedicationFormModal
+          mode="edit"
+          medicationId={selectedMedicationId}
           visible={!!selectedMedicationId}
           onClose={() => setSelectedMedicationId(null)}
-          id={selectedMedicationId}
         />
       )}
     </SafeAreaView>

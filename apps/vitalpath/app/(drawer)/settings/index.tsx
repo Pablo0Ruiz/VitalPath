@@ -1,11 +1,11 @@
-import { ScrollView, StyleSheet, Switch, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Switch, View } from 'react-native';
 import {
   BackButton,
   Card,
   ScreenHeader,
   TextField,
 } from '@/src/components/ui/atoms';
+import { ScreenLayout } from '@/src/components/ui/organisms';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
 import { useTheme } from '@/src/hooks/useTheme';
 
@@ -14,16 +14,13 @@ export default function SettingsScreen() {
   const { isSeniorUI, setIsSeniorUI } = useSeniorUIStore();
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: t.background }}
-      edges={['top']}
-    >
+    <ScreenLayout scrollable={true}>
       <BackButton />
       <ScreenHeader
         title="Configuración"
         subtitle="Preferencias y accesibilidad"
       />
-      <ScrollView contentContainerStyle={s.content}>
+      <View style={s.content}>
         <Card>
           <View
             style={[
@@ -45,7 +42,7 @@ export default function SettingsScreen() {
             <Switch
               value={isSeniorUI}
               onValueChange={setIsSeniorUI}
-              trackColor={{ false: t.border, true: t.primary500 }}
+              trackColor={{ false: t.border, true: t.primary600 }}
             />
           </View>
           <View style={s.row}>
@@ -57,8 +54,8 @@ export default function SettingsScreen() {
             </TextField>
           </View>
         </Card>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScreenLayout>
   );
 }
 

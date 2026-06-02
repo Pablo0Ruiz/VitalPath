@@ -27,7 +27,7 @@ const DataTable = <T,>({
   return (
     <div
       className={cn(
-        'w-full overflow-x-auto rounded-xl border border-brand-border',
+        'w-full overflow-x-auto rounded-2xl border border-brand-border bg-brand-surface',
         className,
       )}
     >
@@ -36,11 +36,11 @@ const DataTable = <T,>({
         {...(ariaLabel ? { 'aria-label': ariaLabel } : {})}
       >
         <thead>
-          <tr className="bg-brand-neutral-50 border-b border-brand-border">
+          <tr className="bg-brand-primary-50/60 border-b border-brand-border">
             {columns.map(col => (
               <th
                 key={String(col.key)}
-                className="px-4 py-3 text-left text-xs font-semibold text-brand-text-secondary uppercase tracking-wide whitespace-nowrap"
+                className="px-4 py-3 text-left text-[11px] font-semibold text-brand-primary-700 uppercase tracking-widest whitespace-nowrap"
               >
                 {col.label}
               </th>
@@ -52,7 +52,7 @@ const DataTable = <T,>({
             ? Array.from({ length: 4 }).map((_, i) => (
                 <tr
                   key={i}
-                  className="border-b border-brand-border last:border-0"
+                  className="border-b border-brand-border/60 last:border-0"
                 >
                   {columns.map(col => (
                     <td key={String(col.key)} className="px-4 py-4">
@@ -64,12 +64,16 @@ const DataTable = <T,>({
             : data.map((row, i) => (
                 <tr
                   key={getRowKey ? getRowKey(row) : i}
-                  className="border-b border-brand-border last:border-0 hover:bg-brand-neutral-50 transition-colors"
+                  className={cn(
+                    'border-b border-brand-border/60 last:border-0 transition-colors cursor-default',
+                    'hover:bg-brand-primary-50/40',
+                    i % 2 === 1 && 'bg-brand-background/50',
+                  )}
                 >
                   {columns.map(col => (
                     <td
                       key={String(col.key)}
-                      className="px-4 py-4 text-brand-text-primary"
+                      className="px-4 py-3.5 text-brand-text-primary"
                     >
                       {col.render
                         ? col.render(row)

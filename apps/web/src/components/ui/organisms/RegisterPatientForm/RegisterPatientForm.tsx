@@ -67,8 +67,12 @@ const RegisterPatientForm = ({ onSuccess }: RegisterPatientFormProps) => {
   };
 
   return (
-    <Card padding="none" className="w-full max-w-2xl overflow-hidden">
-      <div className="px-8 py-6 border-b border-brand-border">
+    <Card padding="none" className="relative w-full max-w-2xl overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-primary-500 to-brand-secondary-500" />
+      <div className="relative px-8 py-6 border-b border-brand-border bg-linear-to-r from-brand-primary-50/60 to-transparent">
+        <div className="w-9 h-9 rounded-xl bg-linear-to-br from-brand-primary-500 to-brand-secondary-500 flex items-center justify-center mb-3 shadow-(--brand-shadow-sm)">
+          <HugeiconsIcon icon={UserIcon} size={18} className="text-white" />
+        </div>
         <h2 className="text-lg font-semibold text-brand-text-primary">
           Registrar nuevo paciente
         </h2>
@@ -79,7 +83,7 @@ const RegisterPatientForm = ({ onSuccess }: RegisterPatientFormProps) => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="p-8 flex flex-col gap-5"
+        className="px-8 py-6 flex flex-col gap-5"
       >
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Nombre" error={errors.name?.message}>

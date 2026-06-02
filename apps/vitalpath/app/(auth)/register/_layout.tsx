@@ -1,29 +1,46 @@
 import { Stack } from 'expo-router';
-import { AUTH_REGISTER_ROUTES } from '@/src/routes/routes';
-import { BackButton } from '@/src/components/ui/atoms/BackButton';
+import { useTheme } from '@/src/hooks/useTheme';
+import BackButton from '@/src/components/ui/atoms/BackButton/BackButton';
 
 export default function RegisterLayout() {
+  const t = useTheme();
+
   return (
     <Stack
       screenOptions={{
         headerShown: true,
         headerTransparent: true,
         headerTitle: '',
-        headerLeft: () => <BackButton />,
         animation: 'slide_from_right',
         animationDuration: 320,
         gestureEnabled: true,
         gestureDirection: 'horizontal',
       }}
     >
-      <Stack.Screen name="index" />
-      {AUTH_REGISTER_ROUTES.map(route => (
-        <Stack.Screen
-          key={route.screenName}
-          name={route.screenName}
-          options={{ title: route.title }}
-        />
-      ))}
+      <Stack.Screen
+        name="index"
+        options={{
+          headerBackVisible: false,
+          headerLeft: () => null,
+          headerTintColor: t.textInverse,
+        }}
+      />
+      <Stack.Screen
+        name="step-2"
+        options={{
+          title: 'Registrarse Step 2',
+          headerLeft: () => <BackButton color={t.textInverse} />,
+          headerTintColor: t.textInverse,
+        }}
+      />
+      <Stack.Screen
+        name="step-3"
+        options={{
+          title: 'Registrarse Step 3',
+          headerLeft: () => <BackButton color={t.textInverse} />,
+          headerTintColor: t.textInverse,
+        }}
+      />
     </Stack>
   );
 }

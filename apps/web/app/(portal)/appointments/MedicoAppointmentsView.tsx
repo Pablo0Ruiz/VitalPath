@@ -20,10 +20,13 @@ export default function MedicoAppointmentsView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-brand-text-primary">
+      <div className="mb-5">
+        <h2 className="text-lg font-bold text-brand-text-primary tracking-tight">
           Mis citas
         </h2>
+        <p className="text-sm text-brand-text-secondary mt-0.5">
+          Agenda y pacientes del día
+        </p>
       </div>
 
       {!isLoading && upcomingCitas.length === 0 && (

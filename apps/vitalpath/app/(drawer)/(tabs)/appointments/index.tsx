@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { FlatList, View, Alert, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@/src/components/ui/atoms/Button';
 import { EmptyState } from '@/src/components/ui/atoms/EmptyState';
 import { LoadingScreen } from '@/src/components/ui/atoms/LoadingScreen';
 import { ScreenHeader } from '@/src/components/ui/atoms/ScreenHeader';
@@ -11,10 +11,15 @@ import { DoctorPickerSheet } from '@/src/components/ui/molecules/DoctorPickerShe
 import { EditCitaSheet } from '@/src/components/ui/molecules/EditCitaSheet';
 import { EmptyPacienteActivoState } from '@/src/components/ui/molecules/EmptyPacienteActivoState';
 import { CalendarWidget } from '@/src/components/ui/organisms/CalendarWidget';
+import { ScreenLayout } from '@/src/components/ui/organisms';
 import { CuidadorAppointmentsView } from '@/src/components/ui/molecules/CuidadorAppointmentsView/CuidadorAppointmentsView';
 import { useCitas, useCancelCita } from '@repo/api-client';
 
-import { extractDateKey, parseLocalDateTime } from '@/src/utils/date';
+import {
+  extractDateKey,
+  parseLocalDateTime,
+  formatDateHuman,
+} from '@/src/utils/date';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useDisclosure, useActivePatientId } from '@/src/hooks';
@@ -30,6 +35,7 @@ function PacienteAppointmentsView() {
   const t = useTheme();
   const { patientId, needsSelection } = useActivePatientId();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [hasPickedDate, setHasPickedDate] = useState(false);
   const sheet = useDisclosure<Date>();
   const reschedule = useDisclosure<RescheduleData>();
 
@@ -53,6 +59,14 @@ function PacienteAppointmentsView() {
     const targetKey = extractDateKey(selectedDate);
     return citas.filter((cita: CitaPopulated) => cita.fecha === targetKey);
   }, [citas, selectedDate]);
+
+  const sectionTitle = useMemo(() => {
+    if (!hasPickedDate) return 'Citas de hoy';
+    const key = extractDateKey(selectedDate);
+    const todayKey = extractDateKey(new Date());
+    if (key === todayKey) return 'Citas de hoy';
+    return `Citas del ${formatDateHuman(key)}`;
+  }, [selectedDate, hasPickedDate]);
 
   const handleCancelar = (citaId: string) => {
     Alert.alert(
@@ -86,23 +100,17 @@ function PacienteAppointmentsView() {
 
   if (needsSelection) {
     return (
-      <SafeAreaView
-        style={[s.container, { backgroundColor: t.background }]}
-        edges={['top']}
-      >
+      <ScreenLayout scrollable={false}>
         <ScreenHeader title="Citas" subtitle="Gestioná tus citas médicas" />
         <View style={s.emptyStateWrapper}>
           <EmptyPacienteActivoState />
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView
-      style={[s.container, { backgroundColor: t.background }]}
-      edges={['top']}
-    >
+    <ScreenLayout scrollable={false}>
       <FlatList
         data={todaysAppointments}
         keyExtractor={item => item._id}
@@ -115,14 +123,25 @@ function PacienteAppointmentsView() {
             <View style={s.calendarWrapper}>
               <CalendarWidget
                 appointmentsMap={appointmentsMap}
-                onDateChange={date => setSelectedDate(date)}
+                onDateChange={date => {
+                  setSelectedDate(date);
+                  setHasPickedDate(true);
+                }}
                 initialDate={selectedDate}
-                onDayPressSheet={date => sheet.open(date)}
+              />
+            </View>
+
+            <View style={s.addButtonWrapper}>
+              <Button
+                testID="calendar-add-button"
+                title="+ Agregar cita"
+                variant="primary"
+                onPress={() => sheet.open(selectedDate)}
               />
             </View>
 
             <View style={s.sectionHeaderWrapper}>
-              <SectionHeader title="Citas seleccionadas" style={s.noMargin} />
+              <SectionHeader title={sectionTitle} style={s.noMargin} />
             </View>
           </>
         }
@@ -163,7 +182,7 @@ function PacienteAppointmentsView() {
           onSuccess={reschedule.close}
         />
       )}
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
@@ -175,10 +194,10 @@ export default function AppointmentsScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
   emptyStateWrapper: { flex: 1, justifyContent: 'center' },
   listContent: { paddingBottom: 120 },
-  calendarWrapper: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 20 },
+  calendarWrapper: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 12 },
+  addButtonWrapper: { paddingHorizontal: 20, marginBottom: 20 },
   sectionHeaderWrapper: { paddingHorizontal: 20, marginBottom: 12 },
   noMargin: { marginBottom: 0 },
   separator: { height: 12 },

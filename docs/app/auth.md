@@ -10,15 +10,16 @@ Gestionar la identidad del usuario en la app: login, registro multi-paso, recupe
 
 ## Pantallas del módulo
 
-| Pantalla             | Ruta                                  | Descripción                                       |
-| -------------------- | ------------------------------------- | ------------------------------------------------- |
-| Login                | `/(auth)/login`                       | Entrada principal — email/contraseña o código 2FA |
-| Registro paso 1      | `/(auth)/register`                    | Email y contraseña                                |
-| Registro paso 2      | `/(auth)/register/step-2`             | Nombre, fecha de nacimiento, género               |
-| Registro paso 3      | `/(auth)/register/step-3`             | Confirmación y términos                           |
-| Recuperar contraseña | `/(auth)/recover-password`            | Ingresa email para recibir enlace                 |
-| Email enviado        | `/(auth)/recover-password-email-sent` | Confirmación visual                               |
-| Sugerencia Senior UI | `/(auth)/senior-ui-suggestion`        | Se muestra automáticamente a usuarios ≥ 65 años   |
+| Pantalla             | Ruta                                  | Descripción                                             |
+| -------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Login                | `/(auth)/login`                       | Entrada principal — email/contraseña o código 2FA       |
+| Registro paso 1      | `/(auth)/register`                    | Email y contraseña                                      |
+| Registro paso 2      | `/(auth)/register/step-2`             | Nombre, fecha de nacimiento, género                     |
+| Registro paso 3      | `/(auth)/register/step-3`             | Confirmación y términos                                 |
+| Registro cuidador    | `/(auth)/register-cuidador`           | Registro de cuidador familiar con código de vinculación |
+| Recuperar contraseña | `/(auth)/recover-password`            | Ingresa email para recibir enlace                       |
+| Email enviado        | `/(auth)/recover-password-email-sent` | Confirmación visual                                     |
+| Sugerencia Senior UI | `/(auth)/senior-ui-suggestion`        | Se muestra automáticamente a usuarios ≥ 65 años         |
 
 ---
 
@@ -80,15 +81,16 @@ Response 403: Cuenta desactivada
 ### Login con código 2FA
 
 ```
-POST /auth/login-code
-Body:    { codigo: string }
+POST /auth/login/code/:codigo
 Headers: { x-client-platform: 'mobile' }
 
 Response 200: { user, accessToken, refreshToken }
 Response 400: Código inválido o expirado
 ```
 
-### Registro
+El código de 6 dígitos viaja como **parámetro de ruta** (`:codigo`), no en el body.
+
+### Registro de paciente
 
 ```
 POST /auth/register
@@ -104,15 +106,35 @@ Response 201: { user, accessToken, refreshToken }
 Response 409: Email ya registrado
 ```
 
+### Registro de cuidador familiar
+
+```
+POST /auth/register-cuidador
+Body: {
+  email: string,
+  password: string,
+  name: string,
+  vinculacionCode: string   // código generado por el paciente
+}
+
+Response 201: { user, accessToken, refreshToken }
+Response 409: Email ya registrado
+Response 400: Código de vinculación inválido o expirado
+```
+
+La pantalla `/(auth)/register-cuidador` permite que un nuevo cuidador familiar se registre ingresando sus credenciales junto con el `vinculacionCode` que le proporcionó el paciente.
+
 ### Recuperar contraseña
 
 ```
-POST /auth/forgot-password
+POST /auth/recover-password
 Body: { email: string }
 
 Response 200: { message: 'Email enviado' }
 Response 404: Email no registrado
 ```
+
+El backend envía un email transaccional via **Brevo** con un enlace de recuperación. El enlace tiene validez limitada.
 
 ---
 

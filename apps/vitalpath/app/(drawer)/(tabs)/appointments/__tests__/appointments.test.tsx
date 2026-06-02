@@ -175,6 +175,66 @@ function futureDateKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+// ── ScreenLayout mock ─────────────────────────────────────────────────────────
+jest.mock('@/src/components/ui/organisms', () => {
+  const { View } = require('react-native');
+  const React = require('react');
+  return {
+    ScreenLayout: ({
+      children,
+      scrollable,
+    }: {
+      children: React.ReactNode;
+      scrollable?: any;
+    }) =>
+      React.createElement(
+        View,
+        { testID: 'screen-layout', 'data-scrollable': String(scrollable) },
+        children,
+      ),
+    CalendarWidget: ({
+      onDayPressSheet,
+      onDateChange,
+      appointmentsMap,
+      initialDate,
+    }: {
+      onDayPressSheet?: (date: any) => void;
+      onDateChange?: (date: any) => void;
+      appointmentsMap?: any;
+      initialDate?: any;
+    }) => {
+      const { View, Pressable } = require('react-native');
+      const React = require('react');
+      return React.createElement(
+        View,
+        { testID: 'calendar-widget' },
+        React.createElement(Pressable, {
+          testID: 'calendar-add-button',
+          onPress: () =>
+            onDayPressSheet && onDayPressSheet(initialDate || new Date()),
+        }),
+      );
+    },
+  };
+});
+
+describe('AppointmentsScreen — ScreenLayout (PR5)', () => {
+  beforeEach(() => {
+    mockRole = 'paciente';
+    mockCitasData = [];
+    mockDisclosureIsOpen = false;
+    mockDisclosureData = null;
+    mockDisclosureOpen = jest.fn();
+    mockDisclosureClose = jest.fn();
+  });
+
+  it('paciente view uses ScreenLayout with scrollable=false', () => {
+    const { getByTestId } = render(<AppointmentsScreen />);
+    const layout = getByTestId('screen-layout');
+    expect(layout.props['data-scrollable']).toBe('false');
+  });
+});
+
 describe('AppointmentsScreen — role branching', () => {
   beforeEach(() => {
     mockRole = 'paciente';

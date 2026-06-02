@@ -37,7 +37,7 @@ export const badgeTextStyle = (
   t: ThemeTokens,
 ): TextStyle => {
   const map: Record<BadgeVariant, TextStyle> = {
-    success: { color: t.success },
+    success: { color: t.successText },
     error: { color: t.error },
     warning: { color: t.warning },
     primary: { color: t.primary600 },

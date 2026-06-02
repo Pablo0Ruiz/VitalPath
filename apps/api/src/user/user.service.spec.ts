@@ -67,7 +67,7 @@ describe('UserService', () => {
       userModel.findById.mockResolvedValue(null);
 
       await expect(service.getUserProfile(userId)).rejects.toThrow(
-        'Error al obtener el perfil',
+        'Perfil no encontrado',
       );
     });
 

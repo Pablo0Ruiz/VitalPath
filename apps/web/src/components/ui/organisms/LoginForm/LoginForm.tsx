@@ -94,8 +94,8 @@ const LoginForm = () => {
   };
 
   return (
-    <Card padding="none" className="w-full max-w-md overflow-hidden">
-      <div className="p-8 flex flex-col gap-6">
+    <Card elevated padding="none" className="w-full max-w-md overflow-hidden">
+      <div className="p-8 pt-7 flex flex-col gap-5">
         <HeaderLogin />
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FormField label="Correo electrónico" error={errors.email?.message}>
@@ -133,7 +133,7 @@ const LoginForm = () => {
           <div className="flex justify-end">
             <a
               href="#"
-              className="text-sm text-brand-primary-600 hover:underline"
+              className="text-xs font-medium text-brand-primary-700 hover:text-brand-primary-800 hover:underline transition-colors"
             >
               ¿Olvidaste tu contraseña?
             </a>
@@ -159,7 +159,7 @@ const LoginForm = () => {
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-brand-border" />
           <span className="text-xs text-brand-text-secondary">
-            ¿Primera vez?
+            ¿Es tu primera vez?
           </span>
           <div className="flex-1 h-px bg-brand-border" />
         </div>
@@ -168,7 +168,7 @@ const LoginForm = () => {
           <button
             type="button"
             onClick={() => setShowLinkForm(!showLinkForm)}
-            className="text-sm text-brand-primary-600 hover:underline text-center"
+            className="text-sm text-brand-primary-700 hover:text-brand-primary-800 font-medium hover:underline text-center transition-colors"
           >
             Vinculá tu perfil con el código de tu centro
           </button>
@@ -179,7 +179,7 @@ const LoginForm = () => {
                 e.preventDefault();
                 handleSubmitInvite(onSubmitInvite)(e);
               }}
-              className="flex flex-col gap-4 p-4 bg-brand-neutral-50 rounded-xl border border-brand-border"
+              className="flex flex-col gap-4 p-4 bg-brand-background rounded-2xl border border-brand-primary-100"
             >
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="email" error={errorsInvite.email?.message}>

@@ -49,7 +49,7 @@ const ConversationCard = ({
         {lastMessage || 'Sin mensajes aún...'}
       </TextField>
 
-      <View style={s.footer}>
+      <View style={[s.footer, { borderTopColor: t.border }]}>
         <TextField variant="label" style={{ color: t.primary600 }}>
           {format(date, "d 'de' MMMM", { locale: es })}
         </TextField>
@@ -90,7 +90,6 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.05)',
     paddingTop: 12,
   },
 });

@@ -1,13 +1,13 @@
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   BackButton,
   Button,
-  Card,
   ScreenHeader,
-  TextField,
   UserAvatar,
 } from '@/src/components/ui/atoms';
+import { SettingsRow } from '@/src/components/ui/molecules';
+import { ScreenLayout } from '@/src/components/ui/organisms';
 import { useAuthStore } from '@/src/stores/auth';
 import { useLogout } from '@repo/api-client';
 import { mobileTokenAdapter } from '@/src/adapters/mobileTokenAdapter';
@@ -46,54 +46,46 @@ export default function ProfileScreen() {
   ];
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: t.background }}
-      edges={['top']}
-    >
+    <ScreenLayout scrollable={true}>
       <BackButton />
       <ScreenHeader title="Mi Perfil" subtitle="Información de tu cuenta" />
-      <ScrollView contentContainerStyle={s.content}>
-        <View style={s.avatarContainer}>
+      <View style={s.avatarContainer}>
+        <LinearGradient
+          testID="avatar-gradient-ring"
+          colors={[t.accentAi, t.primary600]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={s.gradientRing}
+        >
           <UserAvatar size="lg" name={user?.name} showStatus />
-        </View>
-        <Card>
-          {rows.map((row, i) => (
-            <View
-              key={row.label}
-              style={[
-                s.row,
-                i < rows.length - 1 && {
-                  borderBottomWidth: 1,
-                  borderBottomColor: t.border,
-                },
-              ]}
-            >
-              <TextField variant="caption" style={{ color: t.textSecondary }}>
-                {row.label}
-              </TextField>
-              <TextField
-                variant="body"
-                style={{ color: t.textPrimary, marginTop: 2 }}
-              >
-                {row.value}
-              </TextField>
-            </View>
-          ))}
-        </Card>
-        <Button
-          title="Cerrar sesión"
-          variant="outline"
-          onPress={handleLogout}
-          style={s.logoutButton}
-        />
-      </ScrollView>
-    </SafeAreaView>
+        </LinearGradient>
+      </View>
+      <View style={s.card}>
+        {rows.map((row, i) => (
+          <SettingsRow
+            key={row.label}
+            label={row.label}
+            value={row.value}
+            noBorder={i === rows.length - 1}
+          />
+        ))}
+      </View>
+      <Button
+        title="Cerrar sesión"
+        variant="outline"
+        onPress={handleLogout}
+        style={s.logoutButton}
+      />
+    </ScreenLayout>
   );
 }
 
 const s = StyleSheet.create({
-  content: { paddingHorizontal: 20, paddingBottom: 40 },
   avatarContainer: { alignItems: 'center', paddingVertical: 24 },
-  row: { paddingHorizontal: 16, paddingVertical: 14 },
+  gradientRing: {
+    padding: 3,
+    borderRadius: 999,
+  },
+  card: { borderRadius: 16, overflow: 'hidden', marginBottom: 8 },
   logoutButton: { marginTop: 24 },
 });

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { View, AppState, AppStateStatus, useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import * as SplashScreen from 'expo-splash-screen';
@@ -18,8 +19,18 @@ import { setupApiInterceptors } from '@/src/lib/api-setup';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { VersionGate } from '@/src/components/ui/organisms/VersionGate';
 
 setupApiInterceptors();
+
+if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+    enabled: !__DEV__,
+    tracesSampleRate: 0,
+    sendDefaultPii: false,
+  });
+}
 
 const queryClient = new QueryClient();
 
@@ -30,6 +41,25 @@ function AuthInitializer() {
     useAuthStore();
   const { syncWithUser, reset: resetSeniorUI } = useSeniorUIStore();
 
+  useEffect(() => {
+    if (_hasHydrated) return;
+
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      useAuthStore.getState().setHasHydrated();
+    });
+
+    const timeout = setTimeout(() => {
+      if (!useAuthStore.getState()._hasHydrated) {
+        useAuthStore.getState().setHasHydrated();
+      }
+    }, 3000);
+
+    return () => {
+      unsub();
+      clearTimeout(timeout);
+    };
+  }, [_hasHydrated]);
+
   useSession(
     mobileTokenAdapter,
     { setSession, clearSession, setIsLoading },
@@ -39,8 +69,10 @@ function AuthInitializer() {
   useEffect(() => {
     if (user) {
       syncWithUser(user);
+      Sentry.setUser({ id: user._id, role: user.role });
     } else {
       resetSeniorUI();
+      Sentry.setUser(null);
     }
   }, [user, syncWithUser, resetSeniorUI]);
 
@@ -57,6 +89,8 @@ function RootLayout() {
     'Inter_18pt-Regular': require('../assets/fonts/Inter_18pt-Regular.ttf'),
     'Inter_18pt-Thin': require('../assets/fonts/Inter_18pt-Thin.ttf'),
     'Inter_18pt-ThinItalic': require('../assets/fonts/Inter_18pt-ThinItalic.ttf'),
+    'PlusJakartaSans-Italic-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf'),
+    'PlusJakartaSans-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf'),
   });
 
   useEffect(() => {
@@ -84,17 +118,19 @@ function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <AuthInitializer />
-        <View style={{ flex: 1, backgroundColor: t.background }}>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(drawer)" />
-          </Stack>
-        </View>
+        <VersionGate>
+          <View style={{ flex: 1, backgroundColor: t.background }}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(drawer)" />
+            </Stack>
+          </View>
+        </VersionGate>
       </QueryClientProvider>
     </SafeAreaProvider>
   );
 }
 
-export default RootLayout;
+export default Sentry.wrap(RootLayout);

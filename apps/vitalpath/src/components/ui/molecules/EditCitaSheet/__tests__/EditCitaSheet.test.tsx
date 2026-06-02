@@ -59,11 +59,18 @@ function todayKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/** Returns a time string that is 2 hours in the past (same-day guard) */
+/** Returns a time string that is 2 hours in the past (same-day guard).
+ *  Uses minute-based arithmetic to avoid Date.setHours() rollover into the
+ *  previous day when the current hour is < 2.
+ */
 function pastTimeToday(): string {
-  const d = new Date();
-  d.setHours(d.getHours() - 2);
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const now = new Date();
+  const totalMinutes = now.getHours() * 60 + now.getMinutes();
+  // Subtract 120 minutes; clamp to 0 (midnight) so it stays within today
+  const pastMinutes = Math.max(0, totalMinutes - 120);
+  const h = Math.floor(pastMinutes / 60);
+  const m = pastMinutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 // --- Tests ---

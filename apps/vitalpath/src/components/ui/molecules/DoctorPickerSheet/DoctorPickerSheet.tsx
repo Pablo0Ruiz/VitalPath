@@ -124,9 +124,13 @@ export const DoctorPickerSheet = ({
               <Pressable
                 style={[
                   s.submitButton,
-                  {
-                    backgroundColor: selectedSlot ? t.primary600 : t.neutral200,
-                  },
+                  selectedSlot
+                    ? { backgroundColor: t.primary600 }
+                    : {
+                        backgroundColor: 'transparent',
+                        borderWidth: 1.5,
+                        borderColor: t.border,
+                      },
                 ]}
                 disabled={!selectedSlot || isCreating}
                 onPress={handleAgendarCita}
@@ -135,7 +139,7 @@ export const DoctorPickerSheet = ({
                   variant="body"
                   style={[
                     s.submitText,
-                    { color: selectedSlot ? '#FFFFFF' : t.neutral400 },
+                    { color: selectedSlot ? '#FFFFFF' : t.textSecondary },
                   ]}
                 >
                   Agendar cita

@@ -5,6 +5,7 @@ import {
   ViewProps,
   StyleSheet,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import {
   TextField,
   Tabs,
@@ -63,24 +64,30 @@ const TimelineCard = ({
       ]}
       {...props}
     >
-      <View style={s.header}>
-        <TextField
-          variant="body"
-          style={[
-            s.title,
-            { color: status === 'processing' ? t.primary600 : t.textPrimary },
-          ]}
-        >
-          {title}
-        </TextField>
-        {date && <Tabs label={date} variant={isLocked ? 'pending' : 'date'} />}
-      </View>
+      {/* Title — full width, no competing siblings */}
+      <TextField
+        variant="body"
+        style={[
+          s.title,
+          { color: status === 'processing' ? t.primary600 : t.textPrimary },
+        ]}
+      >
+        {title}
+      </TextField>
 
-      {time && (
-        <View style={s.row}>
-          <TextField variant="caption" style={{ color: t.textSecondary }}>
-            🕐 {time}
-          </TextField>
+      {(date || time) && (
+        <View style={s.metaRow}>
+          {date && (
+            <Tabs label={date} variant={isLocked ? 'pending' : 'date'} />
+          )}
+          {time && (
+            <View style={s.timePill}>
+              <Feather name="clock" size={12} color={t.textSecondary} />
+              <TextField variant="caption" style={{ color: t.textSecondary }}>
+                {time}
+              </TextField>
+            </View>
+          )}
         </View>
       )}
 
@@ -104,8 +111,7 @@ const TimelineCard = ({
           ]}
         >
           <TextField variant="caption" style={{ color: t.textSecondary }}>
-            Muestras procesadas:{' '}
-            <Text style={[s.bold, { color: t.textPrimary }]}>{samples}</Text>
+            {samples}
           </TextField>
         </View>
       )}
@@ -128,13 +134,15 @@ const TimelineCard = ({
           {pendingNote}
         </TextField>
       )}
+
       {estimatedTime && (
         <View style={s.estimatedRow}>
+          <Feather name="info" size={12} color={t.textSecondary} />
           <TextField
             variant="caption"
             style={[s.italic, { color: t.textSecondary }]}
           >
-            ℹ Tiempo estimado: {estimatedTime}
+            Tiempo estimado: {estimatedTime}
           </TextField>
         </View>
       )}
@@ -151,20 +159,19 @@ const s = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
   title: {
     fontWeight: '700',
-    fontSize: 16,
-    flex: 1,
-    marginRight: 8,
     textAlign: 'left',
+    marginBottom: 6,
   },
-  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
+  },
+  timePill: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   doctorRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -183,14 +190,14 @@ const s = StyleSheet.create({
   progressSection: { marginTop: 12 },
   progressBar: { marginBottom: 8 },
   extrabold: { fontWeight: '800' },
-  note: { marginTop: 4, fontSize: 12 },
+  note: { marginTop: 4 },
   estimatedRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     marginTop: 4,
   },
-  italic: { fontStyle: 'italic', fontSize: 12 },
+  italic: { fontStyle: 'italic' },
 });
 
 export default TimelineCard;

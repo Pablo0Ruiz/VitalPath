@@ -31,3 +31,8 @@ export { LoadingScreen } from './LoadingScreen';
 export type { LoadingScreenProps } from './LoadingScreen';
 export { default as MoodItem, MOODS } from './MoodItem/MoodItem';
 export type { MoodItemProps, Mood } from './MoodItem/MoodItem';
+export { MetricCard } from './MetricCard';
+export type { MetricCardProps } from './MetricCard';
+export { InlineEmptySlot } from './InlineEmptySlot';
+export type { InlineEmptySlotProps } from './InlineEmptySlot';
+export { ThinkingIndicator } from './ThinkingIndicator';

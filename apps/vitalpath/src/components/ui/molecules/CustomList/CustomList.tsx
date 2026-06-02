@@ -8,8 +8,7 @@ type MedicationListProps = {
   data: Medication[] | undefined;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
-  onTake: (id: string) => void;
-  completedIds: string[];
+  onTake: (item: Medication) => void;
 };
 
 type AppointmentListProps = {
@@ -43,7 +42,6 @@ const CustomList = (props: ListProps) => {
           onDelete={props.onDelete}
           onEdit={props.onEdit}
           onTake={props.onTake}
-          completedIds={props.completedIds}
         />
       </View>
     );

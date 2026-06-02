@@ -9,7 +9,7 @@ export type ChatStreamFetcher = (
 ) => Promise<void>;
 
 export interface ChatContextState {
-  geminiWriting: boolean;
+  aiWriting: boolean;
   chatId: string;
   messages: Message[];
   addMessage: (
@@ -43,7 +43,7 @@ const generateId = (): string => {
 
 const createMessage = (
   text: string,
-  sender: 'user' | 'gemini',
+  sender: 'user' | 'ai',
   attachments: any[] = [],
   type: 'text' | 'image' | 'audio' = 'text',
 ): Message => {
@@ -78,7 +78,7 @@ const createMessage = (
 };
 
 export const useChatContextStore = create<ChatContextState>()((set, get) => ({
-  geminiWriting: false,
+  aiWriting: false,
   chatId: generateId(),
   messages: [],
 
@@ -88,11 +88,11 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
     fetcher: ChatStreamFetcher,
   ) => {
     const userMessage = createMessage(prompt, 'user', attachments);
-    const geminiMessage = createMessage('Generando respuesta...', 'gemini');
+    const geminiMessage = createMessage('Generando respuesta...', 'ai');
     const chatId = get().chatId;
 
     set((state: ChatContextState) => ({
-      geminiWriting: true,
+      aiWriting: true,
       messages: [geminiMessage, userMessage, ...state.messages],
     }));
 
@@ -112,8 +112,9 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
             : msg,
         ),
       }));
+      throw error;
     } finally {
-      set({ geminiWriting: false });
+      set({ aiWriting: false });
     }
   },
 
@@ -123,7 +124,7 @@ export const useChatContextStore = create<ChatContextState>()((set, get) => ({
     audioUri?: string,
   ) => {
     const userMessage = createMessage(transcript, 'user', [audioUri], 'audio');
-    const geminiMessage = createMessage(replyText, 'gemini');
+    const geminiMessage = createMessage(replyText, 'ai');
 
     set((state: ChatContextState) => ({
       messages: [geminiMessage, userMessage, ...state.messages],

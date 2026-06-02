@@ -68,10 +68,10 @@ El usuario puede volver al historial tocando el botón de retroceso en el ChatHe
 
 ## Llamadas a la API
 
-### Enviar mensaje de texto
+### Enviar mensaje de texto (streaming)
 
 ```
-POST /chat/send
+POST /ai/chat-stream
 Headers: Authorization: Bearer {accessToken}
 Body: {
   chatId: string,
@@ -87,7 +87,7 @@ La respuesta es un **stream** que se va acumulando en `ChatMessages` a medida qu
 ### Enviar mensaje de voz
 
 ```
-POST /chat/voice
+POST /ai/voice-chat
 Headers: Authorization: Bearer {accessToken}
          Content-Type: multipart/form-data
 Body:    FormData con el archivo de audio grabado
@@ -97,16 +97,39 @@ Response: { text: string, audioResponse?: string }
 
 El flujo de voz es manejado por `src/core/actions/chat-stream.actions.ts`.
 
-### Obtener historial de conversaciones
+### Obtener historial de un chat
 
 ```
-GET /chat/history?chatId={chatId}
+GET /ai/chat-history/:chatId
 Headers: Authorization: Bearer {accessToken}
 
 Response 200: Message[]
 ```
 
 El hook `useChatHistory` carga el historial de una conversación al retomar un chat previo.
+
+### Listar conversaciones
+
+```
+GET /ai/conversations
+Headers: Authorization: Bearer {accessToken}
+
+Response 200: Conversation[]
+```
+
+---
+
+## Capacidades del asistente según el rol
+
+El asistente es **consciente del rol del usuario**. El servicio `GroqToolsService` en el backend selecciona un conjunto diferente de herramientas (tools) según quién está autenticado:
+
+| Rol                 | Herramientas disponibles                                                 |
+| ------------------- | ------------------------------------------------------------------------ |
+| `PACIENTE`          | Consulta de sus propios datos de salud (medicamentos, citas, resultados) |
+| `MEDICO`            | Gestión de pacientes, prescripciones, historial médico                   |
+| `TRABAJADOR_CENTRO` | Herramientas administrativas (agendamiento, coordinación)                |
+
+Esto significa que las respuestas y capacidades del asistente varían dependiendo de quién esté usando la app. Un médico puede pedir información de sus pacientes; un paciente solo accede a sus propios datos.
 
 ---
 
@@ -118,7 +141,7 @@ El hook `useChatHistory` carga el historial de una conversación al retomar un c
 Usuario toca el botón de micrófono en ChatComposer
   → useVoiceAssistant() inicia grabación vía expo-audio
   → Usuario suelta el botón → grabación finaliza
-  → Audio enviado vía POST /chat/voice
+  → Audio enviado vía POST /ai/voice-chat
   → Respuesta de texto mostrada en ChatMessages
   → Si hay audioResponse → expo-speech reproduce la respuesta en voz
 ```
@@ -156,12 +179,12 @@ Usuario toca el ícono de imagen
 4. ChatMessages muestra los mensajes
 5. Usuario escribe en ChatComposer y envía
    → addMessage() agrega el mensaje al store local
-   → POST /chat/send con streaming
+   → POST /ai/chat-stream con streaming
    → geminiWriting = true → indicador de escritura en ChatHeader
    → Tokens llegan en stream → se acumulan en el último mensaje del asistente
    → geminiWriting = false al completarse
 6. Usuario puede grabar un mensaje de voz (botón micrófono)
-   → mismo flujo pero con POST /chat/voice
+   → mismo flujo pero con POST /ai/voice-chat
 7. Usuario retrocede → vuelve a ChatHistory
 ```
 
@@ -174,3 +197,4 @@ Usuario toca el ícono de imagen
 | `token.access` | Autenticar todas las peticiones del chat             |
 | `user._id`     | Contexto del usuario en el backend para el modelo IA |
 | `user.name`    | Personalización del asistente ("Hola, [nombre]")     |
+| `user.role`    | Determina el conjunto de herramientas del asistente  |

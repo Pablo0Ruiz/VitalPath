@@ -11,4 +11,5 @@ export const EnvConfig = () => ({
   supabase_url: process.env.SUPABASE_URL,
   supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
   groq_api_key: process.env.GROQ_API_KEY,
+  min_app_version: process.env.MIN_APP_VERSION || '1.0.0',
 });

@@ -16,12 +16,19 @@ Permitir la gestión del personal médico (doctores y especialistas) que laboran
 
 ## Llamadas a la API
 
-- **Directorio:** `GET /doctors`
-- **Detalle de perfil:** `GET /doctors/:id`
-- **Operaciones CRUD:** `POST /doctors`, `PATCH /doctors/:id` (según los permisos del backend).
+> **Nota:** No existe un controlador `/doctors` en el backend. Todas las operaciones sobre médicos se realizan bajo el prefijo `/hospitals`.
+
+| Acción                               | Endpoint real                                         | Roles requeridos             |
+| ------------------------------------ | ----------------------------------------------------- | ---------------------------- |
+| Listar todos los médicos del sistema | `GET /api/hospitals/doctors`                          | Autenticado                  |
+| Invitar médico a un hospital         | `POST /api/hospitals/doctors/:doctorId/invite`        | `ADMIN`, `TRABAJADOR_CENTRO` |
+| Actualizar horarios de un médico     | `PATCH /api/hospitals/doctors/:doctorUserId/schedule` | `ADMIN`, `TRABAJADOR_CENTRO` |
+| Crear un hospital                    | `POST /api/hospitals`                                 | `ADMIN`, `TRABAJADOR_CENTRO` |
+
+La invitación de un médico (`POST /api/hospitals/doctors/:doctorId/invite`) acepta opcionalmente un `hospitalId` en el cuerpo para vincular al médico con un hospital específico. Si se omite, el servicio determina el hospital por contexto.
 
 ## Flujos Típicos
 
-- Un administrador del centro requiere agregar un nuevo médico a la plantilla de Cardiología.
-- Ingresa a `/doctors`, utiliza el formulario de alta ingresando nombre, colegiatura y especialidad.
-- Tras el guardado, el nuevo médico ya es elegible para ser seleccionado en el módulo de `schedule` y `appointments`.
+- **Directorio de médicos:** Al ingresar a `/doctors`, el componente llama a `GET /api/hospitals/doctors`. La lista muestra todos los médicos registrados en el sistema con su especialidad y avatar.
+- **Invitar médico:** Desde el panel de administración, se ingresa el `doctorId` de un usuario con rol `MEDICO` y se llama a `POST /api/hospitals/doctors/:doctorId/invite`. El médico queda vinculado al hospital y disponible para ser asignado en citas.
+- **Gestión de horarios:** Desde `/schedule`, el administrador selecciona un médico y edita sus slots disponibles. La acción llama a `PATCH /api/hospitals/doctors/:doctorUserId/schedule` con el nuevo array de slots (full-replace).

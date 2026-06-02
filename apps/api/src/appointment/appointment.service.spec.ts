@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
   ForbiddenException,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
@@ -15,8 +16,9 @@ import { CitaState } from './dto/enum/cita-state.enum';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { PushNotificationsService } from 'src/push-notifications/push-notifications.service';
 import { VinculacionService } from 'src/vinculacion/vinculacion.service';
+import { AppointmentNotificationService } from './appointment-notification.service';
+import { CITA_ALLOWED_TRANSITIONS } from '@repo/types';
 
-// expo-server-sdk uses ESM — mock it so Jest (CJS transform) can parse appointment.service.ts
 jest.mock('expo-server-sdk', () => {
   const MockExpo = Object.assign(
     jest.fn().mockImplementation(() => ({
@@ -64,6 +66,11 @@ const makeVinculacionService = () => ({
   isCuidadorLinkedToPaciente: jest.fn().mockResolvedValue(false),
 });
 
+const makeNotificationService = () => ({
+  notifyAgendada: jest.fn().mockResolvedValue(undefined),
+  notifyStateChange: jest.fn().mockResolvedValue(undefined),
+});
+
 // ─── Mongoose chainable query mock ──────────────────────────────────────────
 // Supports both `await query.lean()` and `await query.lean().exec()`.
 // lean() returns a thenable so JavaScript's await mechanism resolves it,
@@ -102,6 +109,7 @@ describe('AppointmentService', () => {
   let userModel: ReturnType<typeof makeUserModel>;
   let pushService: ReturnType<typeof makePushService>;
   let vinculacionService: ReturnType<typeof makeVinculacionService>;
+  let notificationService: ReturnType<typeof makeNotificationService>;
 
   beforeEach(async () => {
     citaModel = makeCitaModel();
@@ -110,6 +118,7 @@ describe('AppointmentService', () => {
     userModel = makeUserModel();
     pushService = makePushService();
     vinculacionService = makeVinculacionService();
+    notificationService = makeNotificationService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -120,6 +129,10 @@ describe('AppointmentService', () => {
         { provide: getModelToken(Patient.name), useValue: patientModel },
         { provide: PushNotificationsService, useValue: pushService },
         { provide: VinculacionService, useValue: vinculacionService },
+        {
+          provide: AppointmentNotificationService,
+          useValue: notificationService,
+        },
       ],
     }).compile();
 
@@ -399,12 +412,11 @@ describe('AppointmentService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    // ─── Push notification integration ─────────────────────────────────────
+    // ─── Notification dispatch integration ─────────────────────────────────
 
-    it('calls sendPushNotification with correct payload when patient has a push token', async () => {
+    it('calls notifyStateChange after a valid transition', async () => {
       const citaId = makeId();
       const pacienteId = makeId();
-      const token = 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]';
 
       citaModel.findById.mockResolvedValue({
         estado: CitaState.EN_PROCESO,
@@ -414,31 +426,23 @@ describe('AppointmentService', () => {
           estado: CitaState.RESULTADOS_LISTOS,
         }),
       });
-      userModel.findById.mockReturnValue(chainQuery({ expoPushToken: token }));
-      pushService.sendPushNotification.mockResolvedValue(undefined);
 
       await service.updateEstadoWorker(
         makeId().toString(),
         CitaState.RESULTADOS_LISTOS,
       );
 
-      // Fire-and-forget: flush all pending microtask ticks so the async chain resolves
+      // Fire-and-forget: flush pending microtasks
       await new Promise(resolve => setImmediate(resolve));
 
-      expect(pushService.sendPushNotification).toHaveBeenCalledWith(
-        expect.objectContaining({
-          tokens: [token],
-          title: expect.any(String),
-          body: expect.any(String),
-          data: expect.objectContaining({
-            type: 'cita_state_change',
-            citaId: String(citaId),
-          }),
-        }),
+      expect(notificationService.notifyStateChange).toHaveBeenCalledWith(
+        citaId,
+        pacienteId,
+        CitaState.RESULTADOS_LISTOS,
       );
     });
 
-    it('does not call sendPushNotification for an invalid transition', async () => {
+    it('does not call notifyStateChange for an invalid transition', async () => {
       const appt = { estado: CitaState.AGENDADA, save: jest.fn() };
       citaModel.findById.mockResolvedValue(appt);
 
@@ -446,21 +450,13 @@ describe('AppointmentService', () => {
         service.updateEstadoWorker(makeId().toString(), CitaState.EN_PROCESO),
       ).rejects.toThrow(BadRequestException);
 
-      expect(pushService.sendPushNotification).not.toHaveBeenCalled();
+      expect(notificationService.notifyStateChange).not.toHaveBeenCalled();
     });
 
-    it('does not call sendPushNotification for state AGENDADA (no copy entry)', async () => {
-      // AGENDADA is not a state you can transition INTO via updateEstadoWorker
-      // (it's only the initial state). Simulate a hypothetical save that returns AGENDADA.
+    it('calls notifyStateChange for AGENDADA → ASISTIDA transition', async () => {
       const citaId = makeId();
       const pacienteId = makeId();
-      // We can test this by checking that AGENDADA has no copy entry:
-      // The only way to reach notifyStateChange with AGENDADA would require
-      // bypassing ALLOWED_TRANSITIONS, so we test notifyStateChange indirectly
-      // via a transition to ASISTIDA → copy exists; AGENDADA → no copy.
-      // For direct coverage, use a valid transition (AGENDADA→ASISTIDA) which
-      // is notifiable; the AGENDADA copy absence is covered by the copy constant test.
-      // We verify ASISTIDA triggers push (copy exists) and patient has no token → no call.
+
       citaModel.findById.mockResolvedValue({
         estado: CitaState.AGENDADA,
         save: jest.fn().mockResolvedValue({
@@ -469,42 +465,20 @@ describe('AppointmentService', () => {
           estado: CitaState.ASISTIDA,
         }),
       });
-      userModel.findById.mockReturnValue(chainQuery({ expoPushToken: null }));
 
       await service.updateEstadoWorker(makeId().toString(), CitaState.ASISTIDA);
       await Promise.resolve();
 
-      expect(pushService.sendPushNotification).not.toHaveBeenCalled();
-    });
-
-    it('does not call sendPushNotification when patient has no expoPushToken', async () => {
-      const citaId = makeId();
-      const pacienteId = makeId();
-
-      citaModel.findById.mockResolvedValue({
-        estado: CitaState.EN_PROCESO,
-        save: jest.fn().mockResolvedValue({
-          _id: citaId,
-          paciente_ID: pacienteId,
-          estado: CitaState.RESULTADOS_LISTOS,
-        }),
-      });
-      // Patient found but expoPushToken is null
-      userModel.findById.mockReturnValue(chainQuery({ expoPushToken: null }));
-
-      await service.updateEstadoWorker(
-        makeId().toString(),
-        CitaState.RESULTADOS_LISTOS,
+      expect(notificationService.notifyStateChange).toHaveBeenCalledWith(
+        citaId,
+        pacienteId,
+        CitaState.ASISTIDA,
       );
-      await Promise.resolve();
-
-      expect(pushService.sendPushNotification).not.toHaveBeenCalled();
     });
 
-    it('resolves successfully even when sendPushNotification rejects', async () => {
+    it('resolves successfully even when notifyStateChange rejects', async () => {
       const citaId = makeId();
       const pacienteId = makeId();
-      const token = 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]';
 
       citaModel.findById.mockResolvedValue({
         estado: CitaState.EN_PROCESO,
@@ -514,9 +488,9 @@ describe('AppointmentService', () => {
           estado: CitaState.RESULTADOS_LISTOS,
         }),
       });
-      userModel.findById.mockReturnValue(chainQuery({ expoPushToken: token }));
-      pushService.sendPushNotification.mockRejectedValue(
-        new Error('Expo down'),
+      // Simulate notification failure that is swallowed by fire-and-forget
+      notificationService.notifyStateChange.mockImplementation(() =>
+        Promise.reject(new Error('Notification failure')).catch(() => {}),
       );
 
       // updateEstadoWorker must still resolve (fire-and-forget)
@@ -611,6 +585,68 @@ describe('AppointmentService', () => {
 
       expect(result).toBeDefined();
       expect(result).toMatchObject({ medico_ID: { especialidad: 'Clínica' } });
+    });
+  });
+
+  // ─── createAppointment — InternalServerErrorException (task 1.10) ──────────
+
+  describe('createAppointment — DB error path', () => {
+    it('throws InternalServerErrorException when citaModel.create returns falsy', async () => {
+      const userId = makeId();
+      // create() resolves to null/undefined → service must throw
+      citaModel.create.mockResolvedValue(null as unknown as never);
+
+      await expect(
+        service.createAppointment(userId.toString(), {
+          medico_ID: makeId().toString(),
+          centroSalud_ID: makeId().toString(),
+          fecha: '2026-05-01',
+          hora: '10:00',
+        }),
+      ).rejects.toThrow(InternalServerErrorException);
+    });
+  });
+
+  // ─── updateEstadoWorker — CITA_ALLOWED_TRANSITIONS source (task 3.2) ───────
+
+  describe('updateEstadoWorker — transition map sourced from @repo/types', () => {
+    it('rejects a transition that is NOT in CITA_ALLOWED_TRANSITIONS', async () => {
+      // Find any state that has no outgoing transition in the real constant
+      // COMPLETADA is a terminal state — nothing transitions out of it
+      const appt = { estado: CitaState.COMPLETADA, save: jest.fn() };
+      citaModel.findById.mockResolvedValue(appt);
+
+      await expect(
+        service.updateEstadoWorker(makeId().toString(), CitaState.ASISTIDA),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('accepts exactly the transitions defined in CITA_ALLOWED_TRANSITIONS', async () => {
+      // For every entry in the real constant, the service must allow it
+      const entries = Object.entries(
+        CITA_ALLOWED_TRANSITIONS as Record<string, string>,
+      ) as [CitaState, CitaState][];
+
+      for (const [from, to] of entries) {
+        const apptId = makeId();
+        const pacienteId = makeId();
+        const appt = {
+          estado: from,
+          save: jest.fn().mockResolvedValue({
+            _id: apptId,
+            paciente_ID: pacienteId,
+            estado: to,
+          }),
+        };
+        citaModel.findById.mockResolvedValue(appt);
+        userModel.findById.mockReturnValue(chainQuery(null));
+
+        await expect(
+          service.updateEstadoWorker(makeId().toString(), to),
+        ).resolves.toBeDefined();
+
+        expect(appt.estado).toBe(to);
+      }
     });
   });
 });

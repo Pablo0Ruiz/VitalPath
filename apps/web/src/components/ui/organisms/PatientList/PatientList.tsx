@@ -19,13 +19,22 @@ const statusTabs = [
 const PatientList = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const { data: citas, isLoading, isError, error } = useCitasMedico();
+  const { data: citas, isLoading, isError } = useCitasMedico();
 
   if (isLoading) {
-    return <div>Cargando pacientes...</div>;
+    return (
+      <div className="flex items-center gap-3 p-8 text-sm text-brand-text-secondary">
+        <div className="w-5 h-5 rounded-full border-2 border-brand-primary-300 border-t-transparent animate-spin" />
+        Cargando pacientes...
+      </div>
+    );
   }
   if (isError) {
-    return <div>Error al cargar pacientes: {error.message}</div>;
+    return (
+      <div className="p-8 text-sm text-brand-state-error">
+        No se pudieron cargar los pacientes.
+      </div>
+    );
   }
 
   const seenIds = new Set();
@@ -68,18 +77,24 @@ const PatientList = () => {
         />
       </div>
 
-      <Card padding="none" className="overflow-hidden">
+      <Card padding="none" className="relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-secondary-500 to-brand-primary-500" />
         <div className="px-5 py-4 border-b border-brand-border">
-          <span className="text-sm font-semibold text-brand-text-primary">
-            Pacientes ({filtered?.length})
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-brand-text-secondary">
+              Pacientes
+            </span>
+            <span className="text-xs font-semibold bg-brand-secondary-50 text-brand-secondary-700 px-2.5 py-0.5 rounded-full border border-brand-secondary-100">
+              {filtered?.length ?? 0}
+            </span>
+          </div>
         </div>
         <div className="divide-y divide-brand-border">
           {filtered?.map(patient => (
             <Link
               key={patient._id}
               href={`/patients/${patient.paciente_ID._id}`}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-secondary-50/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600"
             >
               <Avatar
                 name={`${patient.paciente_ID.name} ${patient.paciente_ID.lastName}`}

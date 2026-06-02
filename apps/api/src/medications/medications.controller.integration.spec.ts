@@ -3,6 +3,7 @@ import {
   INestApplication,
   ExecutionContext,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import request from 'supertest';
 import { AuthGuard } from '@nestjs/passport';
@@ -22,6 +23,7 @@ describe('MedicationsController (Integration)', () => {
     findActiveByPatient: jest.fn(),
     updateMedication: jest.fn(),
     removeMedication: jest.fn(),
+    takeMedication: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -107,6 +109,60 @@ describe('MedicationsController (Integration)', () => {
       .delete('/medications/1')
       .expect(200)
       .expect({ deleted: true });
+  });
+
+  // ─── PATCH /medications/:id/take ─────────────────────────────────────────
+
+  describe('PATCH /medications/:id/take', () => {
+    it('returns 200 with { completed: false, medication } for mid-course take', async () => {
+      const med = {
+        _id: 'med-1',
+        name: 'Amoxicilina',
+        dosesTaken: 8,
+        frequencyHours: 8,
+        durationDays: 5,
+        notificationIds: [],
+      };
+      mockMedicationsService.takeMedication.mockResolvedValue({
+        completed: false,
+        medication: med,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch('/medications/med-1/take')
+        .expect(200);
+
+      expect(response.body.completed).toBe(false);
+      expect(response.body.medication).toBeDefined();
+      expect(response.body.medication._id).toBe('med-1');
+      expect(mockMedicationsService.takeMedication).toHaveBeenCalledWith(
+        activeUser._id,
+        'med-1',
+      );
+    });
+
+    it('returns 200 with { completed: true } when last dose taken', async () => {
+      mockMedicationsService.takeMedication.mockResolvedValue({
+        completed: true,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch('/medications/med-complete/take')
+        .expect(200);
+
+      expect(response.body.completed).toBe(true);
+      expect(response.body.medication).toBeUndefined();
+    });
+
+    it('returns 404 when service throws NotFoundException', async () => {
+      mockMedicationsService.takeMedication.mockRejectedValue(
+        new NotFoundException('Medicamento no encontrado'),
+      );
+
+      await request(app.getHttpServer())
+        .patch('/medications/unknown-id/take')
+        .expect(404);
+    });
   });
 
   // ─── GET /medications/patient/:id ─────────────────────────────────────────

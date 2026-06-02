@@ -9,6 +9,8 @@ export interface EmptyStateProps {
   title: string;
   subtitle: string;
   action?: { label: string; onPress: () => void };
+  actionLabel?: string;
+  onAction?: () => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -17,9 +19,16 @@ export const EmptyState = ({
   title,
   subtitle,
   action,
+  actionLabel,
+  onAction,
   style,
 }: EmptyStateProps) => {
   const t = useTheme();
+  const resolvedAction =
+    action ??
+    (actionLabel && onAction
+      ? { label: actionLabel, onPress: onAction }
+      : undefined);
 
   return (
     <View style={[s.container, style]}>
@@ -35,12 +44,12 @@ export const EmptyState = ({
       >
         {subtitle}
       </TextField>
-      {action && (
+      {resolvedAction && (
         <Button
           variant="secondary"
           size="sm"
-          title={action.label}
-          onPress={action.onPress}
+          title={resolvedAction.label}
+          onPress={resolvedAction.onPress}
           style={s.action}
         />
       )}
