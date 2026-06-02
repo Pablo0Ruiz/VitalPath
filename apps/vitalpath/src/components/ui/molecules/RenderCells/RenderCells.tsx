@@ -24,6 +24,11 @@ const RenderCells = ({
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
+  const now = new Date();
+  const todayYear = now.getFullYear();
+  const todayMonth = now.getMonth();
+  const todayDay = now.getDate();
+
   for (let i = 0; i < firstDayOfWeek; i++) {
     cells.push(<View key={`empty-${i}`} style={s.cell} />);
   }
@@ -33,6 +38,13 @@ const RenderCells = ({
     const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const hasAppointment = appointmentsMap[dateString];
 
+    const isToday =
+      year === todayYear && month === todayMonth && i === todayDay;
+    const isPast =
+      year < todayYear ||
+      (year === todayYear && month < todayMonth) ||
+      (year === todayYear && month === todayMonth && i < todayDay);
+
     let isSelected = false;
     if (selectedDate) {
       isSelected =
@@ -41,13 +53,21 @@ const RenderCells = ({
         selectedDate.getDate() === i;
     }
 
+    let dayTextColor = t.textPrimary;
+    if (isSelected) dayTextColor = t.primary600;
+    else if (isToday) dayTextColor = t.primary600;
+    else if (isPast) dayTextColor = t.textSecondary;
+
     cells.push(
       <Button
         key={`day-${i}`}
         onPress={() => onDayPress(date)}
-        variant={isSelected ? 'outline' : 'ghost'}
+        variant={isSelected || isToday ? 'outline' : 'ghost'}
         style={[
           s.cell,
+          isToday && !isSelected
+            ? [s.today, { borderColor: t.primary600 }]
+            : null,
           isSelected
             ? [
                 s.selected,
@@ -57,14 +77,15 @@ const RenderCells = ({
                 },
               ]
             : null,
+          isPast && !isSelected ? s.pastCell : null,
         ]}
       >
         <TextField
           variant="body"
           style={[
             s.dayText,
-            { color: isSelected ? t.primary600 : t.textPrimary },
-            isSelected && s.bold,
+            { color: dayTextColor },
+            (isSelected || isToday) && s.bold,
           ]}
         >
           {i}
@@ -97,6 +118,12 @@ const s = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+  today: {
+    borderWidth: 1,
+  },
+  pastCell: {
+    opacity: 0.4,
   },
   dayText: { textAlign: 'center', fontSize: 14 },
   bold: { fontWeight: '700' },

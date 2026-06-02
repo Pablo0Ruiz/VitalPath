@@ -7,8 +7,7 @@ interface RawMedicationsProps {
   data: Medication[];
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
-  onTake: (id: string) => void;
-  completedIds: string[];
+  onTake: (item: Medication) => void;
 }
 
 export const RawMedications = ({
@@ -16,7 +15,6 @@ export const RawMedications = ({
   onDelete,
   onEdit,
   onTake,
-  completedIds,
 }: RawMedicationsProps) => (
   <>
     {data.map((item, index) => (
@@ -24,10 +22,11 @@ export const RawMedications = ({
         <MedicationRow
           name={item.name}
           description={item.description}
-          isDone={completedIds.includes(item._id)}
+          time={item.startTime}
+          isDone={(item.dosesTaken ?? 0) > 0}
           onDeletePress={() => onDelete(item._id)}
           onEditPress={() => onEdit(item._id)}
-          onTakePress={() => onTake(item._id)}
+          onTakePress={() => onTake(item)}
         />
         {index < data.length - 1 && <Divider style={{ marginVertical: 8 }} />}
       </View>

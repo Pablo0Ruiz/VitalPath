@@ -6,6 +6,8 @@ import { TextField } from '@/src/components/ui/atoms/TextField';
 import type { IMedicalResults } from '@repo/types';
 import type { BadgeVariant } from '@/src/components/ui/atoms/Badge/Badge.variants';
 import { useTheme } from '@/src/hooks/useTheme';
+import { formatDateHuman } from '@/src/utils/date';
+import { toTitleCase } from '@/src/utils/text';
 
 interface StudyCardProps {
   study: IMedicalResults;
@@ -33,7 +35,7 @@ function getEstadoBadge(estado: string): {
 const StudyCard = ({ study, onPress }: StudyCardProps) => {
   const t = useTheme();
   const badge = getEstadoBadge(study.cita_ID?.estado || 'completada');
-  const doctorName = `Dr. ${study.medico_ID.name} ${study.medico_ID.lastName}`;
+  const doctorName = `Dr. ${toTitleCase(study.medico_ID.name)} ${toTitleCase(study.medico_ID.lastName)}`;
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={s.touchable}>
@@ -49,8 +51,9 @@ const StudyCard = ({ study, onPress }: StudyCardProps) => {
             variant="caption"
             style={[s.date, { color: t.textSecondary }]}
           >
-            {study.cita_ID?.fecha ||
-              new Date(study.createdAt).toLocaleDateString()}
+            {study.cita_ID?.fecha
+              ? formatDateHuman(study.cita_ID.fecha)
+              : formatDateHuman(study.createdAt.slice(0, 10))}
           </TextField>
         </View>
         <View style={s.actions}>
@@ -66,8 +69,8 @@ const s = StyleSheet.create({
   touchable: { marginBottom: 12 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   content: { flex: 1, gap: 2 },
-  doctorName: { fontWeight: '600', fontSize: 15, textAlign: 'left' },
-  date: { fontSize: 12, textAlign: 'left' },
+  doctorName: { fontWeight: '600', textAlign: 'left' },
+  date: { textAlign: 'left' },
   actions: { alignItems: 'flex-end', gap: 8 },
 });
 

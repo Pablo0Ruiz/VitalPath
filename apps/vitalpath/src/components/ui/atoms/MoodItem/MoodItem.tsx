@@ -8,13 +8,34 @@ import Reanimated, {
 import { useTheme } from '@/src/hooks/useTheme';
 import { useMemo } from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export const MOODS = [
-  { id: '1', emoji: '😞', label: 'Mal' },
-  { id: '2', emoji: '😕', label: 'Regular' },
-  { id: '3', emoji: '😐', label: 'Normal' },
-  { id: '4', emoji: '🙂', label: 'Bien' },
-  { id: '5', emoji: '🤩', label: 'Excelente' },
+  {
+    id: '1',
+    icon: { name: 'sad-outline' as const, color: '#EF4444' },
+    label: 'Mal',
+  },
+  {
+    id: '2',
+    icon: { name: 'sad-sharp' as const, color: '#F97316' },
+    label: 'Regular',
+  },
+  {
+    id: '3',
+    icon: { name: 'remove-circle-outline' as const, color: '#6B7280' },
+    label: 'Normal',
+  },
+  {
+    id: '4',
+    icon: { name: 'happy-outline' as const, color: '#22C55E' },
+    label: 'Bien',
+  },
+  {
+    id: '5',
+    icon: { name: 'happy-sharp' as const, color: '#8B5CF6' },
+    label: 'Excelente',
+  },
 ] as const;
 
 export type Mood = (typeof MOODS)[number];
@@ -42,9 +63,8 @@ const MoodItem = ({
         height: Math.max(56, t.minTouchTarget),
         borderRadius: Math.max(56, t.minTouchTarget) / 2,
       },
-      emoji: { fontSize: Math.max(32, t.fontSizeBody * 1.6) },
     }),
-    [t.minTouchTarget, t.fontSizeBody],
+    [t.minTouchTarget],
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -78,8 +98,13 @@ const MoodItem = ({
           },
         ]}
       >
-        <Text style={[s.emoji, dynamicStyles.emoji]}>{mood.emoji}</Text>
-        <Text style={[s.moodLabel, { color: t.textSecondary }]}>
+        <Ionicons name={mood.icon.name} color={mood.icon.color} size={28} />
+        <Text
+          style={[
+            s.moodLabel,
+            { color: t.textSecondary, fontSize: t.fontSizeLabel },
+          ]}
+        >
           {mood.label}
         </Text>
       </Pressable>
@@ -99,11 +124,7 @@ const s = StyleSheet.create({
   moodItemSelected: {
     borderWidth: 2,
   },
-  emoji: {
-    textAlign: 'center',
-  },
   moodLabel: {
-    fontSize: 11,
     textAlign: 'center',
     marginTop: 2,
   },

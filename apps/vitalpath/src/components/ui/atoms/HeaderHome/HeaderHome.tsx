@@ -23,11 +23,14 @@ const HeaderHome = ({
         <View style={s.content}>
           <TextField
             variant="caption"
-            style={[s.label, { color: t.textSecondary }]}
+            style={[s.label, { color: t.white, fontSize: t.fontSizeLabel }]}
           >
             {textLabel}
           </TextField>
-          <TextField variant="body" style={[s.name, { color: t.textPrimary }]}>
+          <TextField
+            variant="body"
+            style={[s.name, { color: t.textPrimary, fontSize: t.fontSizeBody }]}
+          >
             {nameUser}
           </TextField>
         </View>
@@ -48,8 +51,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 0,
   },
   content: { marginLeft: 12 },
-  label: { textAlign: 'left', fontSize: 12 },
-  name: { textAlign: 'left', fontSize: 15, fontWeight: '600' },
+  label: { textAlign: 'left' },
+  name: { textAlign: 'left', fontWeight: '600' },
 });
 
 export default HeaderHome;

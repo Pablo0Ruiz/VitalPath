@@ -10,5 +10,7 @@ module.exports = {
     '^@expo/vector-icons$': '<rootDir>/__mocks__/@expo/vector-icons.js',
     '^@expo/vector-icons/(.*)$': '<rootDir>/__mocks__/@expo/vector-icons.js',
     '^react-native-worklets$': '<rootDir>/__mocks__/react-native-worklets.js',
+    '^expo-notifications$': '<rootDir>/__mocks__/expo-notifications.js',
+    '^@react-native-community/datetimepicker$': '<rootDir>/__mocks__/empty.js',
   },
 };

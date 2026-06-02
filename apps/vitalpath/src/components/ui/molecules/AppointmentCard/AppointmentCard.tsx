@@ -3,7 +3,8 @@ import { Card } from '@/src/components/ui/atoms/Card';
 import { TextField } from '@/src/components/ui/atoms';
 import { AppointmentRow } from '../AppointmentRow';
 import { AppointmentStatus } from '../AppointmentStatus';
-import { formatDateShort } from '@/src/utils/date';
+import { formatRelativeDay } from '@/src/utils/date';
+import { toTitleCase } from '@/src/utils/text';
 import { CitaPopulated } from '@repo/types';
 import { useTheme } from '@/src/hooks/useTheme';
 
@@ -27,6 +28,7 @@ const AppointmentCard = ({
   const t = useTheme();
   const { name, lastName } = appointment.medico_ID;
   const avatarInitials = `${name[0]}${lastName[0]}`.toUpperCase();
+  const doctorDisplayName = `${toTitleCase(name)} ${toTitleCase(lastName)}`;
 
   return (
     <Card
@@ -41,10 +43,10 @@ const AppointmentCard = ({
     >
       <View style={s.row}>
         <AppointmentRow
-          doctor={`${name} ${lastName}`}
+          doctor={doctorDisplayName}
           specialty={appointment.medico_ID.especialidad}
           time={appointment.hora}
-          date={formatDateShort(appointment.fecha)}
+          date={formatRelativeDay(appointment.fecha)}
           avatarInitials={avatarInitials}
         />
       </View>

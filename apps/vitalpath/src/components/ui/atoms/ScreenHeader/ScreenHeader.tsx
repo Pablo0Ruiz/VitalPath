@@ -21,9 +21,9 @@ const ScreenHeader = ({
         variant="title"
         style={{
           color: t.textPrimary,
-          fontSize: 30,
+          fontSize: t.fontSizeTitle,
           fontWeight: '700',
-          lineHeight: 36,
+          lineHeight: t.fontSizeTitle * 1.3,
         }}
       >
         {title}

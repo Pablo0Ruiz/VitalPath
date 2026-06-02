@@ -1,8 +1,9 @@
-import { View, Pressable, FlatList, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TextField, TimeSlotChip } from '../../atoms';
 import { DoctorSession } from '@repo/api-client';
 import { useTheme } from '@/src/hooks/useTheme';
+import { toTitleCase } from '@/src/utils/text';
 
 interface DoctorCardProps {
   doctor: DoctorSession;
@@ -42,7 +43,8 @@ export const DoctorCard = ({
         </View>
         <View style={s.info}>
           <TextField variant="body" style={[s.name, { color: t.textPrimary }]}>
-            {doctor.user.name} {doctor.user.lastName}
+            Dr. {toTitleCase(doctor.user.name)}{' '}
+            {toTitleCase(doctor.user.lastName)}
           </TextField>
           <View style={s.specialtyWrapper}>
             <Ionicons name="medkit-outline" size={13} color={t.textSecondary} />
@@ -50,26 +52,23 @@ export const DoctorCard = ({
               variant="caption"
               style={[s.specialtyText, { color: t.textSecondary }]}
             >
-              {doctor.especialidad} - {doctor.user.centroSalud_ID?.nombre}
+              {toTitleCase(doctor.especialidad)} ·{' '}
+              {doctor.user.centroSalud_ID?.nombre}
             </TextField>
           </View>
         </View>
       </View>
 
-      <FlatList
-        data={doctor.slots}
-        horizontal
-        keyExtractor={slot => slot}
-        showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
-        renderItem={({ item: slot }) => (
+      <View style={s.slotsGrid}>
+        {doctor.slots.map(slot => (
           <TimeSlotChip
+            key={slot}
             slot={slot}
             isActive={isSelected && selectedSlot === slot}
             onPress={() => onSlotPress(slot)}
           />
-        )}
-      />
+        ))}
+      </View>
     </Pressable>
   );
 };
@@ -120,6 +119,12 @@ const s = StyleSheet.create({
   specialtyText: {
     fontSize: 12,
     textAlign: 'left',
+    flexShrink: 1,
+  },
+  slotsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
 });
 

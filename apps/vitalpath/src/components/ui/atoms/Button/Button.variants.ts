@@ -7,7 +7,8 @@ export type ButtonVariant =
   | 'outline'
   | 'ghost'
   | 'ghost-on-dark'
-  | 'danger';
+  | 'danger'
+  | 'ai';
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export const buttonContainerStyle = (
@@ -23,7 +24,11 @@ export const buttonContainerStyle = (
       shadowOffset: { width: 0, height: 4 },
       elevation: 6,
     },
-    secondary: { backgroundColor: '#F1F5F9' },
+    secondary: {
+      backgroundColor: t.surface,
+      borderWidth: 1,
+      borderColor: t.border,
+    },
     outline: {
       backgroundColor: 'transparent',
       borderWidth: 1,
@@ -31,7 +36,19 @@ export const buttonContainerStyle = (
     },
     ghost: { backgroundColor: 'transparent' },
     'ghost-on-dark': { backgroundColor: 'rgba(255,255,255,0.1)' },
-    danger: { backgroundColor: '#FEE2E2' },
+    danger: {
+      backgroundColor: t.errorLight,
+      borderWidth: 1,
+      borderColor: t.error,
+    },
+    ai: {
+      backgroundColor: t.accentAi,
+      shadowColor: t.accentAi,
+      shadowOpacity: 0.25,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 3 },
+      elevation: 4,
+    },
   };
   return map[variant];
 };
@@ -80,6 +97,7 @@ export const buttonTitleStyle = (
     ghost: t.primary600,
     'ghost-on-dark': t.white,
     danger: t.error,
+    ai: t.white,
   };
   return { color: colorMap[variant], fontWeight: '600' };
 };
@@ -108,6 +126,7 @@ export const buttonLoadingColor = (
     ghost: t.primary600,
     'ghost-on-dark': '#FFFFFF',
     danger: '#DC2626',
+    ai: t.white,
   };
   return map[variant];
 };

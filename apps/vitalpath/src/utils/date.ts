@@ -1,8 +1,41 @@
-/**
- * Formatea una fecha nativa a YYYY-MM-DD para fácil indexado.
- * @param date Fecha a formatear.
- * @returns String en formato YYYY-MM-DD.
- */
+const MONTHS_ES = [
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
+];
+
+export const formatDateHuman = (dateString: string): string => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return `${day} de ${MONTHS_ES[month - 1]} de ${year}`;
+};
+
+export const formatRelativeDay = (dateString: string): string => {
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const yesterdayKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const tomorrowKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
+  if (dateString === todayKey) return 'Hoy';
+  if (dateString === tomorrowKey) return 'Mañana';
+  if (dateString === yesterdayKey) return 'Ayer';
+  return formatDateHuman(dateString);
+};
+
 export const extractDateKey = (date: Date): string => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
@@ -30,27 +63,5 @@ export const parseLocalDateTime = (fecha: string, hora: string): Date => {
   return new Date(year, month - 1, day, hours, minutes);
 };
 
-export const isElderlyUser = (
-  fechaNacimiento: string | null | undefined,
-): boolean => {
-  if (!fechaNacimiento) return false;
-
-  let birth: Date;
-  const ddmmyyyy = fechaNacimiento.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (ddmmyyyy) {
-    const [, day, month, year] = ddmmyyyy.map(Number);
-    birth = new Date(year, month - 1, day);
-  } else {
-    birth = new Date(fechaNacimiento);
-  }
-
-  if (isNaN(birth.getTime())) return false;
-
-  const today = new Date();
-  const age = today.getFullYear() - birth.getFullYear();
-  const hasBirthdayPassed =
-    today.getMonth() > birth.getMonth() ||
-    (today.getMonth() === birth.getMonth() &&
-      today.getDate() >= birth.getDate());
-  return age - (hasBirthdayPassed ? 0 : 1) >= 65;
-};
+// isElderlyUser has been moved to @repo/types — re-exported here for backwards compatibility.
+export { isElderlyUser } from '@repo/types';

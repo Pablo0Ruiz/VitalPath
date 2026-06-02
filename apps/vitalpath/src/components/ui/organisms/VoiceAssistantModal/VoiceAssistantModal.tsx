@@ -15,8 +15,6 @@ import { useTheme } from '@/src/hooks/useTheme';
 import { useVoiceAssistant } from '@/src/hooks/useVoiceAssistant';
 import { useChatContextStore } from '@repo/store';
 
-const RECORDING_AMBER = '#D97706';
-
 interface VoiceAssistantModalProps {
   visible: boolean;
   onClose: () => void;
@@ -166,11 +164,12 @@ const VoiceAssistantModal = ({
 
           <View style={s.controls}>
             <Pressable
+              testID="voice-main-button"
               onPress={handlePress}
               style={({ pressed }) => [
                 s.mainButton,
                 {
-                  backgroundColor: isRecording ? RECORDING_AMBER : t.primary600,
+                  backgroundColor: isRecording ? t.warning : t.primary600,
                   opacity: pressed ? 0.8 : 1,
                 },
               ]}

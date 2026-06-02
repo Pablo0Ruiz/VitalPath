@@ -37,7 +37,7 @@ const ChatHeader = ({ view, onBack }: HeaderProps) => {
           }}
         >
           <LinearGradient
-            colors={[t.primary600, t.primary700]}
+            colors={[t.accentAi, t.primary700]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[s.avatar, s.shadow]}

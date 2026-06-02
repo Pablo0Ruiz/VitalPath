@@ -65,10 +65,13 @@ describe('CalendarWidget', () => {
     expect(onDayPressSheet).not.toHaveBeenCalled();
   });
 
-  it('onDayPressSheet prop exists on the interface and can be called explicitly via onAddPress', () => {
+  it('onDayPressSheet prop is accepted by the interface without error', () => {
     const onDateChange = jest.fn();
     const onDayPressSheet = jest.fn();
-    const { getByTestId } = render(
+    // The add button has been moved to the screen level (appointments/index.tsx).
+    // CalendarWidget no longer renders it internally.
+    // This test verifies the prop is still accepted without crashing.
+    const { queryByTestId } = render(
       <CalendarWidget
         appointmentsMap={appointmentsMap}
         onDateChange={onDateChange}
@@ -76,8 +79,6 @@ describe('CalendarWidget', () => {
         initialDate={fixedDate}
       />,
     );
-    // Simulate explicit "add" button press via the exposed onAddPress trigger
-    fireEvent.press(getByTestId('calendar-add-button'));
-    expect(onDayPressSheet).toHaveBeenCalledTimes(1);
+    expect(queryByTestId('calendar-add-button')).toBeNull();
   });
 });

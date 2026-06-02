@@ -3,7 +3,7 @@ import { ErrorBoundaryProps } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+export default function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);

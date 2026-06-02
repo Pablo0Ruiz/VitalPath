@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -39,7 +39,8 @@ const TabBarPill = ({ state, descriptors, navigation }: TabBarPillProps) => {
       style={[
         s.container,
         {
-          backgroundColor: t.primary900,
+          backgroundColor: t.surfaceElevated,
+          borderColor: t.border,
           marginBottom: Math.max(insets.bottom, 12),
         },
       ]}
@@ -49,7 +50,7 @@ const TabBarPill = ({ state, descriptors, navigation }: TabBarPillProps) => {
         const routeIndex = state.routes.findIndex(r => r.key === route.key);
         const focused = state.index === routeIndex;
 
-        const iconColor = focused ? t.white : t.neutral400;
+        const iconColor = focused ? t.primary600 : t.neutral400;
 
         const iconName =
           ICON_MAP[route.name] ??
@@ -68,6 +69,8 @@ const TabBarPill = ({ state, descriptors, navigation }: TabBarPillProps) => {
           }
         };
 
+        const label = descriptors[route.key].options.title ?? route.name;
+
         return (
           <Pressable
             key={route.key}
@@ -75,13 +78,20 @@ const TabBarPill = ({ state, descriptors, navigation }: TabBarPillProps) => {
             accessibilityState={focused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
             onPress={onPress}
-            style={({ pressed }) => [s.item, { opacity: pressed ? 0.8 : 1 }]}
+            style={({ pressed }) => [
+              s.item,
+              focused && { backgroundColor: t.primary50 },
+              { opacity: pressed ? 0.8 : 1 },
+            ]}
           >
             {options.tabBarIcon ? (
-              options.tabBarIcon({ focused, color: iconColor, size: 22 })
+              options.tabBarIcon({ focused, color: iconColor, size: 20 })
             ) : iconName ? (
-              <Feather name={iconName} size={24} color={iconColor} />
+              <Feather name={iconName} size={20} color={iconColor} />
             ) : null}
+            <Text numberOfLines={1} style={[s.label, { color: iconColor }]}>
+              {label}
+            </Text>
           </Pressable>
         );
       })}
@@ -95,21 +105,30 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     borderRadius: 9999,
-    height: 64,
+    paddingVertical: 8,
     paddingHorizontal: 8,
     marginHorizontal: 20,
-    elevation: 8,
+    borderWidth: 1,
+    elevation: 6,
     shadowColor: '#000000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
   },
   item: {
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 48,
-    height: 48,
+    minHeight: 44,
+    minWidth: 48,
+    paddingHorizontal: 8,
     borderRadius: 24,
+    gap: 2,
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '500',
+    lineHeight: 14,
   },
 });
 

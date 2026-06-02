@@ -1,6 +1,8 @@
 import { StyleSheet, View, ViewProps } from 'react-native';
 import { TimelineStep, SecurityBanner } from '../../molecules';
 import type { IMedicalResults } from '@repo/types';
+import { formatDateHuman } from '@/src/utils/date';
+import { toTitleCase } from '@/src/utils/text';
 
 export interface TrackingTimelineProps extends ViewProps {
   onPrivacyPress?: () => void;
@@ -40,16 +42,18 @@ const TrackingTimeline = ({
   if (!resultado) return null;
 
   const steps = deriveSteps(resultado.cita_ID?.estado || 'completada');
-  const doctorName = `Dr. ${resultado.medico_ID.name} ${resultado.medico_ID.lastName}`;
-  const fecha =
-    resultado.cita_ID?.fecha ||
-    new Date(resultado.createdAt).toLocaleDateString();
+  const doctorName = `Dr. ${toTitleCase(resultado.medico_ID.name)} ${toTitleCase(resultado.medico_ID.lastName)}`;
+  const fecha = resultado.cita_ID?.fecha
+    ? formatDateHuman(resultado.cita_ID.fecha)
+    : formatDateHuman(resultado.createdAt.slice(0, 10));
+
+  const step3Completed = steps.s3 === 'completed';
 
   return (
     <View style={[s.container, style]} {...props}>
       <TimelineStep
         status={steps.s1}
-        title="Cita Completada"
+        title="Cita realizada"
         time={resultado.cita_ID?.hora || ''}
         date={fecha}
         doctorName={doctorName}
@@ -57,18 +61,20 @@ const TrackingTimeline = ({
 
       <TimelineStep
         status={steps.s2}
-        title="Muestra Tomada"
+        title="Muestra recibida"
         date={fecha}
-        samples="El personal del centro de salud procesó y cargó el estudio al sistema."
+        samples="La muestra fue recibida y enviada al laboratorio para su análisis."
         isLocked={steps.s2 === 'locked'}
       />
 
       <TimelineStep
         status={steps.s3}
-        title="En Proceso de Laboratorio"
-        progressLabel="ANÁLISIS"
+        title={
+          step3Completed ? 'Análisis completado' : 'En proceso de laboratorio'
+        }
+        progressLabel={!step3Completed ? 'ANÁLISIS' : undefined}
         progressValue={
-          steps.s3 === 'processing' ? 65 : steps.s3 === 'completed' ? 100 : 0
+          !step3Completed ? (steps.s3 === 'processing' ? 65 : 0) : undefined
         }
         isActive={steps.s3 === 'processing'}
         isLocked={steps.s3 === 'locked'}
@@ -76,7 +82,7 @@ const TrackingTimeline = ({
 
       <TimelineStep
         status={steps.s4}
-        title="Resultados Listos"
+        title="Resultados listos"
         doctorName={steps.s4 !== 'locked' ? doctorName : undefined}
         pendingNote={
           steps.s4 === 'locked'

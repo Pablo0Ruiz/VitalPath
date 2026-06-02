@@ -42,7 +42,13 @@ export const DailyCheckIn = () => {
 
   return (
     <View style={s.container}>
-      <TextField variant="body" style={[s.title, { color: t.textPrimary }]}>
+      <TextField
+        variant="body"
+        style={[
+          s.title,
+          { color: t.textPrimary, fontSize: t.fontSizeBody + 2 },
+        ]}
+      >
         ¿Cómo te sentís hoy?
       </TextField>
       <View style={s.moodList}>
@@ -70,7 +76,7 @@ export const DailyCheckIn = () => {
 
 const s = StyleSheet.create({
   container: { marginBottom: 24 },
-  title: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
+  title: { fontWeight: '700', marginBottom: 16 },
   moodList: {
     flexDirection: 'row',
     justifyContent: 'space-between',

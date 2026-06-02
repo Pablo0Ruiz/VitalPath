@@ -19,6 +19,7 @@ import { setupApiInterceptors } from '@/src/lib/api-setup';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
+import { VersionGate } from '@/src/components/ui/organisms/VersionGate';
 
 setupApiInterceptors();
 
@@ -88,6 +89,8 @@ function RootLayout() {
     'Inter_18pt-Regular': require('../assets/fonts/Inter_18pt-Regular.ttf'),
     'Inter_18pt-Thin': require('../assets/fonts/Inter_18pt-Thin.ttf'),
     'Inter_18pt-ThinItalic': require('../assets/fonts/Inter_18pt-ThinItalic.ttf'),
+    'PlusJakartaSans-Italic-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf'),
+    'PlusJakartaSans-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf'),
   });
 
   useEffect(() => {
@@ -115,14 +118,16 @@ function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <AuthInitializer />
-        <View style={{ flex: 1, backgroundColor: t.background }}>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(drawer)" />
-          </Stack>
-        </View>
+        <VersionGate>
+          <View style={{ flex: 1, backgroundColor: t.background }}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(drawer)" />
+            </Stack>
+          </View>
+        </VersionGate>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

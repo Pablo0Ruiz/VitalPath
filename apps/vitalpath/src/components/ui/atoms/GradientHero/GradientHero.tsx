@@ -5,8 +5,16 @@ import {
   type GradientHeroSize,
 } from './GradientHero.variants';
 
-const LIGHT_STOPS = ['#4B2067', '#3A1852', '#1E0C2B'] as const;
-const DARK_STOPS = ['#EED88E', '#D4A843', '#A67B27'] as const;
+const LIGHT_STOPS: readonly [string, string, string] = [
+  '#4F6EF7',
+  '#9B5DE5',
+  '#14B8A6',
+];
+const DARK_STOPS: readonly [string, string, string] = [
+  '#7B8FFA',
+  '#B87AF8',
+  '#2DD4BF',
+];
 
 export interface GradientHeroProps extends ViewProps {
   size?: GradientHeroSize;
@@ -30,6 +38,7 @@ const GradientHero = ({
         end={{ x: 1, y: 1 }}
         style={s.gradient}
       >
+        <View style={s.glassOverlay} />
         {children}
       </LinearGradient>
     </View>
@@ -39,6 +48,10 @@ const GradientHero = ({
 const s = StyleSheet.create({
   base: { width: '100%', overflow: 'hidden' },
   gradient: { flex: 1 },
+  glassOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+  },
 });
 
 export default GradientHero;

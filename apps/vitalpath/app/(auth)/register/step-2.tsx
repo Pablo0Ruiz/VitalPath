@@ -2,10 +2,15 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { Button, ProgressBar, TextField } from '@/src/components/ui/atoms';
-import { FormField, GenderForm } from '@/src/components/ui/molecules';
+import { Button, ProgressBar } from '@/src/components/ui/atoms';
+import {
+  AuthHeader,
+  FormField,
+  GenderForm,
+} from '@/src/components/ui/molecules';
+import { AuthLayout } from '@/src/components/ui/organisms/AuthLayout';
 import { formatDateInput } from '@/src/utils/formatDateInput';
 import { Step2FormValues, step2Schema } from '@repo/types';
 import { useRegisterStore } from '@repo/store';
@@ -35,18 +40,12 @@ const RegisterStep2 = () => {
   };
 
   return (
-    <View style={[s.container, { backgroundColor: t.background }]}>
+    <AuthLayout
+      heroContent={
+        <AuthHeader title="Detalles Personales" subtitle="Paso 2 de 3" />
+      }
+    >
       <ProgressBar progress={66} style={s.progressBar} />
-
-      <TextField variant="title" style={[s.title, { color: t.textPrimary }]}>
-        Detalles Personales
-      </TextField>
-      <TextField
-        variant="caption"
-        style={[s.subtitle, { color: t.textSecondary }]}
-      >
-        (Paso 2 de 3)
-      </TextField>
 
       <Controller
         control={control}
@@ -90,31 +89,12 @@ const RegisterStep2 = () => {
         variant="primary"
         style={s.button}
       />
-    </View>
+    </AuthLayout>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 64 },
-  backButton: {
-    position: 'absolute',
-    top: 64,
-    left: 24,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
   progressBar: { marginBottom: 40, maxWidth: 200, alignSelf: 'center' },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32 },
   button: { marginTop: 16 },
 });
 

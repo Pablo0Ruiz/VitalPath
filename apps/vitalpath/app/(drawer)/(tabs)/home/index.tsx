@@ -1,40 +1,38 @@
-import { useMemo } from 'react';
-import { ScrollView, StyleSheet, View, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
 
-import { Button, HeaderHome, LoadingScreen } from '@/src/components/ui/atoms';
 import {
-  CustomList,
-  CustomModal,
-  SectionHeader,
+  EmptyState,
+  LoadingScreen,
+  MetricCard,
+} from '@/src/components/ui/atoms';
+import {
+  AppointmentPreviewRow,
+  CompactMedRow,
   DailyCheckIn,
   EmptyPacienteActivoState,
+  HomeTopBar,
+  SectionHeader,
 } from '@/src/components/ui/molecules';
-import CustomUpdateModal from '@/src/components/ui/molecules/CustomUpdateModal/CustomUpdateModal';
 import { useChatContextStore } from '@repo/store';
 import { useAuthStore } from '@/src/stores/auth';
-import {
-  useCitas,
-  useDeleteMedication,
-  useMedicaments,
-} from '@repo/api-client';
+import { useMedicaments } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
-import { parseLocalDateTime } from '@/src/utils/date';
 import { useTheme } from '@/src/hooks/useTheme';
-import {
-  useCompletedSet,
-  useDisclosure,
-  useActivePatientId,
-} from '@/src/hooks';
+import { useDisclosure, useActivePatientId } from '@/src/hooks';
 import { useSeniorUIStore } from '@/src/stores/seniorUI.store';
-import { VoiceAssistantModal } from '@/src/components/ui/organisms';
+import {
+  ScreenLayout,
+  VoiceAssistantModal,
+} from '@/src/components/ui/organisms';
+import { Ionicons } from '@expo/vector-icons';
+import { useAdherence } from '@/src/hooks/useAdherence';
+import { useUpcomingCitas } from '@/src/hooks/useUpcomingCitas';
+import { MedicationFormModal } from '@/src/components/ui/molecules/MedicationFormModal';
 
 export default function DashboardScreen() {
   const t = useTheme();
-  const navigation = useNavigation();
   const { user } = useAuthStore();
   const { isSeniorUI } = useSeniorUIStore();
   const chatId = useChatContextStore(state => state.chatId);
@@ -42,162 +40,184 @@ export default function DashboardScreen() {
 
   const createModal = useDisclosure();
   const editModal = useDisclosure<string>();
-  const { completedIds, markCompleted } = useCompletedSet();
 
   const { patientId, needsSelection } = useActivePatientId();
 
   const { data: medicaments, isLoading } = useMedicaments();
-  const { data: citas = [], isLoading: isLoadCitas } = useCitas(
-    patientId ?? '',
-  );
-  const { mutateAsync: deleteMedication } = useDeleteMedication();
-
-  const upcomingCitas = useMemo(() => {
-    const now = new Date();
-    return [...citas]
-      .filter(
-        c =>
-          c.estado === 'agendada' && parseLocalDateTime(c.fecha, c.hora) > now,
-      )
-      .sort((a, b) => {
-        const dateCompare = a.fecha.localeCompare(b.fecha);
-        if (dateCompare !== 0) return dateCompare;
-        return a.hora.localeCompare(b.hora);
-      })
-      .slice(0, 3);
-  }, [citas]);
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteMedication(id);
-    } catch (error) {
-      console.error('Error al eliminar:', error);
-    }
-  };
+  const { adherenceValue, pendingMedsCount } = useAdherence();
+  const {
+    upcomingCitas,
+    nextCitaValue,
+    isLoading: isLoadCitas,
+  } = useUpcomingCitas(patientId ?? '');
 
   return (
-    <SafeAreaView
-      style={[s.container, { backgroundColor: t.background }]}
-      edges={['top']}
-    >
-      <View style={s.topBar}>
-        <HeaderHome
-          textLabel="Buenos días"
-          nameUser={user?.name}
-          style={s.flex1}
-        />
-        <View style={s.actions}>
-          <Button
-            variant="ghost"
-            size="sm"
-            style={[s.iconButton, { backgroundColor: t.neutral100 }]}
-            onPress={() => {}}
-            accessibilityLabel="Notificaciones"
-            accessibilityRole="button"
-          >
-            <Ionicons
-              name="notifications-outline"
-              size={22}
-              color={t.textSecondary}
-            />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            style={[s.iconButton, { backgroundColor: t.neutral100 }]}
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            accessibilityLabel="Abrir menú"
-            accessibilityRole="button"
-          >
-            <Ionicons name="menu-outline" size={24} color={t.textSecondary} />
-          </Button>
-        </View>
-      </View>
-
-      {needsSelection ? (
-        <View style={s.emptyStateWrapper}>
+    <View style={s.root}>
+      <ScreenLayout
+        showHero={true}
+        heroSize="banner"
+        heroContent={
+          <HomeTopBar
+            userName={user?.name}
+            pendingMeds={pendingMedsCount}
+            nextCita={nextCitaValue}
+          />
+        }
+        scrollable={true}
+      >
+        {needsSelection ? (
           <EmptyPacienteActivoState />
-        </View>
-      ) : (
-        <ScrollView
-          style={s.scroll}
-          contentContainerStyle={s.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={s.section}>
-            <DailyCheckIn />
-
-            <SectionHeader
-              title="Próximas citas"
-              linkLabel="Ver todas"
-              onLinkPress={() => router.push(ROUTES.APPOINTMENTS)}
-              style={s.sectionHeader}
-            />
-            <View
-              testID="card-shadow-citas"
-              style={[s.cardShadow, { backgroundColor: t.surfaceElevated }]}
-            >
+        ) : (
+          <>
+            {/* Daily check-in — primera acción del día */}
+            <View style={s.sectionBlock}>
               <View
-                testID="card-clip-citas"
-                style={[s.cardClip, { borderColor: t.border }]}
+                style={[
+                  s.miniCard,
+                  { backgroundColor: t.surface, borderColor: t.border },
+                ]}
               >
-                {isLoadCitas ? (
-                  <LoadingScreen size="small" />
-                ) : (
-                  <CustomList type="cita" data={upcomingCitas} />
-                )}
+                <View style={s.checkInInner}>
+                  <DailyCheckIn />
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={s.section}>
-            <View style={s.medicationHeader}>
+            <View style={s.sectionBlock}>
               <SectionHeader
-                title="Medicamentos de hoy"
+                title="Medicamentos"
                 linkLabel="Ver todos"
                 onLinkPress={() => router.push(ROUTES.MEDICATIONS)}
-                style={s.flex1}
               />
-              <Button
-                title="Agregar"
-                onPress={() => createModal.open()}
-                size="sm"
-                variant="primary"
-              />
-              <CustomModal
+              <View
+                style={[
+                  s.miniCard,
+                  { backgroundColor: t.surface, borderColor: t.border },
+                ]}
+              >
+                {isLoading ? (
+                  <LoadingScreen size="small" />
+                ) : medicaments && medicaments.length > 0 ? (
+                  medicaments
+                    .slice(0, 3)
+                    .map(med => <CompactMedRow key={med._id} med={med} />)
+                ) : (
+                  <EmptyState
+                    icon="activity"
+                    title="Todavía no registraste medicamentos."
+                    subtitle="Agregá tu tratamiento y empezá a recibir recordatorios."
+                    actionLabel="+ Agregar medicamento"
+                    onAction={() => createModal.open()}
+                    style={s.emptyStateCard}
+                  />
+                )}
+              </View>
+              <MedicationFormModal
+                mode="create"
                 visible={createModal.isOpen}
                 onClose={createModal.close}
               />
             </View>
 
-            {isLoading ? (
-              <LoadingScreen size="small" />
-            ) : (
+            <View style={s.sectionBlock}>
+              <SectionHeader title="Próximas Citas" />
               <View
-                testID="card-shadow-meds"
-                style={[s.cardShadow, { backgroundColor: t.surfaceElevated }]}
+                style={[
+                  s.miniCard,
+                  { backgroundColor: t.surface, borderColor: t.border },
+                ]}
               >
-                <View
-                  testID="card-clip-meds"
-                  style={[s.cardClip, { borderColor: t.border }]}
-                >
-                  <CustomList
-                    type="medication"
-                    data={medicaments}
-                    onDelete={handleDelete}
-                    onEdit={id => editModal.open(id)}
-                    onTake={markCompleted}
-                    completedIds={completedIds}
+                {isLoadCitas ? (
+                  <LoadingScreen size="small" />
+                ) : upcomingCitas.length > 0 ? (
+                  upcomingCitas
+                    .slice(0, 2)
+                    .map(cita => (
+                      <AppointmentPreviewRow key={cita._id} cita={cita} />
+                    ))
+                ) : (
+                  <EmptyState
+                    icon="calendar"
+                    title="No tenés consultas agendadas."
+                    subtitle="Agendá una cita para mantener tu seguimiento organizado."
+                    actionLabel="Agendar consulta"
+                    onAction={() => router.push(ROUTES.APPOINTMENTS)}
+                    style={s.emptyStateCard}
                   />
-                </View>
+                )}
               </View>
-            )}
-          </View>
-        </ScrollView>
-      )}
+            </View>
+
+            <View style={s.sectionBlock}>
+              <SectionHeader title="Tu progreso" />
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={s.metricsRow}
+                contentContainerStyle={s.metricsRowContent}
+              >
+                <MetricCard
+                  icon={
+                    <Ionicons
+                      name="medical-outline"
+                      size={18}
+                      color={t.secondary500}
+                    />
+                  }
+                  label="ADHERENCIA"
+                  value={adherenceValue}
+                  color={t.secondary500}
+                  index={0}
+                />
+                <MetricCard
+                  icon={
+                    <Ionicons
+                      name="calendar-outline"
+                      size={18}
+                      color={t.primary600}
+                    />
+                  }
+                  label="PRÓXIMA CITA"
+                  value={nextCitaValue}
+                  color={t.primary600}
+                  index={1}
+                />
+                <MetricCard
+                  icon={
+                    <Ionicons
+                      name="happy-outline"
+                      size={18}
+                      color={t.accentAi}
+                    />
+                  }
+                  label="CHECK-IN"
+                  value={null}
+                  color={t.accentAi}
+                  index={2}
+                />
+                <MetricCard
+                  icon={
+                    <Ionicons
+                      name="footsteps-outline"
+                      size={18}
+                      color={t.secondary500}
+                    />
+                  }
+                  label="PASOS"
+                  value={null}
+                  color={t.secondary500}
+                  index={3}
+                  onConfigure={() => {}}
+                />
+              </ScrollView>
+            </View>
+          </>
+        )}
+      </ScreenLayout>
 
       {isSeniorUI && (
         <Pressable
+          testID="senior-fab"
           style={[s.fab, { backgroundColor: t.primary600 }]}
           onPress={() => voiceModal.open()}
         >
@@ -214,64 +234,41 @@ export default function DashboardScreen() {
       )}
 
       {editModal.isOpen && editModal.data && (
-        <CustomUpdateModal
+        <MedicationFormModal
+          mode="edit"
+          medicationId={editModal.data}
           visible={editModal.isOpen}
           onClose={editModal.close}
-          id={editModal.data}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
+  root: { flex: 1 },
+  sectionBlock: {
+    marginTop: 16,
   },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    paddingHorizontal: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scroll: { flex: 1 },
-  scrollContent: { paddingBottom: 100 },
-  emptyStateWrapper: { flex: 1, justifyContent: 'center' },
-  section: { paddingHorizontal: 20, paddingTop: 20 },
-  sectionHeader: { marginTop: 12, marginBottom: 8 },
-  cardShadow: {
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  cardClip: {
-    borderRadius: 24,
-    overflow: 'hidden',
+  miniCard: {
+    borderRadius: 12,
     borderWidth: 1,
+    overflow: 'hidden',
   },
-  medicationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
+  checkInInner: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  flex1: { flex: 1 },
+  emptyStateCard: {
+    paddingVertical: 24,
+  },
+  metricsRow: {
+    marginHorizontal: -8,
+  },
+  metricsRowContent: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   fab: {
     position: 'absolute',
     bottom: 30,

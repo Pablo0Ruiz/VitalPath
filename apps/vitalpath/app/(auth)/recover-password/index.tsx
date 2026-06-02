@@ -4,7 +4,7 @@ import {
   AuthHeader,
   FormField,
 } from '@/src/components/ui/molecules';
-import { AuthLayout } from '@/src/components/ui/organisms';
+import { AuthLayout } from '@/src/components/ui/organisms/AuthLayout';
 import { useRecoverPassword } from '@repo/api-client';
 import { RecoverPasswordFormValues, recoverPasswordSchema } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';

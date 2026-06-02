@@ -1,4 +1,4 @@
-import { StyleSheet, View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps, useColorScheme } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { useTheme } from '@/src/hooks/useTheme';
@@ -13,29 +13,43 @@ const SecurityBanner = ({
   ...props
 }: SecurityBannerProps) => {
   const t = useTheme();
+  const isDark = useColorScheme() === 'dark';
+
+  const bannerBg = isDark ? t.surfaceElevated : t.primary50;
+  const iconBg = isDark ? 'rgba(123,143,250,0.15)' : t.primary100;
+  const iconColor = isDark ? t.primary500 : t.primary600;
 
   return (
     <View
-      style={[s.container, { backgroundColor: t.neutral950 }, style]}
+      style={[
+        s.container,
+        {
+          backgroundColor: bannerBg,
+          borderColor: isDark ? t.border : t.glassBorder,
+        },
+        style,
+      ]}
       {...props}
     >
-      <View style={[s.iconWrapper, { backgroundColor: t.neutral800 }]}>
-        <Feather name="lock" size={20} color={t.white} />
+      <View style={[s.iconWrapper, { backgroundColor: iconBg }]}>
+        <Feather name="lock" size={20} color={iconColor} />
       </View>
       <View style={s.content}>
-        <TextField variant="body" style={[s.title, { color: t.white }]}>
-          Seguridad de Nivel Médico
+        <TextField variant="body" style={[s.title, { color: t.textPrimary }]}>
+          Tus resultados son privados
         </TextField>
         <TextField
           variant="caption"
-          style={[s.description, { color: t.neutral400 }]}
+          style={[s.description, { color: t.textSecondary }]}
         >
-          Tus resultados están protegidos mediante cifrado AES-256 de extremo a
-          extremo. Solo tú y tu médico tratante pueden acceder a esta
+          Cifrado de grado médico. Solo vos y tu médico pueden acceder a esta
           información.
         </TextField>
         <Button onPress={onMorePress} variant="ghost" style={s.button}>
-          <TextField variant="caption" style={[s.link, { color: t.info }]}>
+          <TextField
+            variant="caption"
+            style={[s.link, { color: t.primary600 }]}
+          >
             Más sobre privacidad →
           </TextField>
         </Button>
@@ -46,28 +60,27 @@ const SecurityBanner = ({
 
 const s = StyleSheet.create({
   container: {
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 16,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 16,
+    gap: 12,
+    borderWidth: 1,
   },
-  iconWrapper: { borderRadius: 12, padding: 10, marginTop: 4 },
+  iconWrapper: { borderRadius: 10, padding: 10, marginTop: 2 },
   content: { flex: 1 },
   title: {
-    fontWeight: '700',
-    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 4,
     textAlign: 'left',
   },
   description: {
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: 10,
     textAlign: 'left',
-    fontSize: 13,
   },
   button: { padding: 0, alignSelf: 'flex-start' },
-  link: { fontWeight: '600', fontSize: 13 },
+  link: { fontWeight: '600' },
 });
 
 export default SecurityBanner;

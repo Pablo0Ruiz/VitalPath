@@ -98,13 +98,13 @@ export const AUTH_REGISTER_ROUTES: RouteConfig[] = [
 
 export const TAB_ROUTES: RouteConfig[] = [
   {
-    title: 'Records',
+    title: 'Análisis',
     icon: 'NoteIcon',
     screenName: TAB_SCREEN_NAMES.RECORDS,
     allowedRoles: ['paciente'],
   },
   {
-    title: 'Home',
+    title: 'Inicio',
     icon: 'Home01Icon',
     screenName: TAB_SCREEN_NAMES.HOME,
     allowedRoles: ['paciente'],
