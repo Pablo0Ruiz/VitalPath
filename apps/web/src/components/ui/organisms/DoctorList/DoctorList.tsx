@@ -50,9 +50,20 @@ const DoctorList = () => {
     variables: invitingId,
   } = useInviteDoctor();
 
-  if (error) return <div>Error al cargar los doctores</div>;
+  if (error)
+    return (
+      <div className="p-8 text-sm text-brand-state-error">
+        No se pudieron cargar los médicos.
+      </div>
+    );
 
-  if (isLoading) return <div>Cargando doctores...</div>;
+  if (isLoading)
+    return (
+      <div className="flex items-center gap-3 p-8 text-sm text-brand-text-secondary">
+        <div className="w-5 h-5 rounded-full border-2 border-brand-primary-300 border-t-transparent animate-spin" />
+        Cargando médicos...
+      </div>
+    );
 
   const filteredDoctors = doctors?.filter(doctor => {
     const fullName =
@@ -99,18 +110,24 @@ const DoctorList = () => {
         />
       </div>
 
-      <Card padding="none" className="overflow-hidden">
+      <Card padding="none" className="relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-primary-500 to-brand-secondary-500" />
         <div className="px-5 py-4 border-b border-brand-border">
-          <span className="text-sm font-semibold text-brand-text-primary">
-            Doctores ({filteredDoctors?.length})
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-brand-text-secondary">
+              Médicos
+            </span>
+            <span className="text-xs font-semibold bg-brand-primary-50 text-brand-primary-700 px-2.5 py-0.5 rounded-full border border-brand-primary-100">
+              {filteredDoctors?.length}
+            </span>
+          </div>
         </div>
         <div className="divide-y divide-brand-border">
           {filteredDoctors?.map(doctor => (
             <Link
               key={doctor._id}
               href={`/doctors/${doctor._id}`}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-neutral-50 transition-colors no-underline"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-brand-primary-50/30 hover:border-l-2 hover:border-l-brand-primary-200 transition-colors no-underline"
             >
               <Avatar
                 name={`${doctor.user.name} ${doctor.user.lastName}`}

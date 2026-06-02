@@ -71,7 +71,7 @@ export default function PortalLayout({
             breadcrumbs={breadcrumbs}
             user={{ name: user?.name ?? '', role }}
           />
-          <main className="flex-1 overflow-y-auto bg-brand-neutral-50 p-6 min-h-[calc(100vh-4rem)]">
+          <main className="flex-1 overflow-y-auto bg-brand-background p-6">
             {children}
           </main>
           <FloatingChat />

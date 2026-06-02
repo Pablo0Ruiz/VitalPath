@@ -16,13 +16,20 @@ const SidebarItem = ({ icon, label, href, active }: SidebarItemProps) => {
     <Link
       href={href}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors border-l-2',
+        'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
         active
-          ? 'bg-brand-primary-50 text-brand-primary-700 border-brand-primary-600'
-          : 'text-brand-text-secondary hover:bg-brand-neutral-100 hover:text-brand-text-primary border-transparent',
+          ? 'bg-white/12 text-white font-semibold'
+          : 'text-white/55 hover:bg-white/7 hover:text-white/85',
       )}
     >
-      <HugeiconsIcon icon={icon} size={18} />
+      {active && (
+        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-brand-primary-400" />
+      )}
+      <HugeiconsIcon
+        icon={icon}
+        size={17}
+        className={cn(active ? 'text-brand-primary-300' : 'text-white/45')}
+      />
       <span>{label}</span>
     </Link>
   );

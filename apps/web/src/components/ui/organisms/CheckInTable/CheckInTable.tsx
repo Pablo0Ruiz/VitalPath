@@ -2,6 +2,7 @@
 
 import { useRef, useMemo } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
+import { cn } from '@/lib/utils';
 import { Loading, FileUploadIcon } from '@hugeicons/core-free-icons';
 import { formatLocalYMD } from '../../../../utils/format';
 import { isActiveCita } from '@/lib/citaStates';
@@ -111,7 +112,11 @@ const CheckInTable = () => {
   }
 
   return (
-    <Card padding="none" className="flex flex-col gap-0 overflow-hidden">
+    <Card
+      padding="none"
+      className="relative flex flex-col gap-0 overflow-hidden"
+    >
+      <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl bg-linear-to-r from-brand-primary-500 to-brand-secondary-500" />
       <div className="px-5 py-4 border-b border-brand-border">
         <h3 className="text-sm font-semibold text-brand-text-primary">
           Agenda del día
@@ -120,7 +125,7 @@ const CheckInTable = () => {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-brand-neutral-50 border-b border-brand-border">
+            <tr className="bg-brand-primary-50/60 dark:bg-brand-surface-elevated border-b border-brand-border">
               {[
                 'Hora',
                 'Paciente',
@@ -131,7 +136,7 @@ const CheckInTable = () => {
               ].map(h => (
                 <th
                   key={h}
-                  className="px-4 py-3 text-left text-xs font-semibold text-brand-text-secondary uppercase tracking-wide"
+                  className="px-4 py-3 text-left text-xs font-semibold text-brand-primary-700 uppercase tracking-wide"
                 >
                   {h}
                 </th>
@@ -149,14 +154,17 @@ const CheckInTable = () => {
                 </td>
               </tr>
             )}
-            {rows.map(row => {
+            {rows.map((row, idx) => {
               const nextEstado = CITA_ALLOWED_TRANSITIONS[row.estado];
               const actionLabel = ACTION_LABEL[row.estado];
 
               return (
                 <tr
                   key={row._id}
-                  className="border-b border-brand-border last:border-0 hover:bg-brand-neutral-50 transition-colors"
+                  className={cn(
+                    'border-b border-brand-border last:border-0 hover:bg-brand-primary-50/30 hover:border-brand-primary-100 transition-colors',
+                    idx % 2 === 0 ? 'bg-brand-background/50' : '',
+                  )}
                 >
                   <td className="px-4 py-3 font-medium text-brand-text-primary">
                     {row.hora}

@@ -5,9 +5,23 @@ import { cardVariants } from './Card.variants';
 type CardProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof cardVariants>;
 
-const Card = ({ className, padding, children, ...props }: CardProps) => {
+const Card = ({
+  className,
+  padding,
+  interactive,
+  glass,
+  elevated,
+  children,
+  ...props
+}: CardProps) => {
   return (
-    <div className={cn(cardVariants({ padding }), className)} {...props}>
+    <div
+      className={cn(
+        cardVariants({ padding, interactive, glass, elevated }),
+        className,
+      )}
+      {...props}
+    >
       {children}
     </div>
   );

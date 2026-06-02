@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { Tick02Icon } from '@hugeicons/core-free-icons';
 import { Card } from '@/components/ui/atoms/Card';
-import { Badge } from '@/components/ui/atoms/Badge';
 import { Skeleton } from '@/components/ui/atoms/Skeleton';
 import { EmptyState } from '@/components/ui/molecules/EmptyState';
 import { cn } from '@/lib/utils';
@@ -62,15 +61,21 @@ const AlertPanel = ({
   );
 
   return (
-    <Card className={cn('flex flex-col gap-4 p-4', className)}>
+    <Card
+      className={cn(
+        'relative overflow-hidden flex flex-col gap-4 p-5',
+        className,
+      )}
+    >
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-brand-state-error to-brand-state-warning" />
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-brand-text-primary">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-brand-text-secondary">
           Alertas operativas
         </h2>
         {!isLoading && !isError && alerts.length > 0 && (
-          <Badge variant="neutral" size="sm">
+          <span className="text-xs font-bold bg-brand-state-error-light text-brand-state-error-dark px-2.5 py-0.5 rounded-full">
             {alerts.length} activas
-          </Badge>
+          </span>
         )}
       </div>
 

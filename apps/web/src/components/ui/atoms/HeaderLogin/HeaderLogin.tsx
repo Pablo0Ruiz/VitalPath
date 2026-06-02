@@ -1,20 +1,20 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { InboxIcon } from '@hugeicons/core-free-icons';
+
 const HeaderLogin = () => {
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="flex items-center gap-2 mb-1">
-        <div className="w-8 h-8 rounded-lg bg-brand-primary-600 flex items-center justify-center">
-          <span className="text-white text-xs font-bold">VP</span>
-        </div>
-        <span className="text-xl font-bold text-brand-text-primary tracking-tight">
-          VitalPath
-        </span>
+    <div className="flex flex-col items-center gap-2">
+      <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-brand-primary-500 to-brand-accent-ai flex items-center justify-center shadow-(--brand-shadow-md) mb-1">
+        <HugeiconsIcon icon={InboxIcon} size={22} className="text-white" />
       </div>
-      <h1 className="text-xl font-bold text-brand-text-primary">
-        Iniciar sesión
-      </h1>
-      <p className="text-sm text-brand-text-secondary">
-        Accedé al portal médico
-      </p>
+      <div className="flex flex-col items-center gap-0.5">
+        <h1 className="text-xl font-bold text-brand-text-primary tracking-tight">
+          Bienvenido a VitalPath
+        </h1>
+        <p className="text-sm text-brand-text-secondary">
+          Ingresá al portal médico
+        </p>
+      </div>
     </div>
   );
 };

@@ -60,16 +60,20 @@ export default function AdminAppointmentsView() {
   const currentRows = activeTab === 'activas' ? activaCitas : historicalCitas;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-brand-text-primary">
-          Citas
-        </h2>
+    <div className="flex flex-col gap-5">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-brand-text-primary tracking-tight">
+            Citas
+          </h2>
+          <p className="text-sm text-brand-text-secondary mt-0.5">
+            Gestión de turnos y agenda
+          </p>
+        </div>
         <Button
-          type="button"
-          variant="primary"
-          size="sm"
           onClick={() => setShowCreateModal(true)}
+          variant="primary"
+          size="md"
         >
           Nueva cita
         </Button>

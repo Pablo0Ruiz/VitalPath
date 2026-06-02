@@ -38,7 +38,7 @@ const TopbarUser = ({ name, role }: TopbarUserProps) => {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-brand-neutral-50 transition-colors"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-brand-background transition-colors cursor-pointer"
       >
         <Avatar name={name} size="sm" />
         <div className="flex flex-col items-start gap-0.5">
@@ -60,7 +60,7 @@ const TopbarUser = ({ name, role }: TopbarUserProps) => {
         />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-44 bg-brand-background border border-brand-border rounded-xl shadow-(--brand-shadow-md) z-50 py-1">
+        <div className="absolute right-0 top-full mt-1 w-44 bg-brand-surface border border-brand-border rounded-xl shadow-(--brand-shadow-md) z-50 py-1">
           <button
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-brand-state-error hover:bg-brand-neutral-50 transition-colors"
             onClick={logout}
