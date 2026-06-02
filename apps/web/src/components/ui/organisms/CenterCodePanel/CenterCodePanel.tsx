@@ -23,7 +23,7 @@ const CenterCodePanel = () => {
         <span className="text-xs text-brand-text-secondary">
           Último reseteo: 15 abr. 2026
         </span>
-        <Button variant="danger" size="sm">
+        <Button variant="destructive" size="sm">
           Resetear código
         </Button>
       </div>
