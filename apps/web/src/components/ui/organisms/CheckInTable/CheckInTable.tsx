@@ -1,9 +1,8 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { cn } from '@/lib/utils';
-import { Loading, FileUploadIcon } from '@hugeicons/core-free-icons';
+import { Loading } from '@hugeicons/core-free-icons';
 import { formatLocalYMD } from '../../../../utils/format';
 import { isActiveCita } from '@/lib/citaStates';
 
@@ -16,11 +15,9 @@ import {
   CITA_ALLOWED_TRANSITIONS,
   type CitaEstado,
 } from '@repo/types';
-import {
-  useCitasAdministrator,
-  useAvanzarCitaEstado,
-  useUploadStudy,
-} from '@repo/api-client';
+import { useCitasAdministrator, useAvanzarCitaEstado } from '@repo/api-client';
+import { useMemo } from 'react';
+import { UploadCell } from '../../molecules/UploadCell';
 
 type BadgeVariant =
   | 'success'
@@ -52,43 +49,6 @@ const ACTION_LABEL: Partial<Record<CitaEstado, string>> = {
   [CitaEstadoEnum.AGENDADA]: 'Check-in',
   [CitaEstadoEnum.ASISTIDA]: 'Muestra tomada',
   [CitaEstadoEnum.RESULTADOS_LISTOS]: 'Completar',
-};
-
-const UploadCell = ({
-  citaId,
-  pacienteId,
-}: {
-  citaId: string;
-  pacienteId: string;
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { mutate: upload, isPending } = useUploadStudy();
-
-  const handleFile = (file: File | undefined) => {
-    if (!file || file.type !== 'application/pdf') return;
-    upload({ file, ctx: { paciente_ID: pacienteId, cita_ID: citaId } });
-  };
-
-  return (
-    <>
-      <Button
-        variant="secondary"
-        size="sm"
-        disabled={isPending}
-        onClick={() => inputRef.current?.click()}
-      >
-        <HugeiconsIcon icon={FileUploadIcon} size={14} />
-        {isPending ? 'Subiendo...' : 'Subir resultado'}
-      </Button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".pdf"
-        className="hidden"
-        onChange={e => handleFile(e.target.files?.[0])}
-      />
-    </>
-  );
 };
 
 const CheckInTable = () => {
