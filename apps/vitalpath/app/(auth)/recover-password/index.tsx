@@ -6,7 +6,10 @@ import {
 } from '@/src/components/ui/molecules';
 import { AuthLayout } from '@/src/components/ui/organisms/AuthLayout';
 import { useRecoverPassword } from '@repo/api-client';
-import { RecoverPasswordFormValues, recoverPasswordSchema } from '@repo/types';
+import {
+  type RecoverPasswordFormValues,
+  recoverPasswordSchema,
+} from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import Octicons from '@expo/vector-icons/Octicons';
 import { zodResolver } from '@hookform/resolvers/zod';

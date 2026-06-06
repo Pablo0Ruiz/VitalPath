@@ -63,5 +63,4 @@ export const parseLocalDateTime = (fecha: string, hora: string): Date => {
   return new Date(year, month - 1, day, hours, minutes);
 };
 
-// isElderlyUser has been moved to @repo/types — re-exported here for backwards compatibility.
 export { isElderlyUser } from '@repo/types';

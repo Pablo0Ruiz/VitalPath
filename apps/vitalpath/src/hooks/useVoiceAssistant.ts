@@ -52,9 +52,7 @@ export function useVoiceAssistant({
 
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
-    } catch (_err) {
-      // silent: error propagates via hook state
-    }
+    } catch (_err) {}
   };
 
   const stopRecordingAndSend = async () => {

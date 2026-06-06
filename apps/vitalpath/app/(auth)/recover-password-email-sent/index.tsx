@@ -5,7 +5,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 
 import { Button, TextField } from '@/src/components/ui/atoms';
 import { AuthHeader } from '@/src/components/ui/molecules';
-import { AuthLayout } from '@/src/components/ui/organisms';
+import { AuthLayout } from '@/src/components/ui/organisms/AuthLayout';
 import { useRecoverPassword } from '@repo/api-client';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';

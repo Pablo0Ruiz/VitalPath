@@ -14,7 +14,6 @@ export { TimelineIcon } from './TimeLineIcon';
 export { ProgressBar } from './ProgressBar';
 export { HeaderHome } from './HeaderHome';
 export { TimeSlotChip } from './TimeSlotChip/TimeSlotChip';
-// ── New atoms (mobile-ui-redesign) ──
 export { ScreenHeader } from './ScreenHeader';
 export type { ScreenHeaderProps } from './ScreenHeader';
 export { GradientHero } from './GradientHero';

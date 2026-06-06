@@ -77,12 +77,10 @@ export class SeedService {
 
     const hashedPassword = bcrypt.hashSync(SEED_PASSWORD, 12);
 
-    // 1. Crear Centros de Salud
     const centros = await this.centroSaludModel.insertMany(centrosSaludSeed);
     const [centroNord, centroRosa] = centros;
     this.logger.log(`Centros de salud creados: ${centros.length}`);
 
-    // 2. Crear Administrador
     const { centroIndex: adminCentroIndex, ...adminSeedData } = adminSeed;
     const _adminUser = await this.userModel.create({
       ...adminSeedData,
@@ -91,21 +89,18 @@ export class SeedService {
     });
     this.logger.log('Usuario Administrador creado.');
 
-    // 3. Crear Cuidador Familiar
     const caregiverUser = await this.userModel.create({
       ...caregiverSeed,
       password: hashedPassword,
     });
     this.logger.log('Usuario Cuidador Familiar creado.');
 
-    // 4. Crear Medicaciones
     const medications = await this.medicationModel.insertMany(medicationsSeed);
     this.logger.log(`Medicaciones creadas: ${medications.length}`);
 
     const findMed = (name: string) =>
       medications.find(m => m.name.toLowerCase() === name.toLowerCase());
 
-    // 5. Crear Pacientes sin código (y trabajadores centro)
     const usersSinCodigo = await this.userModel.insertMany(
       pacientesSinCodigoSeed.map(u => ({ ...u, password: hashedPassword })),
     );
@@ -156,7 +151,6 @@ export class SeedService {
     }
     this.logger.log(`Usuarios base creados: ${usersSinCodigo.length}`);
 
-    // 6. Crear Pacientes con código
     const usersConCodigo = await this.userModel.insertMany(
       pacientesConCodigoSeed.map(u => ({ ...u, password: hashedPassword })),
     );
@@ -170,7 +164,6 @@ export class SeedService {
     );
     this.logger.log(`Pacientes con código creados: ${usersConCodigo.length}`);
 
-    // 7. Crear Personas mayores (65+)
     const usersMayores = await this.userModel.insertMany(
       personasMayoresSeed.map(u => ({ ...u, password: hashedPassword })),
     );
@@ -206,7 +199,6 @@ export class SeedService {
     await this.patientModel.insertMany(patientMayoresDocs);
     this.logger.log(`Personas mayores creadas: ${usersMayores.length}`);
 
-    // 8. Crear Doctores verificados y vincularlos a centros
     const centrosPorIndex = [centroNord, centroRosa];
 
     const usersDoctoresVerificados = await this.userModel.insertMany(
@@ -246,7 +238,6 @@ export class SeedService {
       `Doctores verificados creados: ${usersDoctoresVerificados.length}`,
     );
 
-    // 9. Crear Doctores pendientes
     const usersDoctoresPendientes = await this.userModel.insertMany(
       doctoresPendientesSeed.map(({ especialidad: _, slots: __, ...rest }) => ({
         ...rest,
@@ -266,7 +257,6 @@ export class SeedService {
       `Doctores pendientes creados: ${usersDoctoresPendientes.length}`,
     );
 
-    // 10. Crear Vínculos Paciente-Cuidador
     const sofiaUser = usersConCodigo.find(p => p.name === 'sofía');
     const manuelUser = usersMayores.find(p => p.name === 'manuel');
 
@@ -291,7 +281,6 @@ export class SeedService {
       this.logger.log('Vínculos de cuidadores creados.');
     }
 
-    // 11. Generar Citas Dinámicas
     const todayStr = new Date().toISOString().split('T')[0];
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -300,7 +289,6 @@ export class SeedService {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-    // Doctors
     const drGomez = usersDoctoresVerificados.find(
       d => d.email === 'roberto.gomez@test.com',
     );
@@ -317,7 +305,6 @@ export class SeedService {
       d => d.email === 'alejandro.silva@test.com',
     );
 
-    // Patients
     const carlos = usersSinCodigo.find(
       p => p.email === 'carlos.martinez@test.com',
     );
@@ -352,8 +339,6 @@ export class SeedService {
 
     const appointmentsToCreate = [];
 
-    // Dr. Gómez (Cardiología, Hospital Norte) — slots: 09:00–16:00
-    // Cubre todos los estados posibles de una cita
     if (drGomez && carlos && laura && miguel && ana && pedro && sofia) {
       appointmentsToCreate.push(
         {
@@ -406,7 +391,7 @@ export class SeedService {
         },
       );
     }
-    // Dr. Gómez — citas futuras para seniors (cardiology + edad avanzada = match perfecto)
+
     if (drGomez && rosa && manuel) {
       appointmentsToCreate.push(
         {
@@ -428,7 +413,6 @@ export class SeedService {
       );
     }
 
-    // Dr. Francisco Jiménez (Neurología, Hospital Norte) — slots: 15:00, 16:00, 17:00
     if (drFrancisco && andres && jose && maria) {
       appointmentsToCreate.push(
         {
@@ -458,7 +442,6 @@ export class SeedService {
       );
     }
 
-    // Dra. Patricia Reyes (Nutrición, Clínica Rosa) — slots: 12:00, 13:00, 14:00
     if (drPatricia && isabella && carmen && valentina) {
       appointmentsToCreate.push(
         {
@@ -488,7 +471,6 @@ export class SeedService {
       );
     }
 
-    // Dr. Alejandro Silva (Traumatología, Hospital Norte) — slots: 08:00, 09:00, 10:00
     if (drAlejandro && pedro && andres && diego) {
       appointmentsToCreate.push(
         {
@@ -518,7 +500,6 @@ export class SeedService {
       );
     }
 
-    // Alerta No-Show: cita AGENDADA con hora pasada (07:00 hoy)
     if (drVargas && diego) {
       appointmentsToCreate.push({
         paciente_ID: diego._id,
@@ -530,7 +511,6 @@ export class SeedService {
       });
     }
 
-    // Alerta Stale Results: RESULTADOS_LISTOS hace más de 24h
     if (drVargas && valentina) {
       appointmentsToCreate.push({
         paciente_ID: valentina._id,
@@ -542,7 +522,6 @@ export class SeedService {
       });
     }
 
-    // Alerta Doctor Overload: Dra. Elena Vargas con 9 citas hoy (slots válidos)
     const overloadPatients = [
       sofia,
       valentina,
@@ -583,7 +562,6 @@ export class SeedService {
     const createdAppts =
       await this.appointmentModel.insertMany(appointmentsToCreate);
 
-    // Ajustar fecha de actualización para la cita stale (36h atrás)
     const staleAppt = createdAppts.find(
       a => a.fecha === yesterdayStr && a.estado === CitaState.RESULTADOS_LISTOS,
     );
@@ -595,7 +573,6 @@ export class SeedService {
       );
     }
 
-    // Asociar citas a pacientes y doctores
     for (const appt of createdAppts) {
       await this.patientModel.findOneAndUpdate(
         { user: appt.paciente_ID },
@@ -608,7 +585,6 @@ export class SeedService {
     }
     this.logger.log(`Citas creadas: ${createdAppts.length}`);
 
-    // 12. Crear Resultados de Estudio
     const apptAna = createdAppts.find(
       a =>
         String(a.paciente_ID) === String(ana?._id) &&
@@ -690,7 +666,6 @@ export class SeedService {
     }
     this.logger.log(`Resultados de estudio creados: ${studyResults.length}`);
 
-    // 13. Generar Historial de Estados de Ánimo (Moods) para Gráficas
     const moodEntries = [];
     const patientsForMood = [carlos, rosa, manuel, sofia, ana, jose].filter(
       Boolean,

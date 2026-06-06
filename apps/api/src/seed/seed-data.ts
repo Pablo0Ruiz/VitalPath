@@ -3,13 +3,7 @@ import { UserGenero } from 'src/auth/enum/user-genero.enum';
 import { UserRoles } from 'src/auth/enum/user-role.enum';
 import { HospitalType } from 'src/user/entities/centro-salud.entity';
 
-/**
- * Contraseña universal usada para todos los usuarios seed.
- * En producción este endpoint no está disponible.
- */
 export const SEED_PASSWORD = 'Password123!';
-
-// ─── Centros de Salud ─────────────────────────────────────────────────────────
 
 export const centrosSaludSeed = [
   {
@@ -30,8 +24,6 @@ export const centrosSaludSeed = [
   },
 ];
 
-// ─── Administrador ────────────────────────────────────────────────────────────
-
 export const adminSeed = {
   name: 'admin',
   lastName: 'vitalpath',
@@ -44,8 +36,6 @@ export const adminSeed = {
   centroIndex: 0,
 };
 
-// ─── Cuidador Familiar ────────────────────────────────────────────────────────
-
 export const caregiverSeed = {
   name: 'juan',
   lastName: 'pérez',
@@ -56,9 +46,6 @@ export const caregiverSeed = {
   telefono: '+34 600 111 222',
   isActive: true,
 };
-
-// ─── Pacientes sin código de acceso ──────────────────────────────────────────
-// Pueden hacer login solo con email + contraseña
 
 export const pacientesSinCodigoSeed = [
   {
@@ -135,13 +122,10 @@ export const pacientesSinCodigoSeed = [
     fechaNacimiento: new Date('1977-12-23'),
     genero: UserGenero.MASCULINO,
     telefono: '+34 612 349 005',
-    isActive: false, // Pending worker activation on web
+    isActive: false,
     verificationCode: 'NORD-2024',
   },
 ];
-
-// ─── Pacientes con código de acceso ──────────────────────────────────────────
-// Tienen accessCode asignado (registrados por un trabajador del centro)
 
 export const pacientesConCodigoSeed = [
   {
@@ -206,9 +190,6 @@ export const pacientesConCodigoSeed = [
   },
 ];
 
-// ─── Personas mayores (65+) ───────────────────────────────────────────────────
-// seniorMode: true, fechaNacimiento <= 1961, pueden usar loginWithCode
-
 export const personasMayoresSeed = [
   {
     name: 'rosa',
@@ -271,10 +252,6 @@ export const personasMayoresSeed = [
     accessCode: 'MAYO-005',
   },
 ];
-
-// ─── Doctores verificados ─────────────────────────────────────────────────────
-// isActive: true, sin verificationCode, vinculados a un centro
-// centroIndex: 0 = Hospital del Norte, 1 = Clínica Santa Rosa
 
 export const doctoresVerificadosSeed = [
   {
@@ -370,10 +347,6 @@ export const doctoresVerificadosSeed = [
   },
 ];
 
-// ─── Doctores pendientes de verificación ─────────────────────────────────────
-// isActive: false, con verificationCode = codigoVinculacion del centro destino
-// La web usa verificationCode para verificarlos y vincularlos al centro
-
 export const doctoresPendientesSeed = [
   {
     name: 'sebastián',
@@ -383,7 +356,7 @@ export const doctoresPendientesSeed = [
     fechaNacimiento: new Date('1982-02-14'),
     genero: UserGenero.MASCULINO,
     telefono: '+34 612 349 001',
-    isActive: false, // Pending doctor verification on web
+    isActive: false,
     seniorMode: false,
     especialidad: Especialidad.CARDIOLOGIA,
     verificationCode: 'NORD-2024',
@@ -397,7 +370,7 @@ export const doctoresPendientesSeed = [
     fechaNacimiento: new Date('1986-10-05'),
     genero: UserGenero.FEMENINO,
     telefono: '+34 612 349 002',
-    isActive: false, // Pending doctor verification on web
+    isActive: false,
     seniorMode: false,
     especialidad: Especialidad.MEDICINA_GENERAL,
     verificationCode: 'ROSA-2024',
@@ -411,15 +384,13 @@ export const doctoresPendientesSeed = [
     fechaNacimiento: new Date('1979-07-19'),
     genero: UserGenero.MASCULINO,
     telefono: '+34 612 349 003',
-    isActive: false, // Pending doctor verification on web
+    isActive: false,
     seniorMode: false,
     especialidad: Especialidad.NEUROLOGIA,
     verificationCode: 'NORD-2024',
     slots: ['16:00', '17:00', '18:00'],
   },
 ];
-
-// ─── Medicaciones ────────────────────────────────────────────────────────────
 
 export const medicationsSeed = [
   {

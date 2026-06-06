@@ -31,7 +31,6 @@ import { SeedService } from './seed.service';
 
 @Module({
   imports: [
-    // Registra todos los modelos directamente para evitar circular deps
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Doctor.name, schema: DoctorSchema },

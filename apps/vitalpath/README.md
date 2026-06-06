@@ -1,50 +1,114 @@
-# Welcome to your Expo app 👋
+# VitalPath — App Móvil
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada con **React Native + Expo** para la plataforma VitalPath AI. Dirigida a pacientes y sus cuidadores, permite gestionar citas, medicamentos, registros de salud y comunicarse con un asistente de IA.
 
-## Get started
+---
 
-1. Install dependencies
+## ¿Qué hace?
 
-   ```bash
-   npm install
-   ```
+- Permite al paciente ver y gestionar sus **citas médicas** y recibir recordatorios push
+- Muestra el **calendario de medicamentos** con horarios y alertas
+- Accede al **asistente de IA** (Groq) mediante texto o voz para consultas de salud
+- Registra el **estado de ánimo** diario (mood check-in)
+- Almacena y visualiza **registros de salud** (resultados, documentos médicos)
+- Soporta el rol de **cuidador**: vincula su cuenta con la del paciente y accede a su información
+- Incluye un **modo de accesibilidad para adultos mayores** con UI adaptada
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+| Herramienta                | Uso                                                    |
+| -------------------------- | ------------------------------------------------------ |
+| React Native + Expo SDK 54 | Framework principal multiplataforma (iOS + Android)    |
+| Expo Router v6             | Navegación file-based con rutas tipadas                |
+| React Navigation           | Drawer + tabs para la navegación principal             |
+| UI Kitten                  | Componentes de UI accesibles y temátizables            |
+| Zustand (`@repo/store`)    | Estado global compartido con el portal web             |
+| TanStack React Query       | Fetching, caché e invalidación de datos del servidor   |
+| Axios (`@repo/api-client`) | Cliente HTTP con interceptores de autenticación        |
+| React Hook Form + Zod      | Formularios con validación en el cliente               |
+| Expo Notifications         | Notificaciones push locales y remotas                  |
+| Expo Secure Store          | Almacenamiento seguro de tokens JWT                    |
+| Expo Image Picker          | Selección de imágenes para perfil y registros de salud |
+| Expo Audio + Speech        | Entrada de voz para el asistente de IA                 |
+| Sentry                     | Monitoreo de errores en producción                     |
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Pantallas
 
-## Get a fresh project
+### Autenticación
 
-When you're ready, run:
+| Pantalla             | Descripción                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| Login                | Inicio de sesión con email y contraseña                        |
+| Registro             | Registro en 3 pasos (datos personales, contacto, confirmación) |
+| Registro cuidador    | Flujo específico para registrarse como cuidador                |
+| Recuperar contraseña | Solicitud de recuperación vía email                            |
+| Sugerencia UI senior | Propone activar el modo de accesibilidad para adultos mayores  |
 
-```bash
-npm run reset-project
+### Aplicación principal (drawer + tabs)
+
+| Pantalla           | Descripción                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Home               | Resumen del día: citas próximas, medicamentos pendientes, estado de ánimo             |
+| Chat IA            | Asistente conversacional con Groq (texto y voz); puede consultar citas y medicamentos |
+| Citas              | Lista, detalle y gestión de citas médicas                                             |
+| Medicamentos       | Calendario de medicamentos con horarios y dosis                                       |
+| Registros de salud | Historial de documentos y resultados médicos                                          |
+| Perfil             | Edición de datos personales y foto de perfil                                          |
+| Configuración      | Preferencias de la app (notificaciones, accesibilidad, idioma)                        |
+| Cuidadores         | Lista de cuidadores vinculados (vista del paciente)                                   |
+| Pacientes          | Lista de pacientes a cargo (vista del cuidador)                                       |
+| Vincular           | Flujo para vincular una cuenta de paciente con un cuidador                            |
+
+---
+
+## Variables de entorno
+
+Crear un archivo `.env` en `apps/vitalpath/`:
+
+```env
+EXPO_PUBLIC_API_URL=http://<ip-local-de-tu-máquina>:3000
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+> La app necesita la IP local de tu máquina (no `localhost`) para comunicarse con la API desde el dispositivo/emulador.  
+> En macOS/Linux: `ifconfig | grep "inet "` → buscá una IP tipo `192.168.x.x`.  
+> En Windows: `ipconfig` → buscá `IPv4`.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Ejecutar la app
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+# Iniciar el servidor de Expo
+pnpm start
 
-## Join the community
+# Abrir en simulador iOS
+pnpm ios
 
-Join our community of developers creating universal apps.
+# Abrir en emulador Android
+pnpm android
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Build de Android (preview)
+pnpm build:android
+```
+
+Desde la raíz del monorepo:
+
+```bash
+pnpm --filter vitalpath start
+```
+
+Escanear el QR con **Expo Go** en el dispositivo físico, o presionar `i` / `a` en la terminal para abrir el simulador correspondiente.
+
+---
+
+## Tests
+
+```bash
+pnpm test
+```
+
+Los tests usan **Jest** con `jest-expo` preset. Los mocks globales están en `jest.setup.js` (incluye `expo-secure-store`, `expo-notifications`, `react-native-mmkv`, etc.).

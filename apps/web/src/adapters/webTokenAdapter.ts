@@ -8,7 +8,6 @@ export const webTokenAdapter: TokenAdapter = {
     document.cookie = `${ACCESS_TOKEN_KEY}=${encodeURIComponent(token)}; path=/; SameSite=Lax`;
   },
   deleteToken: async () => clearAllCookies(),
-  // noop — refresh is httpOnly cookie, JS cannot read or write it
   getRefreshToken: async () => null,
   setRefreshToken: async () => {},
   deleteRefreshToken: async () => {},

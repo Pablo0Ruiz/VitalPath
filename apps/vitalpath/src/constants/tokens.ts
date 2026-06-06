@@ -1,22 +1,17 @@
 const light = {
-  // ── Surfaces ─────────────────────────────────────────────────
   background: '#F5F7FC',
   surface: '#FFFFFF',
   surfaceElevated: '#FFFFFF',
   surfaceDark: '#1e2f8a',
 
-  // ── Text ─────────────────────────────────────────────────────
   textPrimary: '#111827',
   textSecondary: '#6B7280',
   textInverse: '#FFFFFF',
 
-  // ── Border ───────────────────────────────────────────────────
   border: '#E4E7EF',
 
-  // ── Online presence ──────────────────────────────────────────
   online: '#22C55E',
 
-  // ── Brand Primary: Indigo Blue ───────────────────────────────
   primary50: '#eef1fe',
   primary100: '#dde3fd',
   primary200: '#bbc7fb',
@@ -25,7 +20,6 @@ const light = {
   primary700: '#3a57e0',
   primary900: '#1e2f8a',
 
-  // ── Brand Secondary: Teal ────────────────────────────────────
   secondary50: '#F0FDFA',
   secondary100: '#CCFBF1',
   secondary200: '#99F6E4',
@@ -34,10 +28,8 @@ const light = {
   secondary700: '#0F766E',
   secondary900: '#134E4A',
 
-  // ── Accent AI: Purple ────────────────────────────────────────
   accentAi: '#9B5DE5',
 
-  // ── Neutral: Zinc ────────────────────────────────────────────
   neutral50: '#FAFAFA',
   neutral100: '#F4F4F5',
   neutral200: '#E4E4E7',
@@ -50,7 +42,6 @@ const light = {
   neutral900: '#18181B',
   neutral950: '#09090B',
 
-  // ── State ────────────────────────────────────────────────────
   error: '#EF4444',
   errorLight: '#FEE2E2',
   errorDark: '#991B1B',
@@ -67,44 +58,35 @@ const light = {
   white: '#FFFFFF',
   black: '#000000',
 
-  // ── Glass ────────────────────────────────────────────────────
   glassBorder: 'rgba(79, 110, 247, 0.20)',
 
-  // ── Typography scale ─────────────────────────────────────────
   fontSizeDisplay: 32,
   fontSizeTitle: 24,
   fontSizeBody: 15,
   fontSizeCaption: 13,
   fontSizeLabel: 11,
 
-  // ── Radii ────────────────────────────────────────────────────
   radiusCard: 16,
   radiusHero: 20,
   radiusSheet: 24,
 
-  // ── Touch ────────────────────────────────────────────────────
   minTouchTarget: 44,
 } as const;
 
 const dark = {
-  // ── Surfaces ─────────────────────────────────────────────────
   background: '#13141F',
   surface: '#1C1E2E',
   surfaceElevated: '#252841',
   surfaceDark: '#0D0E18',
 
-  // ── Text ─────────────────────────────────────────────────────
   textPrimary: '#EEF0F8',
   textSecondary: '#8B90A8',
   textInverse: '#13141F',
 
-  // ── Border ───────────────────────────────────────────────────
   border: '#2F3347',
 
-  // ── Online presence ──────────────────────────────────────────
   online: '#22C55E',
 
-  // ── Brand Primary: Indigo Blue (lighter in dark) ─────────────
   primary50: '#eef1fe',
   primary100: '#dde3fd',
   primary200: '#bbc7fb',
@@ -113,7 +95,6 @@ const dark = {
   primary700: '#9aaafb',
   primary900: '#dde3fd',
 
-  // ── Brand Secondary: Teal ────────────────────────────────────
   secondary50: '#F0FDFA',
   secondary100: '#CCFBF1',
   secondary200: '#99F6E4',
@@ -122,10 +103,8 @@ const dark = {
   secondary700: '#0D9488',
   secondary900: '#134E4A',
 
-  // ── Accent AI: Purple ────────────────────────────────────────
   accentAi: '#B87AF8',
 
-  // ── Neutral: Zinc (same scale) ───────────────────────────────
   neutral50: '#FAFAFA',
   neutral100: '#F4F4F5',
   neutral200: '#E4E4E7',
@@ -138,7 +117,6 @@ const dark = {
   neutral900: '#18181B',
   neutral950: '#09090B',
 
-  // ── State ────────────────────────────────────────────────────
   error: '#F87171',
   errorLight: '#450a0a',
   errorDark: '#ef4444',
@@ -155,22 +133,18 @@ const dark = {
   white: '#FFFFFF',
   black: '#000000',
 
-  // ── Glass ────────────────────────────────────────────────────
   glassBorder: 'rgba(123, 143, 250, 0.22)',
 
-  // ── Typography scale ─────────────────────────────────────────
   fontSizeDisplay: 32,
   fontSizeTitle: 24,
   fontSizeBody: 15,
   fontSizeCaption: 13,
   fontSizeLabel: 11,
 
-  // ── Radii ────────────────────────────────────────────────────
   radiusCard: 16,
   radiusHero: 20,
   radiusSheet: 24,
 
-  // ── Touch ────────────────────────────────────────────────────
   minTouchTarget: 44,
 } as const;
 
