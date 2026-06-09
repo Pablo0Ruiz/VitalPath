@@ -33,15 +33,18 @@ jest.mock('react-native-reanimated', () => {
       }),
     }),
   });
+  const AnimatedDefault = {
+    View: require('react-native').View,
+    Text: require('react-native').Text,
+    Image: require('react-native').Image,
+    ScrollView: require('react-native').ScrollView,
+    FlatList: require('react-native').FlatList,
+    createAnimatedComponent: component => component,
+  };
   return {
-    default: {
-      View: require('react-native').View,
-      Text: require('react-native').Text,
-      Image: require('react-native').Image,
-      ScrollView: require('react-native').ScrollView,
-      FlatList: require('react-native').FlatList,
-      createAnimatedComponent: component => component,
-    },
+    __esModule: true,
+    default: AnimatedDefault,
+    ...AnimatedDefault,
     useSharedValue: init => ({ value: init }),
     useAnimatedStyle: fn => fn(),
     withTiming: val => val,

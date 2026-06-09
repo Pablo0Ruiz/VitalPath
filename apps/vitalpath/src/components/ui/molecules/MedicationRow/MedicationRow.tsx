@@ -24,6 +24,7 @@ const MedicationRow = ({
   style,
   ...props
 }: MedicationRowProps) => {
+  'use memo';
   const t = useTheme();
 
   return (

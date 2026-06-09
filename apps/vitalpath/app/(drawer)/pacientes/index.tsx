@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import {
@@ -31,6 +31,8 @@ export default function PacientesScreen() {
         keyExtractor={item => item._id}
         contentContainerStyle={s.listContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
+        initialNumToRender={10}
         ListHeaderComponent={
           <>
             <ScreenHeader

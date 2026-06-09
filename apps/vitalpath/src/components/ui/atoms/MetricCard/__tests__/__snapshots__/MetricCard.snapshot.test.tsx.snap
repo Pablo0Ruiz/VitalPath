@@ -1,0 +1,203 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MetricCard — snapshot baseline (PERF-B0-T01) renders with a value and matches snapshot 1`] = `
+<View
+  entering={{}}
+>
+  <View
+    style={
+      [
+        {
+          "borderRadius": 16,
+          "elevation": 2,
+          "marginRight": 10,
+          "minHeight": 96,
+          "padding": 12,
+          "shadowOffset": {
+            "height": 1,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 4,
+          "width": 120,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "shadowColor": "#000",
+        },
+      ]
+    }
+    testID="metric-card"
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+            "textAlign": "left",
+          },
+          [
+            {
+              "fontSize": 10,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 4,
+              "marginTop": 2,
+              "textTransform": "uppercase",
+            },
+            {
+              "color": "#6B7280",
+            },
+          ],
+        ]
+      }
+    >
+      PASOS
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+              "fontSize": 15,
+              "fontWeight": "600",
+              "textAlign": "left",
+            },
+            [
+              {
+                "fontSize": 22,
+                "fontWeight": "700",
+                "lineHeight": 26,
+              },
+              {
+                "color": "#111827",
+              },
+            ],
+          ]
+        }
+      >
+        8,000
+        <Text
+          style={
+            [
+              {
+                "color": "#6B7280",
+                "fontSize": 13,
+                "fontWeight": "500",
+                "textAlign": "left",
+              },
+              {
+                "color": "#6B7280",
+                "fontSize": 13,
+              },
+            ]
+          }
+        >
+          steps
+        </Text>
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`MetricCard — snapshot baseline (PERF-B0-T01) renders with null value and matches snapshot 1`] = `
+<View
+  entering={{}}
+>
+  <View
+    style={
+      [
+        {
+          "borderRadius": 16,
+          "elevation": 2,
+          "marginRight": 10,
+          "minHeight": 96,
+          "padding": 12,
+          "shadowOffset": {
+            "height": 1,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 4,
+          "width": 120,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "shadowColor": "#000",
+        },
+      ]
+    }
+    testID="metric-card"
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+            "textAlign": "left",
+          },
+          [
+            {
+              "fontSize": 10,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 4,
+              "marginTop": 2,
+              "textTransform": "uppercase",
+            },
+            {
+              "color": "#6B7280",
+            },
+          ],
+        ]
+      }
+    >
+      ADHERENCIA
+    </Text>
+    <View
+      style={
+        {
+          "marginTop": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#6B7280",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textAlign": "left",
+            },
+            [
+              {
+                "fontSize": 11,
+                "marginBottom": 4,
+              },
+              {
+                "color": "#6B7280",
+              },
+            ],
+          ]
+        }
+      >
+        Sin datos aún
+      </Text>
+    </View>
+  </View>
+</View>
+`;

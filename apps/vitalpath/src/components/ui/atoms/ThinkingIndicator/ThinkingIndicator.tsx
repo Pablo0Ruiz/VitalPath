@@ -16,43 +16,47 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 
 const DOTS = [0, 150, 300] as const;
 
-const ThinkingIndicator = () => {
-  const t = useTheme();
-  const isReducedMotion = useReducedMotion();
+interface DotItemProps {
+  delay: number;
+  color: string;
+  reduced: boolean;
+  index: number;
+}
 
-  const opacities = [
-    useSharedValue(0.3),
-    useSharedValue(0.3),
-    useSharedValue(0.3),
-  ];
+const DotItem = ({ delay, color, reduced, index }: DotItemProps) => {
+  const opacity = useSharedValue(0.3);
 
   useEffect(() => {
-    if (isReducedMotion) return;
-
-    opacities.forEach((opacity, i) => {
-      opacity.value = withRepeat(
-        withDelay(
-          DOTS[i],
-          withSequence(
-            withTiming(1, { duration: 400 }),
-            withTiming(0.3, { duration: 400 }),
-          ),
+    if (reduced) return;
+    opacity.value = withRepeat(
+      withDelay(
+        delay,
+        withSequence(
+          withTiming(1, { duration: 400 }),
+          withTiming(0.3, { duration: 400 }),
         ),
-        -1,
-        false,
-      );
-    });
+      ),
+      -1,
+      false,
+    );
+    return () => cancelAnimation(opacity);
+  }, [reduced, delay]);
 
-    return () => {
-      opacities.forEach(o => cancelAnimation(o));
-    };
-  }, [isReducedMotion]);
+  const style = useAnimatedStyle(() => ({
+    opacity: reduced ? 0.6 : opacity.value,
+  }));
 
-  const styles = opacities.map(opacity =>
-    useAnimatedStyle(() => ({
-      opacity: isReducedMotion ? 0.6 : opacity.value,
-    })),
+  return (
+    <AnimatedView
+      testID={`thinking-dot-${index}`}
+      style={[s.dot, { backgroundColor: color }, style]}
+    />
   );
+};
+
+const ThinkingIndicator = () => {
+  const t = useTheme();
+  const reduced = useReducedMotion();
 
   return (
     <View
@@ -62,11 +66,13 @@ const ThinkingIndicator = () => {
         { backgroundColor: t.surfaceElevated, borderColor: t.border },
       ]}
     >
-      {DOTS.map((_, i) => (
-        <AnimatedView
+      {DOTS.map((delay, i) => (
+        <DotItem
           key={i}
-          testID={`thinking-dot-${i}`}
-          style={[s.dot, { backgroundColor: t.primary600 }, styles[i]]}
+          delay={delay}
+          color={t.primary600}
+          reduced={reduced}
+          index={i}
         />
       ))}
     </View>

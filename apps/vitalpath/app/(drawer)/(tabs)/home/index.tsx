@@ -9,7 +9,7 @@ import {
 } from '@/src/components/ui/atoms';
 import {
   AppointmentPreviewRow,
-  CompactMedRow,
+  MedicationRow,
   DailyCheckIn,
   EmptyPacienteActivoState,
   HomeTopBar,
@@ -17,7 +17,12 @@ import {
 } from '@/src/components/ui/molecules';
 import { useChatContextStore } from '@repo/store';
 import { useAuthStore } from '@/src/stores/auth';
-import { useMedicaments } from '@repo/api-client';
+import {
+  useMedicaments,
+  useDeleteMedication,
+  useTakeMedication,
+} from '@repo/api-client';
+import { Medication } from '@repo/types';
 import { ROUTES } from '@/src/routes/routes';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useDisclosure, useActivePatientId } from '@/src/hooks';
@@ -30,6 +35,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAdherence } from '@/src/hooks/useAdherence';
 import { useUpcomingCitas } from '@/src/hooks/useUpcomingCitas';
 import { MedicationFormModal } from '@/src/components/ui/molecules/MedicationFormModal';
+import { cancelNotifications } from '@/src/utils/medicationNotifications';
 
 export default function DashboardScreen() {
   const t = useTheme();
@@ -44,7 +50,30 @@ export default function DashboardScreen() {
   const { patientId, needsSelection } = useActivePatientId();
 
   const { data: medicaments, isLoading } = useMedicaments();
+  const { mutateAsync: deleteMedication } = useDeleteMedication();
+  const { mutateAsync: takeMedication } = useTakeMedication();
   const { adherenceValue, pendingMedsCount } = useAdherence();
+
+  const handleDelete = async (id: string, notificationIds: string[] = []) => {
+    try {
+      if (notificationIds.length > 0)
+        await cancelNotifications(notificationIds);
+      await deleteMedication(id);
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
+  };
+
+  const handleTake = async (item: Medication) => {
+    try {
+      const result = await takeMedication(item._id);
+      if (result.completed && item.notificationIds?.length) {
+        await cancelNotifications(item.notificationIds);
+      }
+    } catch (error) {
+      console.error('Error al registrar dosis:', error);
+    }
+  };
   const {
     upcomingCitas,
     nextCitaValue,
@@ -69,7 +98,6 @@ export default function DashboardScreen() {
           <EmptyPacienteActivoState />
         ) : (
           <>
-            {/* Daily check-in — primera acción del día */}
             <View style={s.sectionBlock}>
               <View
                 style={[
@@ -98,9 +126,21 @@ export default function DashboardScreen() {
                 {isLoading ? (
                   <LoadingScreen size="small" />
                 ) : medicaments && medicaments.length > 0 ? (
-                  medicaments
-                    .slice(0, 3)
-                    .map(med => <CompactMedRow key={med._id} med={med} />)
+                  medicaments.slice(0, 3).map(med => (
+                    <View key={med._id} style={s.medRowWrapper}>
+                      <MedicationRow
+                        name={med.name}
+                        description={med.description}
+                        time={med.startTime}
+                        isDone={(med.dosesTaken ?? 0) > 0}
+                        onTakePress={() => handleTake(med)}
+                        onEditPress={() => editModal.open(med._id)}
+                        onDeletePress={() =>
+                          handleDelete(med._id, med.notificationIds ?? [])
+                        }
+                      />
+                    </View>
+                  ))
                 ) : (
                   <EmptyState
                     icon="activity"
@@ -112,11 +152,13 @@ export default function DashboardScreen() {
                   />
                 )}
               </View>
-              <MedicationFormModal
-                mode="create"
-                visible={createModal.isOpen}
-                onClose={createModal.close}
-              />
+              {createModal.isOpen && (
+                <MedicationFormModal
+                  mode="create"
+                  visible={createModal.isOpen}
+                  onClose={createModal.close}
+                />
+              )}
             </View>
 
             <View style={s.sectionBlock}>
@@ -249,6 +291,11 @@ const s = StyleSheet.create({
   root: { flex: 1 },
   sectionBlock: {
     marginTop: 16,
+  },
+  medRowWrapper: {
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'transparent',
   },
   miniCard: {
     borderRadius: 12,

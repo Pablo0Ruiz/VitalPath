@@ -1,5 +1,12 @@
-import { useRef, useState } from 'react';
-import { Animated, View, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSequence,
+  withTiming,
+  withDelay,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { TextField } from '@/src/components/ui/atoms/TextField';
@@ -13,24 +20,15 @@ import { useMoodCheckIn } from '@repo/api-client';
 export const DailyCheckIn = () => {
   const t = useTheme();
   const [selected, setSelected] = useState<string | null>(null);
-  const confirmOpacity = useRef(new Animated.Value(0)).current;
+  const confirmOpacity = useSharedValue(0);
   const { mutate: checkIn } = useMoodCheckIn();
 
   const showConfirmation = () => {
-    confirmOpacity.setValue(0);
-    Animated.sequence([
-      Animated.timing(confirmOpacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.delay(3000),
-      Animated.timing(confirmOpacity, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    confirmOpacity.value = 0;
+    confirmOpacity.value = withSequence(
+      withTiming(1, { duration: 200 }),
+      withDelay(3000, withTiming(0, { duration: 200 })),
+    );
   };
 
   const handleSelect = (mood: Mood) => {
@@ -39,6 +37,10 @@ export const DailyCheckIn = () => {
     checkIn({ mood: mood.id, date: new Date().toISOString().split('T')[0] });
     showConfirmation();
   };
+
+  const confirmStyle = useAnimatedStyle(() => ({
+    opacity: confirmOpacity.value,
+  }));
 
   return (
     <View style={s.container}>
@@ -62,7 +64,7 @@ export const DailyCheckIn = () => {
           />
         ))}
       </View>
-      <Animated.View style={{ opacity: confirmOpacity }}>
+      <Animated.View style={confirmStyle}>
         <TextField
           variant="caption"
           style={[s.confirmation, { color: t.primary600 }]}

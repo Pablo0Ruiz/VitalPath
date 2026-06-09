@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { FlatList, View, Alert, StyleSheet } from 'react-native';
+import { FlatList, Platform, View, Alert, StyleSheet } from 'react-native';
 
 import { Button } from '@/src/components/ui/atoms/Button';
 import { EmptyState } from '@/src/components/ui/atoms/EmptyState';
@@ -116,6 +116,10 @@ function PacienteAppointmentsView() {
         keyExtractor={item => item._id}
         contentContainerStyle={s.listContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={7}
         ListHeaderComponent={
           <>
             <ScreenHeader title="Citas" subtitle="Gestioná tus citas médicas" />

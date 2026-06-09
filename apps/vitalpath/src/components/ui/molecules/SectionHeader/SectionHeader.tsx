@@ -15,6 +15,7 @@ const SectionHeader = ({
   style,
   ...props
 }: SectionHeaderProps) => {
+  'use memo';
   const t = useTheme();
 
   return (

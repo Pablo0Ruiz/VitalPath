@@ -1,4 +1,10 @@
-import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  FlatList,
+  Platform,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { ConversationCard } from '../../molecules/ConversationCard';
 import { TextField, Button } from '../../atoms';
 import { useConversations } from '@repo/api-client';
@@ -40,6 +46,8 @@ const ChatHistory = ({ onSelectConversation, onNewChat }: ChatHistoryProps) => {
         contentContainerStyle={s.listContent}
         refreshing={isLoading}
         onRefresh={refetch}
+        removeClippedSubviews={Platform.OS === 'android'}
+        initialNumToRender={10}
         ListEmptyComponent={
           <View style={s.empty}>
             <TextField

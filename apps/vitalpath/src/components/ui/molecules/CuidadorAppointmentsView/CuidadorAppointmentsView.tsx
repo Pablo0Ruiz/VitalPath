@@ -1,4 +1,4 @@
-import { FlatList, View, StyleSheet } from 'react-native';
+import { FlatList, View, Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/src/components/ui/atoms/EmptyState';
@@ -52,6 +52,7 @@ export function CuidadorAppointmentsView() {
         keyExtractor={item => item._id}
         contentContainerStyle={s.listContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
         ListHeaderComponent={
           <>
             <ScreenHeader title="Citas" subtitle="Citas del paciente activo" />

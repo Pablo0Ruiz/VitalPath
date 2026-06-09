@@ -162,6 +162,10 @@ export const seniorTokens = {
 export type SeniorTokenOverrides = typeof seniorTokens;
 
 export const tokens = { light, dark } as const;
+export const seniorThemes = {
+  light: { ...light, ...seniorTokens } as ThemeTokens,
+  dark: { ...dark, ...seniorTokens } as ThemeTokens,
+} as const;
 
 export type ThemeTokens = {
   [K in keyof typeof light]: (typeof light)[K] extends number ? number : string;

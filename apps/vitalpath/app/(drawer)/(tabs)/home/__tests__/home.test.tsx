@@ -96,6 +96,11 @@ jest.mock('@/src/hooks', () => ({
 }));
 
 // ── Complex molecules / organisms (stub to avoid deep dependency chains) ────
+jest.mock('@/src/utils/medicationNotifications', () => ({
+  cancelNotifications: jest.fn().mockResolvedValue(undefined),
+  scheduleNotifications: jest.fn().mockResolvedValue([]),
+}));
+
 jest.mock('@/src/components/ui/molecules/MedicationFormModal', () => {
   const { View } = require('react-native');
   const React = require('react');
@@ -172,8 +177,8 @@ jest.mock('@/src/components/ui/molecules', () => {
     EmptyPacienteActivoState: () =>
       React.createElement(View, { testID: 'empty-state' }),
     HomeTopBar: () => React.createElement(View, { testID: 'home-top-bar' }),
-    CompactMedRow: ({ med }: { med: { _id: string } }) =>
-      React.createElement(View, { testID: `med-row-${med._id}` }),
+    MedicationRow: ({ name }: { name: string }) =>
+      React.createElement(View, { testID: `med-row-${name}` }),
     AppointmentPreviewRow: ({ cita }: { cita: { _id: string } }) =>
       React.createElement(View, { testID: `appointment-row-${cita._id}` }),
   };

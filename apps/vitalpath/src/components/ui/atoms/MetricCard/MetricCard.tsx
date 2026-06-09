@@ -30,6 +30,7 @@ const MetricCard = ({
   ctaLabel = 'Configurar',
   index = 0,
 }: MetricCardProps) => {
+  'use memo';
   const t = useTheme();
   const isReducedMotion = useReducedMotion();
 

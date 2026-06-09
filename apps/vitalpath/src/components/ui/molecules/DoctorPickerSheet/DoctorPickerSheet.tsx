@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Modal, View, Pressable, FlatList, StyleSheet } from 'react-native';
+import {
+  Modal,
+  View,
+  Pressable,
+  FlatList,
+  Platform,
+  StyleSheet,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TextField } from '../../atoms';
 import { useCreateCita, useDoctors } from '@repo/api-client';
@@ -106,6 +113,7 @@ export const DoctorPickerSheet = ({
               keyExtractor={doc => doc._id}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={s.listContent}
+              removeClippedSubviews={Platform.OS === 'android'}
               renderItem={({ item: doc }) => (
                 <DoctorCard
                   doctor={doc}

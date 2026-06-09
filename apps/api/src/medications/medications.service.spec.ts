@@ -250,9 +250,10 @@ describe('MedicationsService', () => {
   // ─── takeMedication ───────────────────────────────────────────────────────
 
   describe('takeMedication', () => {
-    it('returns completed:true and deletes when durationDays is null (indefinite)', async () => {
+    it('increments dosesTaken and returns completed:false without deleting when durationDays is null (indefinite)', async () => {
       const medId = makeId();
       const userId = makeId().toString();
+      const saveMock = jest.fn().mockResolvedValue(undefined);
       const medication: MedDoc = {
         _id: medId,
         name: 'Ibuprofeno',
@@ -260,22 +261,19 @@ describe('MedicationsService', () => {
         frequencyHours: 24,
         dosesTaken: 0,
         notificationIds: [],
+        save: saveMock,
       };
       userService.getUserProfile.mockResolvedValue(makeProfile([medId]));
       medicationModel.findById.mockResolvedValue(medication);
-      medicationModel.findByIdAndDelete.mockResolvedValue(medication);
 
       const result = await service.takeMedication(userId, medId.toString());
 
-      expect(result.completed).toBe(true);
-      expect(result.medication).toBeUndefined();
-      expect(medicationModel.findByIdAndDelete).toHaveBeenCalledWith(
-        medId.toString(),
-      );
-      expect(patientModel.findOneAndUpdate).toHaveBeenCalledWith(
-        { user: userId },
-        { $pull: { medications: medId.toString() } },
-      );
+      expect(result.completed).toBe(false);
+      expect(result.medication).toBeDefined();
+      expect(medication.dosesTaken).toBe(1);
+      expect(saveMock).toHaveBeenCalled();
+      expect(medicationModel.findByIdAndDelete).not.toHaveBeenCalled();
+      expect(patientModel.findOneAndUpdate).not.toHaveBeenCalled();
     });
 
     it('increments dosesTaken and returns completed:false when mid-course (frequencyHours=8)', async () => {

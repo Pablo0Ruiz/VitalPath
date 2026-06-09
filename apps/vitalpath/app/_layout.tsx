@@ -9,7 +9,7 @@ import {
   focusManager,
 } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { useAuthStore } from '@/src/stores/auth';
 import { useSession } from '@repo/api-client';
@@ -32,7 +32,15 @@ if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
   });
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -85,20 +93,40 @@ function RootLayout() {
 
   const [loaded, error] = useFonts({
     'Inter_18pt-Light': require('../assets/fonts/Inter_18pt-Light.ttf'),
-    'Inter_18pt-LightItalic': require('../assets/fonts/Inter_18pt-LightItalic.ttf'),
     'Inter_18pt-Regular': require('../assets/fonts/Inter_18pt-Regular.ttf'),
-    'Inter_18pt-Thin': require('../assets/fonts/Inter_18pt-Thin.ttf'),
-    'Inter_18pt-ThinItalic': require('../assets/fonts/Inter_18pt-ThinItalic.ttf'),
-    'PlusJakartaSans-Italic-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf'),
     'PlusJakartaSans-VariableFont_wght': require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf'),
   });
 
+  const [fontTimedOut, setFontTimedOut] = useState(false);
+  const [versionDone, setVersionDone] = useState(false);
+  const [versionTimedOut, setVersionTimedOut] = useState(false);
+
+  const fontsReady = loaded || !!error || fontTimedOut;
+  const versionReady = versionDone || versionTimedOut;
+  const appReady = fontsReady && versionReady;
+
   useEffect(() => {
-    if (loaded || error) {
-      if (error) console.error('Error cargando fuentes:', error);
+    const id = setTimeout(() => setFontTimedOut(true), 3000);
+    return () => clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    if (!fontsReady) return;
+    const id = setTimeout(() => setVersionTimedOut(true), 2500);
+    return () => clearTimeout(id);
+  }, [fontsReady]);
+
+  const handleVersionResolved = useCallback(() => setVersionDone(true), []);
+
+  useEffect(() => {
+    if (appReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [appReady]);
+
+  useEffect(() => {
+    if (error) console.error('Error cargando fuentes:', error);
+  }, [error]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener(
@@ -110,7 +138,7 @@ function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  if (!loaded && !error) {
+  if (!fontsReady) {
     return null;
   }
 
@@ -118,7 +146,7 @@ function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <AuthInitializer />
-        <VersionGate>
+        <VersionGate onResolved={handleVersionResolved}>
           <View style={{ flex: 1, backgroundColor: t.background }}>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
             <Stack screenOptions={{ headerShown: false }}>

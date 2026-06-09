@@ -20,6 +20,9 @@ export const ChatMessages = ({ messages, isGeminiWriting }: Props) => {
         inverted
         keyExtractor={item => item.id}
         style={s.list}
+        removeClippedSubviews={false}
+        initialNumToRender={12}
+        maxToRenderPerBatch={10}
         renderItem={({ item }) => {
           if (item.type === 'text' || item.type === 'audio') {
             return (

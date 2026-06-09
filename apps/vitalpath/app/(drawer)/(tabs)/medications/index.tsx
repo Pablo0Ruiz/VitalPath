@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { FlatList, Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -70,6 +70,10 @@ export default function MedicationsScreen() {
         keyExtractor={(item: Medication) => item._id}
         contentContainerStyle={s.listContent}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={7}
         ListHeaderComponent={
           <>
             <ScreenHeader

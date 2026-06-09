@@ -41,7 +41,31 @@ jest.mock('@/src/hooks/useVoiceAssistant', () => ({
   }),
 }));
 
-// Atoms barrel
+jest.mock('react-native-reanimated', () => {
+  const { View } = require('react-native');
+  const AnimatedDefault = {
+    View,
+    createAnimatedComponent: (c: unknown) => c,
+  };
+  return {
+    __esModule: true,
+    default: AnimatedDefault,
+    ...AnimatedDefault,
+    useSharedValue: (init: unknown) => ({ value: init }),
+    useAnimatedStyle: (fn: () => unknown) => fn(),
+    withTiming: (val: unknown) => val,
+    withSequence: (...vals: unknown[]) => vals[vals.length - 1],
+    withRepeat: (val: unknown) => val,
+    cancelAnimation: jest.fn(),
+    createAnimatedComponent: (c: unknown) => c,
+    interpolate: jest.fn((val: unknown) => val),
+    Easing: {
+      inOut: jest.fn(() => jest.fn()),
+      ease: jest.fn(),
+    },
+  };
+});
+
 jest.mock('@/src/components/ui/atoms', () => {
   const { Text } = require('react-native');
   const React = require('react');
@@ -89,8 +113,7 @@ describe('VoiceAssistantModal (PR5)', () => {
     const { getAllByRole } = render(
       <VoiceAssistantModal {...baseProps} onClose={onClose} />,
     );
-    // The close button is a Pressable — find first accessible pressable
-    // We just verify the component renders without crashing
+
     expect(onClose).not.toHaveBeenCalled();
   });
 

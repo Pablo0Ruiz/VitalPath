@@ -1,12 +1,21 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import {
-  Animated,
   Modal,
   StyleSheet,
   View,
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  cancelAnimation,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -28,7 +37,7 @@ const VoiceAssistantModal = ({
 }: VoiceAssistantModalProps) => {
   const t = useTheme();
   const addVoiceMessage = useChatContextStore(state => state.addVoiceMessage);
-  const pulseAnim = useRef(new Animated.Value(0)).current;
+  const pulse = useSharedValue(0);
 
   const {
     isRecording,
@@ -47,35 +56,25 @@ const VoiceAssistantModal = ({
 
   useEffect(() => {
     if (isRecording || isSpeaking) {
-      const loop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 0,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-        ]),
+      pulse.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: 600, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1,
+        false,
       );
-      loop.start();
-      return () => loop.stop();
     } else {
-      pulseAnim.setValue(0);
+      cancelAnimation(pulse);
+      pulse.value = 0;
     }
+    return () => cancelAnimation(pulse);
   }, [isRecording, isSpeaking]);
 
-  const pulseScale = pulseAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 1.25],
-  });
-  const pulseOpacity = pulseAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0],
-  });
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(pulse.value, [0, 1], [1, 1.25]) }],
+    opacity: interpolate(pulse.value, [0, 1], [1, 0]),
+  }));
 
   const handlePress = () => {
     if (isSpeaking) {
@@ -123,9 +122,8 @@ const VoiceAssistantModal = ({
                   s.pulse,
                   {
                     borderColor: t.primary500,
-                    transform: [{ scale: pulseScale }],
-                    opacity: pulseOpacity,
                   },
+                  pulseStyle,
                 ]}
               />
             )}

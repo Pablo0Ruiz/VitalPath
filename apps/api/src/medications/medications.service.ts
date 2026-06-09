@@ -84,27 +84,21 @@ export class MedicationsService {
     const medication = await this.medicationModel.findById(medicationId);
     if (!medication) throw new NotFoundException('Medicamento no encontrado');
 
-    if (!medication.durationDays) {
-      await this.medicationModel.findByIdAndDelete(medicationId);
-      await this.patientModel.findOneAndUpdate(
-        { user: userId },
-        { $pull: { medications: medicationId } },
-      );
-      return { completed: true };
-    }
-
-    const totalDoses = Math.floor(
-      medication.durationDays * (24 / medication.frequencyHours),
-    );
     medication.dosesTaken += 1;
 
-    if (medication.dosesTaken >= totalDoses) {
-      await this.medicationModel.findByIdAndDelete(medicationId);
-      await this.patientModel.findOneAndUpdate(
-        { user: userId },
-        { $pull: { medications: medicationId } },
+    if (medication.durationDays) {
+      const totalDoses = Math.floor(
+        medication.durationDays * (24 / medication.frequencyHours),
       );
-      return { completed: true };
+
+      if (medication.dosesTaken >= totalDoses) {
+        await this.medicationModel.findByIdAndDelete(medicationId);
+        await this.patientModel.findOneAndUpdate(
+          { user: userId },
+          { $pull: { medications: medicationId } },
+        );
+        return { completed: true };
+      }
     }
 
     await medication.save();

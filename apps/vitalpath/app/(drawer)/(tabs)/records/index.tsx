@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, Platform, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import type { IMedicalResults } from '@repo/types';
 
@@ -38,6 +38,8 @@ export default function RecordsScreen() {
             refetchCitas();
           }}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={Platform.OS === 'android'}
+          initialNumToRender={8}
           ListEmptyComponent={
             <EmptyState
               icon="file-text"
